@@ -36,9 +36,11 @@ import { Button } from "@mui/material";
 function Store() {
   const { columns, rows } = authorsTableData();
   const { columns: pColumns, rows: pRows } = projectsTableData();
-const handleClick = () => {
-  
-}
+
+  const handleClick = () => {
+    
+  }
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
