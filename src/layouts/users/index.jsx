@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* Dashboard React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -17,32 +17,36 @@ Coded by www.creative-tim.com
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 
-// Material Dashboard 2 React components
+// Dashboard React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import MDAvatar from "components/MDAvatar";
+import MDProgress from "components/MDProgress";
 
-// Material Dashboard 2 React example components
+// Dashboard React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import Icon from "@mui/material/Icon";
+import LogoAsana from "assets/images/small-logos/logo-asana.svg";
+import team2 from "assets/images/team-2.jpg";
 import MDBadge from "components/MDBadge";
 
-// Data
-import authorsTableData from "layouts/orders/data/authorsTableData";
-import projectsTableData from "layouts/orders/data/projectsTableData";
 
-import {SDK} from "../../api/index"
+// Data
+import {SDK} from "../../api/index";
+
 import { useState, useEffect } from "react";
 
-function Orders() {
-  const [orderData, setOrderData] = useState([]);
+function Users() {
+  const [userData, setUserData] = useState([]);
 
   useEffect(() => {
-    SDK.OrderType.getAll()
+    SDK.UserType.getAll()
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data)
+      setUserData(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
@@ -51,7 +55,7 @@ function Orders() {
 
   const columns = [
     { Header: "id", accessor: "id", width: "10%", align: "left" },
-      { Header: "customerId", accessor: "customerId",  align: "left" },
+      { Header: "fullName", accessor: "fullName",  align: "left" },
       { Header: "role", accessor: "role", align: "left" },
       { Header: "email", accessor: "email", align: "left" },
       { Header: "phoneNumber", accessor: "phoneNumber", align: "center" },
@@ -60,7 +64,7 @@ function Orders() {
       { Header: "action", accessor: "action", align: "center" },
     ]
 
-    const rows = orderData  ?.map((user) =>  ({
+    const rows = userData?.map((user) =>  ({
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
@@ -70,25 +74,20 @@ function Orders() {
         role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {user.role  || "-"}
         </MDTypography>),
-        shippingMethod: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.shippingMethod  || "-"}
+        email: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.email  || "-"}
         </MDTypography>),
-         trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user. trackingNumber  || "-"}
+        phoneNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.phoneNumber  || "-"}
         </MDTypography>),
         status: (
           <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.status}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+            <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
         ),
-        paid: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        total: (
+        address: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.total  || "-"}
+            {user.address  || "-"}
           </MDTypography>
         ),
         action: (
@@ -98,7 +97,6 @@ function Orders() {
         )
     }))
   
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -117,7 +115,7 @@ function Orders() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Orders
+                  Users Table
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
@@ -138,4 +136,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default Users;

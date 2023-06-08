@@ -21,7 +21,7 @@ const getById = async(id) => {
     return data;
 };
 
-const update = async(req) => {
+const update = async(id, req) => {
     const data = await axios.get(extendedUrl + `/subCategory/${id}`, req);
     console.log(data);
     return data;
