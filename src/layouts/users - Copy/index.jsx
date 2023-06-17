@@ -1,6 +1,6 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.1.0
+* Dashboard React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
@@ -17,32 +17,36 @@ Coded by www.creative-tim.com
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 
-// Material Dashboard 2 React components
+// Dashboard React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import MDAvatar from "components/MDAvatar";
+import MDProgress from "components/MDProgress";
 
-// Material Dashboard 2 React example components
+// Dashboard React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import Icon from "@mui/material/Icon";
+import LogoAsana from "assets/images/small-logos/logo-asana.svg";
+import team2 from "assets/images/team-2.jpg";
 import MDBadge from "components/MDBadge";
 
-// Data
-import authorsTableData from "layouts/orders/data/authorsTableData";
-import projectsTableData from "layouts/orders/data/projectsTableData";
 
-import {SDK} from "../../api/index"
+// Data
+import {SDK} from "../../api/index";
+
 import { useState, useEffect } from "react";
 
-function Orders() {
-  const [orderData, setOrderData] = useState([]);
+function Products() {
+  const [productData, setProductsData] = useState([]);
 
   useEffect(() => {
-    SDK.OrderType.getAll()
+    SDK.ProductType.getAll()
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data)
+      setProductsData(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
@@ -50,47 +54,41 @@ function Orders() {
   }, [])
 
   const columns = [
-      { Header: "id", accessor: "id", width: "10%", align: "left" },
-      { Header: "customer Id", accessor: "customerId",  align: "left" },
-      { Header: "itemCount", accessor: "itemCount", align: "left" },
-      { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
-      { Header: "total", accessor: "total", align: "center" },
-      { Header: "paid", accessor: "paid", align: "center" },
-      { Header: "status", accessor: "isActive", align: "center" },
-      { Header: "Order status", accessor: "status", align: "center" },
+    { Header: "id", accessor: "id", width: "10%", align: "left" },
+      { Header: "product", accessor: "productName",  align: "left" },
+      { Header: "Code", accessor: "productCode", align: "left" },
+      { Header: "description", accessor: "description", align: "center" },
+      { Header: "price", accessor: "price", align: "left" },
+      { Header: "category", accessor: "categoryId", align: "center" },
+      { Header: "status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
     ]
 
-    const rows = orderData  ?.map((user) =>  ({
+    const rows = productData?.map((user) =>  ({
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        customerId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.customerId  || "-"}
+        productName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.productName  || "-"}
         </MDTypography>),
-        itemCount: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.itemCount  || "-"}
+        productCode: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.productCode  || "-"}
         </MDTypography>),
-        trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.trackingNumber  || "-"}
+        price: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.price  || "-"}
         </MDTypography>),
-        total: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.total  || "-"}
+        description: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.description  || "-"}
         </MDTypography>),
-        paid: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        isActive: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={user.isActive ? "ACTIVE" : "INACTIVE"} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
         status: (
           <MDBox ml={-1}>
             <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
+        ),
+        categoryId: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.categoryId  || "-"}
+          </MDTypography>
         ),
         action: (
           <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
@@ -99,7 +97,6 @@ function Orders() {
         )
     }))
   
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -118,7 +115,7 @@ function Orders() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Orders
+                  Products Table
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
@@ -139,4 +136,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default Products;

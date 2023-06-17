@@ -47,7 +47,10 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
 import Orders from "layouts/orders";
+import Products from "layouts/users - Copy";
 import Store from "layouts/store";
+import Customers from "layouts/users copy";
+
 
 
 // @mui icons
@@ -80,11 +83,20 @@ const routes = [{
     },
     {
         type: "collapse",
-        name: "Tables",
-        key: "tables",
-        icon: <Icon fontSize = "small" > table_view </Icon>,
-        route: "/tables",
-        component: <Tables /> ,
+        name: "Products",
+        key: "products",
+        icon: <Icon fontSize = "small" > receipt </Icon>,
+        route: "/products",
+        component: <Products /> ,
+    },
+   
+    {
+        type: "collapse",
+        name: "Customers",
+        key: "customers",
+        icon: <Icon fontSize = "small" > Customers </Icon>,
+        route: "/customers",
+        component: <Customers /> ,
     },
     {
         type: "collapse",
@@ -93,6 +105,14 @@ const routes = [{
         icon: <Icon fontSize = "small" > Users </Icon>,
         route: "/users",
         component: <Users /> ,
+    },
+    {
+        type: "collapse",
+        name: "Tables",
+        key: "tables",
+        icon: <Icon fontSize = "small" > table_view </Icon>,
+        route: "/tables",
+        component: <Tables /> ,
     },
     {
         type: "collapse",
