@@ -22,13 +22,13 @@ const getById = async(id) => {
 };
 
 const update = async(id, req) => {
-    const data = await axios.get(extendedUrl + `/orders/${id}`, req);
+    const data = await axios.put(extendedUrl + `/orders/${id}`, req);
     console.log(data);
     return data;
 };
 
 const deletebyId = async(id) => {
-    const data = await axios.get(extendedUrl + `/orders/${id}`);
+    const data = await axios.delete(extendedUrl + `/orders/${id}`);
     console.log(data);
     return data;
 };

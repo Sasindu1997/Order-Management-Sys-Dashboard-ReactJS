@@ -49,25 +49,24 @@ import FormDialog from "./formAdd";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
 
-function Orders() {
-  const [orderData, setOrderData] = useState([]);
+function Customers() {
+  const [customerData, setCustomerData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
 
   useEffect(() => {
-    SDK.OrderType.getAll()
+    SDK.CustomerType.getAll()
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data)
+      setCustomerData(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
     })
   }, [])
 
-  
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -102,7 +101,7 @@ function Orders() {
   }
 
   const handleClickDelete = (id) => {
-    id && SDK.OrderType.deletebyId(id)
+    id && SDK.CustomerType.deletebyId(id)
     .then((res) => {
       console.log("RES: ", res);
       window.location.reload();
@@ -113,47 +112,41 @@ function Orders() {
   }
 
   const columns = [
-      { Header: "id", accessor: "id", width: "10%", align: "left" },
-      { Header: "customer Id", accessor: "customerId",  align: "left" },
-      { Header: "itemCount", accessor: "itemCount", align: "left" },
-      { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
-      { Header: "total", accessor: "total", align: "center" },
-      { Header: "paid", accessor: "paid", align: "center" },
-      { Header: "status", accessor: "isActive", align: "center" },
-      { Header: "Order status", accessor: "status", align: "center" },
+    { Header: "id", accessor: "id", width: "10%", align: "left" },
+      { Header: "fullName", accessor: "fullName",  align: "left" },
+      { Header: "email", accessor: "email", align: "left" },
+      { Header: "phone", accessor: "phoneNumber", align: "center" },
+      { Header: "address", accessor: "address", align: "center" },
+      { Header: "district", accessor: "district", align: "left" },
+      { Header: "status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
     ]
 
-    const rows = orderData  ?.map((user) =>  ({
+    const rows = customerData?.map((user) =>  ({
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        customerId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.customerId  || "-"}
+        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.fullName  || "-"}
         </MDTypography>),
-        itemCount: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.itemCount  || "-"}
+        email: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.email  || "-"}
         </MDTypography>),
-        trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.trackingNumber  || "-"}
+        phoneNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.phone  || "-"}
         </MDTypography>),
-        total: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.total  || "-"}
+        district: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.district  || "-"}
         </MDTypography>),
-        paid: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        isActive: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={user.isActive ? "ACTIVE" : "INACTIVE"} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
         status: (
           <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.status}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+            <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
+        ),
+        address: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.address  || "-"}
+          </MDTypography>
         ),
         action: (
           <Box >
@@ -166,7 +159,6 @@ function Orders() {
         )
     }))
   
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -185,7 +177,7 @@ function Orders() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Orders
+                  Customers Table
                 </MDTypography>
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                 <MDTypography variant="h6" fontWeight="medium"></MDTypography>
@@ -216,4 +208,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default Customers;

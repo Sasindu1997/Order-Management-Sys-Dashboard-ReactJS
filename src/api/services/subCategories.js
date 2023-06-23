@@ -22,13 +22,13 @@ const getById = async(id) => {
 };
 
 const update = async(id, req) => {
-    const data = await axios.get(extendedUrl + `/subCategory/${id}`, req);
+    const data = await axios.put(extendedUrl + `/subCategory/${id}`, req);
     console.log(data);
     return data;
 };
 
 const deletebyId = async(id) => {
-    const data = await axios.get(extendedUrl + `/subCategory/${id}`);
+    const data = await axios.delete(extendedUrl + `/subCategory/${id}`);
     console.log(data);
     return data;
 };

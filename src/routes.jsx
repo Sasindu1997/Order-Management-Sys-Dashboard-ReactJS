@@ -47,9 +47,13 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
 import Orders from "layouts/orders";
-import Products from "layouts/users - Copy";
+import Products from "layouts/products";
 import Store from "layouts/store";
-import Customers from "layouts/users copy";
+import Customers from "layouts/customers";
+import Expenses from "layouts/users copy";
+import Settings from "layouts/store copy";
+import Categories from "layouts/users copy 2";
+import SubCategories from "layouts/users copy 3";
 
 
 
@@ -108,6 +112,14 @@ const routes = [{
     },
     {
         type: "collapse",
+        name: "Expenses",
+        key: "expenses",
+        icon: <Icon fontSize = "small" > receipt_long </Icon>,
+        route: "/expenses",
+        component: <Expenses /> ,
+    },
+    {
+        type: "collapse",
         name: "Tables",
         key: "tables",
         icon: <Icon fontSize = "small" > table_view </Icon>,
@@ -161,6 +173,30 @@ const routes = [{
         icon: <Icon fontSize = "small" > assignment </Icon>,
         route: "/authentication/sign-up",
         component: <SignUp /> ,
+    },
+    {
+        type: "collapse",
+        name: "Settings",
+        key: "sign-up",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings",
+        component: <Settings /> ,
+    },
+    {
+        type: "collapse",
+        name: "Categories",
+        key: "sign-up",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings/categories",
+        component: <Categories /> ,
+    },
+    {
+        type: "collapse",
+        name: "Sub Categories",
+        key: "sign-up",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings/subcategories",
+        component: <SubCategories /> ,
     },
 ];
 

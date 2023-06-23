@@ -12,6 +12,7 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
+import * as React from 'react';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -32,15 +33,28 @@ import Icon from "@mui/material/Icon";
 import LogoAsana from "assets/images/small-logos/logo-asana.svg";
 import team2 from "assets/images/team-2.jpg";
 import MDBadge from "components/MDBadge";
-
+import MDButton from "components/MDButton";
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 // Data
 import {SDK} from "../../api/index";
 
 import { useState, useEffect } from "react";
+import FormDialog from "./formAdd";
+import FormDialogUpdate from "./updateModal";
+import FormDialogView from "./viewModal"
 
 function Products() {
   const [productData, setProductsData] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [userId, setUserId] = React.useState(false);
+  const [openView, setOpenView] = React.useState(false);
+  const [openUpdate, setOpenUpdate] = React.useState(false);
 
   useEffect(() => {
     SDK.ProductType.getAll()
@@ -52,6 +66,51 @@ function Products() {
       console.log("Error: ", error)
     })
   }, [])
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleCloseOpen = (state) => {
+    console.log("here")
+    setOpen(state);
+    window.location.reload();
+  };
+
+  const handleCloseOpenUpdate = (state) => {
+    console.log("here 2")
+    setOpenUpdate(state);
+    window.location.reload();
+  };
+
+  const handleCloseOpenView = (state) => {
+    console.log("here 3")
+    setOpenView(state);
+  };
+
+  const handleClickView = (id) => {
+    console.log(id);
+    id && setUserId(id)
+    id && setOpenView(true);
+  }
+
+  const handleClickUpdate = (id) => {
+    console.log(id);
+    id && setUserId(id)
+    id && setOpenUpdate(true);
+  }
+
+  const handleClickDelete = (id) => {
+    id && SDK.ProductType.deletebyId(id)
+    .then((res) => {
+      console.log("RES: ", res);
+      window.location.reload();
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+  }
+
 
   const columns = [
     { Header: "id", accessor: "id", width: "10%", align: "left" },
@@ -91,9 +150,13 @@ function Products() {
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            View
-          </MDTypography>
+          <Box >
+          <Stack direction="row" spacing={1}>
+            <Button onClick={() => handleClickView(user.id)}> View </Button>           
+            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
+            <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
+          </Stack>
+        </Box>
         )
     }))
   
@@ -117,6 +180,16 @@ function Products() {
                 <MDTypography variant="h6" color="white">
                   Products Table
                 </MDTypography>
+                <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
+                <MDTypography variant="h6" fontWeight="medium"></MDTypography>
+                <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+                  <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+                  &nbsp;Add New User
+                </MDButton>
+                </MDBox>
+                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
+                {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
+                {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
               </MDBox>
               <MDBox pt={3}>
                 <DataTable

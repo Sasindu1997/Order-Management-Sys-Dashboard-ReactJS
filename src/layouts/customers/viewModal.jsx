@@ -26,47 +26,18 @@ export default function FormDialogView({open, setOpen, userId}) {
   const [successSB, setSuccessSB] = useState(false);
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
-  const [userData, setUserData] = useState({});
+  const [data, setData] = useState({});
 
   useEffect(() => {
-    userId && SDK.UserType.getById(userId)
+    userId && SDK.CustomerType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
-      setUserData(res?.data)
+      setData(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
     })
   }, [])
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const obj = {
-        email: data.get('email'),
-        password: data.get('password'),
-        fullName: data.get('fullName'),
-        userName: data.get('userName'),
-        role: data.get('role'),
-        phoneNumber: data.get('phone'),
-        address: data.get('address'),
-        isActive: true
-      }
-      console.log(obj);
-      
-      SDK.UserType.update(userId, obj)
-    .then((res) => {
-      console.log("RES: ", res);
-      res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/users");
-      setOpen(false);
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-      setErrorSB(true);
-      setOpen(false);
-    })
-  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -79,58 +50,44 @@ export default function FormDialogView({open, setOpen, userId}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>View User</DialogTitle>
+        <DialogTitle>View Customer</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          {console.log("userData.fullName", userData.fullName)}
+          <Box component="form" noValidate sx={{ mt: 1 }}>
          
         <Typography  variant="h6" >
           Full Name
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }}>
-          {userData.fullName}
+          {data.fullName}
         </Typography>
 
         <Typography  variant="h6" >
-        Email
-      </Typography>
-      <Typography  variant="body2" sx={{ mb: 3 }}>
-        {userData.email}
-      </Typography>
+          Email
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }}>
+          {data.email}
+        </Typography>
+
 
         <Typography  variant="h6" >
-          User Name
+         District
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.userName}
-        </Typography>
-        
-        <Typography  variant="h6" >
-          Password
-        </Typography>
-        <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.password}
-        </Typography>
-        
-        <Typography  variant="h6" >
-         Role
-        </Typography>
-        <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.role}
+          {data.district}
         </Typography>
        
         <Typography  variant="h6" >
           Phone Number
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.phoneNumber}
+          {data.phone}
         </Typography>
         
         <Typography  variant="h6" >
           Address
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.address}
+          {data.address}
         </Typography>
 
         <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{

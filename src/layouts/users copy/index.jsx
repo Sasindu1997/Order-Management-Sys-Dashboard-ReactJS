@@ -12,6 +12,7 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
+import * as React from 'react';
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -32,68 +33,113 @@ import Icon from "@mui/material/Icon";
 import LogoAsana from "assets/images/small-logos/logo-asana.svg";
 import team2 from "assets/images/team-2.jpg";
 import MDBadge from "components/MDBadge";
-
+import MDButton from "components/MDButton";
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 // Data
 import {SDK} from "../../api/index";
 
 import { useState, useEffect } from "react";
+import FormDialog from "./formTest";
+import FormDialogUpdate from "./updateModal";
+import FormDialogView from "./viewModal"
 
-function Customers() {
-  const [customerData, setCustomerData] = useState([]);
+function Expenses() {
+  const [open, setOpen] = React.useState(false);
+  const [userId, setUserId] = React.useState(false);
+  const [openView, setOpenView] = React.useState(false);
+  const [openUpdate, setOpenUpdate] = React.useState(false);
+  const [userData, setUserData] = useState([]);
 
   useEffect(() => {
-    SDK.CustomerType.getAll()
+    SDK.ExpenseType.getAll()
     .then((res) => {
       console.log("RES: ", res);
-      setCustomerData(res?.data)
+      setUserData(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
     })
   }, [])
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleCloseOpen = (state) => {
+    console.log("here")
+    setOpen(state);
+    window.location.reload();
+  };
+
+  const handleCloseOpenUpdate = (state) => {
+    console.log("here 2")
+    setOpenUpdate(state);
+    window.location.reload();
+  };
+
+  const handleCloseOpenView = (state) => {
+    console.log("here 3")
+    setOpenView(state);
+  };
+
+  const handleClickView = (id) => {
+    console.log(id);
+    id && setUserId(id)
+    id && setOpenView(true);
+  }
+
+  const handleClickUpdate = (id) => {
+    console.log(id);
+    id && setUserId(id)
+    id && setOpenUpdate(true);
+  }
+
+  const handleClickDelete = (id) => {
+    id && SDK.ExpenseType.deletebyId(id)
+    .then((res) => {
+      console.log("RES: ", res);
+      window.location.reload();
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+  }
+
   const columns = [
-    { Header: "id", accessor: "id", width: "10%", align: "left" },
-      { Header: "fullName", accessor: "fullName",  align: "left" },
-      { Header: "email", accessor: "email", align: "left" },
-      { Header: "phone", accessor: "phoneNumber", align: "center" },
-      { Header: "address", accessor: "address", align: "center" },
-      { Header: "district", accessor: "district", align: "left" },
-      { Header: "status", accessor: "status", align: "center" },
-      { Header: "action", accessor: "action", align: "center" },
+    { Header: "id", accessor: "id", width: "15%", align: "left" },
+      { Header: "name", accessor: "name",  align: "left" },
+      { Header: "description", accessor: "description", align: "left" },
+      { Header: "amount", accessor: "amount", align: "left" },
+      { Header: "action", accessor: "action", width: "8%", align: "center" },
     ]
 
-    const rows = customerData?.map((user) =>  ({
+    const rows = userData?.map((user) =>  ({
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.fullName  || "-"}
+        name: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.name  || "-"}
         </MDTypography>),
-        email: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.email  || "-"}
+        description: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.description  || "-"}
         </MDTypography>),
-        phoneNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.phone  || "-"}
+        amount: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.amount  || "-"}
         </MDTypography>),
-        district: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.district  || "-"}
-        </MDTypography>),
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        address: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.address  || "-"}
-          </MDTypography>
-        ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            View
-          </MDTypography>
+          <Box >
+          <Stack direction="row" spacing={1}>
+                    
+            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
+            <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
+          </Stack>
+        </Box>
         )
     }))
   
@@ -114,9 +160,21 @@ function Customers() {
                 borderRadius="lg"
                 coloredShadow="info"
               >
+                <row>
                 <MDTypography variant="h6" color="white">
-                  Customers Table
+                  Expenses Table
                 </MDTypography>
+                <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
+                  <MDTypography variant="h6" fontWeight="medium"></MDTypography>
+                  <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+                    <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+                    &nbsp;Add New Expense
+                  </MDButton>
+              </MDBox>
+               {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
+               {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
+               {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
+                </row>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
@@ -136,4 +194,4 @@ function Customers() {
   );
 }
 
-export default Customers;
+export default Expenses;

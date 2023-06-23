@@ -45,29 +45,28 @@ import Typography from '@mui/material/Typography';
 import {SDK} from "../../api/index";
 
 import { useState, useEffect } from "react";
-import FormDialog from "./formAdd";
+import FormDialog from "./formTest";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
 
-function Orders() {
-  const [orderData, setOrderData] = useState([]);
+function Categories() {
   const [open, setOpen] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
+  const [userData, setUserData] = useState([]);
 
   useEffect(() => {
-    SDK.OrderType.getAll()
+    SDK.UserType.getAll()
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data)
+      setUserData(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
     })
   }, [])
 
-  
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -102,7 +101,7 @@ function Orders() {
   }
 
   const handleClickDelete = (id) => {
-    id && SDK.OrderType.deletebyId(id)
+    id && SDK.UserType.deletebyId(id)
     .then((res) => {
       console.log("RES: ", res);
       window.location.reload();
@@ -113,47 +112,41 @@ function Orders() {
   }
 
   const columns = [
-      { Header: "id", accessor: "id", width: "10%", align: "left" },
-      { Header: "customer Id", accessor: "customerId",  align: "left" },
-      { Header: "itemCount", accessor: "itemCount", align: "left" },
-      { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
-      { Header: "total", accessor: "total", align: "center" },
-      { Header: "paid", accessor: "paid", align: "center" },
-      { Header: "status", accessor: "isActive", align: "center" },
-      { Header: "Order status", accessor: "status", align: "center" },
-      { Header: "action", accessor: "action", align: "center" },
+    { Header: "id", accessor: "id", width: "5%", align: "left" },
+      { Header: "fullName", accessor: "fullName",  align: "left" },
+      { Header: "role", accessor: "role", align: "left" },
+      { Header: "email", accessor: "email", align: "left" },
+      { Header: "phoneNumber", accessor: "phoneNumber", align: "center" },
+      { Header: "address", accessor: "address", align: "center" },
+      { Header: "status", accessor: "status", align: "center" },
+      { Header: "action", accessor: "action", width: "8%", align: "center" },
     ]
 
-    const rows = orderData  ?.map((user) =>  ({
+    const rows = userData?.map((user) =>  ({
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        customerId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.customerId  || "-"}
+        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.fullName  || "-"}
         </MDTypography>),
-        itemCount: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.itemCount  || "-"}
+        role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.role  || "-"}
         </MDTypography>),
-        trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.trackingNumber  || "-"}
+        email: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.email  || "-"}
         </MDTypography>),
-        total: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.total  || "-"}
+        phoneNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.phoneNumber  || "-"}
         </MDTypography>),
-        paid: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        isActive: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={user.isActive ? "ACTIVE" : "INACTIVE"} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
         status: (
           <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.status}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+            <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
+        ),
+        address: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.address  || "-"}
+          </MDTypography>
         ),
         action: (
           <Box >
@@ -166,7 +159,6 @@ function Orders() {
         )
     }))
   
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -184,19 +176,21 @@ function Orders() {
                 borderRadius="lg"
                 coloredShadow="info"
               >
+                <row>
                 <MDTypography variant="h6" color="white">
-                  Orders
+                  Categories Table
                 </MDTypography>
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
-                <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-                <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
-                  <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                  &nbsp;Add New User
-                </MDButton>
-                </MDBox>
-                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
-                {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
-                {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
+                  <MDTypography variant="h6" fontWeight="medium"></MDTypography>
+                  <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+                    <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+                    &nbsp;Add New Category
+                  </MDButton>
+              </MDBox>
+               {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
+               {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
+               {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
+                </row>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
@@ -216,4 +210,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default Categories;
