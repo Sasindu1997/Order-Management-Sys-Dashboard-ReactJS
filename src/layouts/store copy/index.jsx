@@ -34,13 +34,19 @@ import DataTable from "examples/Tables/DataTable";
 import authorsTableData from "layouts/orders/data/authorsTableData";
 import projectsTableData from "layouts/orders/data/projectsTableData";
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function Settings() {
-    const { columns, rows } = authorsTableData();
-    const { columns: pColumns, rows: pRows } = projectsTableData();
+  const { columns, rows } = authorsTableData();
+  const { columns: pColumns, rows: pRows } = projectsTableData();
+  const navigate = useNavigate();
 
-  const handleClick = () => {
+  const handleClickCategories = () => {
+    navigate("/settings/categories");
+  }
 
+  const handleClickSubCategories = () => {
+      navigate("/settings/subcategories");
   }
 
   return (
@@ -54,7 +60,7 @@ function Settings() {
                 color="dark"
                 icon="item"
                 title="Categories"
-                onClickCard={() => handleClick}
+                onClickCard={handleClickCategories}
               />
             </MDBox>
           </Grid>
@@ -63,6 +69,7 @@ function Settings() {
               <ComplexStatisticsCard
                 icon="item"
                 title="Sub Categories"
+                onClickCard={handleClickSubCategories}
               />
             </MDBox>
           </Grid>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -12,52 +12,41 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 
-import {SDK} from "../../api/index";
+import {SDK} from "../../../api/index";
 
 export default function FormDialog({open, setOpen, id}) {
   const [successSB, setSuccessSB] = useState(false);
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState([]);
-  const [categoryId, setCategoryId] = React.useState('');
-
-  useEffect(() => {
-    SDK.CategoryType.getAll()
-    .then((res) => {
-      console.log("RES: ", res);
-      setUserData(res?.data)
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-    })
-  }, [])
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const obj = {
-        title: data.get('title'),
-        description: data.get('description'),
-        categoryId: data.get('categoryId'),
+        email: data.get('email'),
+        password: data.get('password'),
+        fullName: data.get('fullName'),
+        userName: data.get('userName'),
+        role: data.get('role'),
+        phoneNumber: data.get('phone'),
+        address: data.get('address'),
         isActive: true
       }
       console.log(obj);
       
-      SDK.SubCategoryType.add(obj)
+      SDK.UserType.add(obj)
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/settings/subcategories");
+      window.history.pushState("", "", "/users");
       setOpen(false);
     })
     .catch((error) => {
@@ -71,11 +60,6 @@ export default function FormDialog({open, setOpen, id}) {
     setOpen(true);
   };
 
-  const handleChangeCategory = (event) => {
-    console.log(event.target.value)
-    setCategoryId(event.target.value);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -87,44 +71,75 @@ export default function FormDialog({open, setOpen, id}) {
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="fullName"
+          label="Full Name"
+          type="fullName"
+          id="fullName"
+          autoComplete="fullName"
+          autoFocus
+        />
+            <TextField
               margin="normal"
               required
               fullWidth
-              name="title"
-              label="Title"
-              type="name"
-              id="title"
-              autoComplete="title"
-              autoFocus
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              name="description"
-              label="Description"
-              type="description"
-              id="description"
-              autoComplete="description"
+              name="userName"
+              label="User Name"
+              type="userName"
+              id="userName"
+              autoComplete="userName"
             />
-
-            <InputLabel id="demo-simple-select-label" 
-          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Category</InputLabel>
-            <Select
-              labelId="category"
-              id="category"
-              value={categoryId}
-              label="Category"
+            <TextField
+              margin="normal"
+              required
               fullWidth
-              name="categoryId"
-              sx={{ minWidth: 120,  minHeight: 40 }}
-              onChange={handleChangeCategory}
-            >
-            {userData.map((category) => (
-              <MenuItem value={category.id}>{category.title}</MenuItem>
-            ))}
-            </Select>
-            
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            />
+            <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="role"
+            label="Role"
+            type="role"
+            id="role"
+            autoComplete="role"
+          />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="phone"
+              label="Phone"
+              type="number"
+              id="phone"
+              autoComplete="phone"
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="address"
+              label="Address"
+              type="address"
+              id="address"
+              autoComplete="address"
+            />
             <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
                 position: 'absolute',
                 right: 8,

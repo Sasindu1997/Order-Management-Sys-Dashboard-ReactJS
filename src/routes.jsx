@@ -54,6 +54,7 @@ import Expenses from "layouts/users copy";
 import Settings from "layouts/store copy";
 import Categories from "layouts/users copy 2";
 import SubCategories from "layouts/users copy 3";
+import ProductStock from "layouts/store/users";
 
 
 
@@ -68,14 +69,16 @@ const routes = [{
         icon: <Icon fontSize = "small" > dashboard </Icon>,
         route: "/dashboard",
         component: <Dashboard /> ,
+        isVisible: true
     },
     {
         type: "collapse",
         name: "Store",
         key: "store",
         icon: <StoreIcon fontSize = "small" />,
-        route: "/store",
+        route: "/stocks",
         component: <Store /> ,
+        isVisible: true
     },
     {
         type: "collapse",
@@ -84,6 +87,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > receipt </Icon>,
         route: "/orders",
         component: <Orders /> ,
+        isVisible: true
     },
     {
         type: "collapse",
@@ -92,6 +96,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > receipt </Icon>,
         route: "/products",
         component: <Products /> ,
+        isVisible: true
     },
    
     {
@@ -101,6 +106,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > Customers </Icon>,
         route: "/customers",
         component: <Customers /> ,
+        isVisible: true
     },
     {
         type: "collapse",
@@ -109,6 +115,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > Users </Icon>,
         route: "/users",
         component: <Users /> ,
+        isVisible: true
     },
     {
         type: "collapse",
@@ -117,63 +124,77 @@ const routes = [{
         icon: <Icon fontSize = "small" > receipt_long </Icon>,
         route: "/expenses",
         component: <Expenses /> ,
+        isVisible: true
     },
-    {
-        type: "collapse",
-        name: "Tables",
-        key: "tables",
-        icon: <Icon fontSize = "small" > table_view </Icon>,
-        route: "/tables",
-        component: <Tables /> ,
-    },
-    {
-        type: "collapse",
-        name: "Billing",
-        key: "billing",
-        icon: <Icon fontSize = "small" > receipt_long </Icon>,
-        route: "/billing",
-        component: <Billing /> ,
-    },
-    {
-        type: "collapse",
-        name: "RTL",
-        key: "rtl",
-        icon: <Icon fontSize = "small" > format_textdirection_r_to_l </Icon>,
-        route: "/rtl",
-        component: <RTL /> ,
-    },
-    {
-        type: "collapse",
-        name: "Notifications",
-        key: "notifications",
-        icon: <Icon fontSize = "small" > notifications </Icon>,
-        route: "/notifications",
-        component: <Notifications /> ,
-    },
-    {
-        type: "collapse",
-        name: "Profile",
-        key: "profile",
-        icon: <Icon fontSize = "small" > person </Icon>,
-        route: "/profile",
-        component: <Profile /> ,
-    },
-    {
-        type: "collapse",
-        name: "Sign In",
-        key: "sign-in",
-        icon: <Icon fontSize = "small" > login </Icon>,
-        route: "/authentication/sign-in",
-        component: <SignIn /> ,
-    },
-    {
-        type: "collapse",
-        name: "Sign Up",
-        key: "sign-up",
-        icon: <Icon fontSize = "small" > assignment </Icon>,
-        route: "/authentication/sign-up",
-        component: <SignUp /> ,
-    },
+    // {
+    //     type: "collapse",
+    //     name: "Tables",
+    //     key: "tables",
+    //     icon: <Icon fontSize = "small" > table_view </Icon>,
+    //     route: "/tables",
+    //     component: <Tables /> ,
+    //isVisible: true
+  // },
+    // {
+    //     type: "collapse",
+    //     name: "Billing",
+    //     key: "billing",
+    //     icon: <Icon fontSize = "small" > receipt_long </Icon>,
+    //     route: "/billing",
+    //     component: <Billing /> ,
+    //isVisible: true
+  
+  // },
+    // {
+    //     type: "collapse",
+    //     name: "RTL",
+    //     key: "rtl",
+    //     icon: <Icon fontSize = "small" > format_textdirection_r_to_l </Icon>,
+    //     route: "/rtl",
+    //     component: <RTL /> ,
+    //isVisible: true
+  
+  // },
+    // {
+    //     type: "collapse",
+    //     name: "Notifications",
+    //     key: "notifications",
+    //     icon: <Icon fontSize = "small" > notifications </Icon>,
+    //     route: "/notifications",
+    //     component: <Notifications /> ,
+    //isVisible: true
+  
+  // },
+    // {
+    //     type: "collapse",
+    //     name: "Profile",
+    //     key: "profile",
+    //     icon: <Icon fontSize = "small" > person </Icon>,
+    //     route: "/profile",
+    //     component: <Profile /> ,
+    //isVisible: true
+  
+  // },
+    // {
+    //     type: "collapse",
+    //     name: "Sign In",
+    //     key: "sign-in",
+    //     icon: <Icon fontSize = "small" > login </Icon>,
+    //     route: "/authentication/sign-in",
+    //     component: <SignIn /> ,
+    //isVisible: true
+  
+  // },
+    // {
+    //     type: "collapse",
+    //     name: "Sign Up",
+    //     key: "sign-up",
+    //     icon: <Icon fontSize = "small" > assignment </Icon>,
+    //     route: "/authentication/sign-up",
+    //     component: <SignUp /> ,
+    //isVisible: true
+  
+  // },
     {
         type: "collapse",
         name: "Settings",
@@ -181,6 +202,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > assignment </Icon>,
         route: "/settings",
         component: <Settings /> ,
+        isVisible: true
     },
     {
         type: "collapse",
@@ -189,6 +211,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > assignment </Icon>,
         route: "/settings/categories",
         component: <Categories /> ,
+        isVisible: false
     },
     {
         type: "collapse",
@@ -196,7 +219,16 @@ const routes = [{
         key: "sign-up",
         icon: <Icon fontSize = "small" > assignment </Icon>,
         route: "/settings/subcategories",
-        component: <SubCategories /> ,
+        component: <SubCategories />,
+        isVisible: false
+    },
+    {
+        type: "collapse",
+        name: "product-stock",
+        key: "product-stock",
+        route: `/stocks/product-stock/:id`,
+        component: <ProductStock />,
+        isVisible: false
     },
 ];
 

@@ -13,6 +13,18 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
+// Dashboard React example components
+import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
+import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
+
+// Data
+import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
+import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
+
+// Dashboard components
+import Projects from "layouts/dashboard/components/Projects";
+import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -34,13 +46,60 @@ import DataTable from "examples/Tables/DataTable";
 import authorsTableData from "layouts/orders/data/authorsTableData";
 import projectsTableData from "layouts/orders/data/projectsTableData";
 import { Button } from "@mui/material";
+import {SDK} from "../../api/index";
+import { useState, useEffect } from "react";
+import * as React from 'react';
+import { useNavigate, useParams } from "react-router-dom";
+import FormDialog from "./formTest";
+import FormDialogUpdate from "./updateModal";
+import FormDialogView from "./viewModal"
 
 function Store() {
     const { columns, rows } = authorsTableData();
     const { columns: pColumns, rows: pRows } = projectsTableData();
+    const [productData, setProductsData] = useState([]);
+    const [rawMatsData, setRawMatssData] = useState([]);
+    const [open, setOpen] = React.useState(false);
 
-  const handleClick = () => {
+  const [userId, setUserId] = React.useState(false);
+    const { sales, tasks } = reportsLineChartData;
+    const navigate = useNavigate();
 
+    useEffect(() => {
+    SDK.ProductType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductsData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    }, [])
+
+    SDK.RawMatsType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setRawMatssData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+  }, [])
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+
+  const handleCloseOpen = (state) => {
+    console.log("here")
+    setOpen(state);
+    window.location.reload();
+  };
+
+
+  const handleClick = (id) => {
+    console.log("id", id);
+    navigate(`/stocks/product-stock/${id}`);
   }
 
   return (
@@ -48,75 +107,84 @@ function Store() {
       <DashboardNavbar />
       <MDBox pt={2} px={2} display="flex" justifyContent="space-between" alignItems="center">
               <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-              <MDButton variant="gradient" color="dark">
-                <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                &nbsp;Add New Stock
-              </MDButton>
+              <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+                    <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+                    &nbsp;Add New Stock
+                  </MDButton>
             </MDBox>
+
       <MDBox pt={6} pb={3}>
-      <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="dark"
-                icon="item"
-                title="Product 1"
-                count={281}
-                percentage={{
-                  color: "success",
-                  amount: "+55%",
-                  label: "than lask week",
-                }}
-                onClickCard={() => handleClick}
-              />
-            </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                icon="item"
-                title="Product 2"
-                count="2,300"
-                percentage={{
-                  color: "success",
-                  amount: "+3%",
-                  label: "than last month",
-                }}
-              />
-            </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="success"
-                icon="items"
-                title="Product 4"
-                count="34k"
-                percentage={{
-                  color: "success",
-                  amount: "+1%",
-                  label: "than yesterday",
-                }}
-              />
-            </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                color="primary"
-                icon="item"
-                title="Product 4"
-                count="+91"
-                percentage={{
-                  color: "success",
-                  amount: "",
-                  label: "Just updated",
-                }}
-              />
+        <Grid container spacing={3}>
+          <Grid item lg={12} >
+            <MDBox height="100%" width="100%"  mt={0.5} mb={1}  lineHeight={1}>
+              <MDTypography variant="h5" fontWeight="medium">
+                Products
+              </MDTypography>
+              <MDTypography variant="button" color="text" fontWeight="regular">
+                End-products
+              </MDTypography>
             </MDBox>
           </Grid>
         </Grid>
       </MDBox>
+
+      <MDBox py={3}>
+        <Grid container spacing={3}>
+          {productData.length > 0 && productData.map((product) => <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5} on>
+              <ComplexStatisticsCard
+                onClickCard={() => handleClick(product.id)}
+                color="dark"
+                icon="weekend"
+                count={product.productName}
+                // count={281}
+                // percentage={{
+                //   color: "success",
+                //   amount: "+55%",
+                //   label: "than lask week",
+                // }}
+              />
+            </MDBox>
+          </Grid>)}
+        </Grid>
+      </MDBox>
+
+      <MDBox pt={6} pb={3}>
+        <Grid container spacing={3}>
+          <Grid item lg={12} >
+            <MDBox height="100%" width="100%"  mt={0.5} mb={1}  lineHeight={1}>
+              <MDTypography variant="h5" fontWeight="medium">
+                Matterials
+              </MDTypography>
+              <MDTypography variant="button" color="text" fontWeight="regular">
+                Raw-Matterials
+              </MDTypography>
+            </MDBox>
+          </Grid>
+        </Grid>
+      </MDBox>
+
+      <MDBox py={3}>
+        <Grid container spacing={3}>
+          {rawMatsData.length > 0 && rawMatsData.map((product) => <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5} on>
+              <ComplexStatisticsCard
+                onClickCard={() => handleClick(product.id)}
+                color="dark"
+                icon="weekend"
+                count={product.name}
+                // count={281}
+                // percentage={{
+                //   color: "success",
+                //   amount: "+55%",
+                //   label: "than lask week",
+                // }}
+              />
+            </MDBox>
+          </Grid>)}
+        </Grid>
+      </MDBox>
+      {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
       <Footer />
     </DashboardLayout>
   );

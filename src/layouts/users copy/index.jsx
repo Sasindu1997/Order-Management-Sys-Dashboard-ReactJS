@@ -39,7 +39,7 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import moment from 'moment';
 
 // Data
 import {SDK} from "../../api/index";
@@ -116,6 +116,7 @@ function Expenses() {
       { Header: "name", accessor: "name",  align: "left" },
       { Header: "description", accessor: "description", align: "left" },
       { Header: "amount", accessor: "amount", align: "left" },
+      { Header: "date", accessor: "date", align: "left" },
       { Header: "action", accessor: "action", width: "8%", align: "center" },
     ]
 
@@ -131,6 +132,9 @@ function Expenses() {
         </MDTypography>),
         amount: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             {user.amount  || "-"}
+        </MDTypography>),
+        date: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {moment(user.createdAt).format('DD-MM-YYYY')  || "-"}
         </MDTypography>),
         action: (
           <Box >

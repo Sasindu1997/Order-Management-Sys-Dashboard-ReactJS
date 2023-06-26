@@ -42,22 +42,27 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 // Data
-import {SDK} from "../../api/index";
+import {SDK} from "../../../api/index";
 
 import { useState, useEffect } from "react";
 import FormDialog from "./formTest";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
+import { useHistory, useParams } from "react-router-dom";
 
-function Categories() {
+function ProductStock() {
   const [open, setOpen] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [userData, setUserData] = useState([]);
+  const params = useParams();
+
 
   useEffect(() => {
-    SDK.CategoryType.getAll()
+    console.log("params: ", params);
+
+    params.id && SDK.StockType.getByProductId(params.id)
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
@@ -101,7 +106,7 @@ function Categories() {
   }
 
   const handleClickDelete = (id) => {
-    id && SDK.CategoryType.deletebyId(id)
+    id && SDK.UserType.deletebyId(id)
     .then((res) => {
       console.log("RES: ", res);
       window.location.reload();
@@ -111,10 +116,15 @@ function Categories() {
     })
   }
 
+  
+
   const columns = [
     { Header: "id", accessor: "id", width: "5%", align: "left" },
-      { Header: "title", accessor: "title",  align: "left" },
-      { Header: "description", accessor: "description", align: "left" },
+      { Header: "product Id", accessor: "productId", align: "center" },
+      { Header: "product Name", accessor: "productName", align: "center" },
+      { Header: "category", accessor: "categoryId", align: "left" },
+      { Header: "quantity", accessor: "quantity", align: "center" },
+      { Header: "status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", width: "8%", align: "center" },
     ]
 
@@ -122,15 +132,32 @@ function Categories() {
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        title: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.title  || "-"}
+        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.fullName  || "-"}
         </MDTypography>),
-        description: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.description  || "-"}
+        role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.role  || "-"}
         </MDTypography>),
+        categoryId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.categoryId  || "-"}
+        </MDTypography>),
+        productId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.productId  || "-"}
+        </MDTypography>),
+        status: (
+          <MDBox ml={-1}>
+            <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+          </MDBox>
+        ),
+        quantity: (
+          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.quantity  || "-"}
+          </MDTypography>
+        ),
         action: (
           <Box >
           <Stack direction="row" spacing={1}>
+            <Button onClick={() => handleClickView(user.id)}> View </Button>           
             <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
             <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
           </Stack>
@@ -157,13 +184,13 @@ function Categories() {
               >
                 <row>
                 <MDTypography variant="h6" color="white">
-                  Categories Table
+                  Product Stock Table
                 </MDTypography>
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
                   <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                    &nbsp;Add New Category
+                    &nbsp;Add New Stock
                   </MDButton>
               </MDBox>
                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
@@ -189,4 +216,4 @@ function Categories() {
   );
 }
 
-export default Categories;
+export default ProductStock;

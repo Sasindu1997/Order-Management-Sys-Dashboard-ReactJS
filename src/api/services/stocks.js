@@ -21,6 +21,12 @@ const getById = async(id) => {
     return data;
 };
 
+const getByProductId = async(id) => {
+    const data = await axios.get(extendedUrl + `/stocks/byproduct/${id}`);
+    console.log(data);
+    return data;
+};
+
 const update = async(id, req) => {
     const data = await axios.put(extendedUrl + `/stocks/${id}`, req);
     console.log(data);
@@ -38,5 +44,6 @@ export const StockType = {
     add,
     getById,
     update,
-    deletebyId
+    deletebyId,
+    getByProductId
 }

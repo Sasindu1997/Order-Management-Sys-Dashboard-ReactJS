@@ -71,11 +71,6 @@ export default function FormDialog({open, setOpen, id}) {
   const [value, setValue] = React.useState(0);
   const [csvfile, setCsvfile] = React.useState(0);
 
-
-  const SERVER_URL = process.env.REACT_APP_SERVER_URL;
-const PROTOCOL = process.env.REACT_APP_PROTOCOL;
-const PORT = process.env.REACT_APP_PORT;
-
   const handleChangeTabs = (event, newValue) => {
     setValue(newValue);
   };

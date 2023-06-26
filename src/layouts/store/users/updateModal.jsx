@@ -19,7 +19,7 @@ import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
 
-import {SDK} from "../../api/index";
+import {SDK} from "../../../api/index";
 
 export default function FormDialogUpdate({open, setOpen, userId}) {
   const [successSB, setSuccessSB] = useState(false);
@@ -42,17 +42,22 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const obj = {
-        title: data.get('title'),
-        description: data.get('description'),
+        email: data.get('email'),
+        password: data.get('password'),
+        fullName: data.get('fullName'),
+        userName: data.get('userName'),
+        role: data.get('role'),
+        phoneNumber: data.get('phone'),
+        address: data.get('address'),
         isActive: true
       }
       console.log(obj);
       
-      SDK.CategoryType.update(userId, obj)
+      SDK.UserType.update(userId, obj)
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/settings/categories");
+      window.history.pushState("", "", "/users");
       setOpen(false);
     })
     .catch((error) => {
@@ -73,30 +78,85 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Update Category</DialogTitle>
+        <DialogTitle>Update User</DialogTitle>
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
           <TextField
+          defaultValue={userData.fullName}
           margin="normal"
           required
           fullWidth
-          name="title"
-          label="Title"
-          type="name"
-          id="title"
-          autoComplete="title"
+          name="fullName"
+          label="Full Name"
+          type="fullName"
+          id="fullName"
           autoFocus
         />
         <TextField
+          defaultValue={userData.email}
           margin="normal"
           required
           fullWidth
-          name="description"
-          label="Description"
-          type="description"
-          id="description"
-          autoComplete="description"
+          id="email"
+          label="Email Address"
+          name="email"
+          autoComplete="email"
+        />
+        <TextField
+          defaultValue={userData.userName}
+          margin="normal"
+          required
+          fullWidth
+          name="userName"
+          label="User Name"
+          type="userName"
+          id="userName"
+          autoComplete="userName"
+        />
+        <TextField
+          defaultValue={userData.password}
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+        />
+        <TextField
+        defaultValue={userData.role}
+        margin="normal"
+        required
+        fullWidth
+        name="role"
+        label="Role"
+        type="role"
+        id="role"
+        autoComplete="role"
+      />
+        <TextField
+          defaultValue={userData.phoneNumber}
+          margin="normal"
+          required
+          fullWidth
+          name="phone"
+          label="Phone"
+          type="number"
+          id="phone"
+          autoComplete="phone"
+        />
+        <TextField
+          defaultValue={userData.address}
+          margin="normal"
+          required
+          fullWidth
+          name="address"
+          label="Address"
+          type="address"
+          id="address"
+          autoComplete="address"
         />
         <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
             position: 'absolute',

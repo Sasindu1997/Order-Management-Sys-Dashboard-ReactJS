@@ -57,7 +57,7 @@ function SubCategories() {
   const [userData, setUserData] = useState([]);
 
   useEffect(() => {
-    SDK.UserType.getAll()
+    SDK.SubCategoryType.getAll()
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
@@ -101,7 +101,7 @@ function SubCategories() {
   }
 
   const handleClickDelete = (id) => {
-    id && SDK.UserType.deletebyId(id)
+    id && SDK.SubCategoryType.deletebyId(id)
     .then((res) => {
       console.log("RES: ", res);
       window.location.reload();
@@ -113,51 +113,33 @@ function SubCategories() {
 
   const columns = [
     { Header: "id", accessor: "id", width: "5%", align: "left" },
-      { Header: "fullName", accessor: "fullName",  align: "left" },
-      { Header: "role", accessor: "role", align: "left" },
-      { Header: "email", accessor: "email", align: "left" },
-      { Header: "phoneNumber", accessor: "phoneNumber", align: "center" },
-      { Header: "address", accessor: "address", align: "center" },
-      { Header: "status", accessor: "status", align: "center" },
+      { Header: "title", accessor: "title",  align: "left" },
+      { Header: "description", accessor: "description", align: "left" },
+      { Header: "category", accessor: "category", align: "left" },
       { Header: "action", accessor: "action", width: "8%", align: "center" },
     ]
-
     const rows = userData?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.id || "-"}
-        </MDTypography>),
-        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.fullName  || "-"}
-        </MDTypography>),
-        role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.role  || "-"}
-        </MDTypography>),
-        email: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.email  || "-"}
-        </MDTypography>),
-        phoneNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.phoneNumber  || "-"}
-        </MDTypography>),
-        status: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        address: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.address  || "-"}
-          </MDTypography>
-        ),
-        action: (
-          <Box >
-          <Stack direction="row" spacing={1}>
-            <Button onClick={() => handleClickView(user.id)}> View </Button>           
-            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
-            <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
-          </Stack>
-        </Box>
-        )
-    }))
+      id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.id || "-"}
+      </MDTypography>),
+      title: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.title  || "-"}
+      </MDTypography>),
+      description: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      {user.description  || "-"}
+      </MDTypography>),
+      category: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      {user.categoryId  || "-"}
+      </MDTypography>),
+      action: (
+        <Box >
+        <Stack direction="row" spacing={1}>
+          <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
+          <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
+        </Stack>
+      </Box>
+      )
+  }))
   
   return (
     <DashboardLayout>

@@ -31,22 +31,17 @@ export default function FormDialog({open, setOpen, id}) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const obj = {
-        email: data.get('email'),
-        password: data.get('password'),
-        fullName: data.get('fullName'),
-        userName: data.get('userName'),
-        role: data.get('role'),
-        phoneNumber: data.get('phone'),
-        address: data.get('address'),
+        title: data.get('title'),
+        description: data.get('description'),
         isActive: true
       }
       console.log(obj);
       
-      SDK.UserType.add(obj)
+      SDK.CategoryType.add(obj)
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/users");
+      window.history.pushState("", "", "/settings/categories");
       setOpen(false);
     })
     .catch((error) => {
@@ -67,78 +62,29 @@ export default function FormDialog({open, setOpen, id}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add User</DialogTitle>
+        <DialogTitle>Add Category</DialogTitle>
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="fullName"
-          label="Full Name"
-          type="fullName"
-          id="fullName"
-          autoComplete="fullName"
-          autoFocus
-        />
-            <TextField
+              <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              name="title"
+              label="Title"
+              type="name"
+              id="title"
+              autoComplete="title"
+              autoFocus
             />
             <TextField
               margin="normal"
               required
               fullWidth
-              name="userName"
-              label="User Name"
-              type="userName"
-              id="userName"
-              autoComplete="userName"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="role"
-            label="Role"
-            type="role"
-            id="role"
-            autoComplete="role"
-          />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="phone"
-              label="Phone"
-              type="number"
-              id="phone"
-              autoComplete="phone"
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="address"
-              label="Address"
-              type="address"
-              id="address"
-              autoComplete="address"
+              name="description"
+              label="Description"
+              type="description"
+              id="description"
+              autoComplete="description"
             />
             <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
                 position: 'absolute',

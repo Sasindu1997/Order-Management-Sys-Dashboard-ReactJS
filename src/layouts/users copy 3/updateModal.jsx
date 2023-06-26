@@ -11,7 +11,10 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
@@ -26,9 +29,11 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
+  const [categoryData, setCategoryData] = useState({});
+  const [categoryId, setCategoryId] = React.useState('');
 
   useEffect(() => {
-    userId && SDK.UserType.getById(userId)
+    userId && SDK.SubCategoryType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
@@ -36,28 +41,38 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     .catch((error) => {
       console.log("Error: ", error)
     })
+
+    SDK.CategoryType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setCategoryData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
   }, [])
+
+  const handleChangeCategory = (event) => {
+    console.log(event.target.value)
+    setCategoryId(event.target.value);
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const obj = {
-        email: data.get('email'),
-        password: data.get('password'),
-        fullName: data.get('fullName'),
-        userName: data.get('userName'),
-        role: data.get('role'),
-        phoneNumber: data.get('phone'),
-        address: data.get('address'),
+        title: data.get('title'),
+        description: data.get('description'),
+        categoryId: data.get('categoryId'),
         isActive: true
       }
       console.log(obj);
       
-      SDK.UserType.update(userId, obj)
+      SDK.SubCategoryType.update(userId, obj)
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/users");
+      window.history.pushState("", "", "/settings/subcategories");
       setOpen(false);
     })
     .catch((error) => {
@@ -78,86 +93,48 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Update User</DialogTitle>
+        <DialogTitle>Update Sub Category</DialogTitle>
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
           <TextField
-          defaultValue={userData.fullName}
-          margin="normal"
-          required
-          fullWidth
-          name="fullName"
-          label="Full Name"
-          type="fullName"
-          id="fullName"
-          autoFocus
-        />
-        <TextField
-          defaultValue={userData.email}
-          margin="normal"
-          required
-          fullWidth
-          id="email"
-          label="Email Address"
-          name="email"
-          autoComplete="email"
-        />
-        <TextField
-          defaultValue={userData.userName}
-          margin="normal"
-          required
-          fullWidth
-          name="userName"
-          label="User Name"
-          type="userName"
-          id="userName"
-          autoComplete="userName"
-        />
-        <TextField
-          defaultValue={userData.password}
-          margin="normal"
-          required
-          fullWidth
-          name="password"
-          label="Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-        />
-        <TextField
-        defaultValue={userData.role}
-        margin="normal"
-        required
-        fullWidth
-        name="role"
-        label="Role"
-        type="role"
-        id="role"
-        autoComplete="role"
-      />
-        <TextField
-          defaultValue={userData.phoneNumber}
-          margin="normal"
-          required
-          fullWidth
-          name="phone"
-          label="Phone"
-          type="number"
-          id="phone"
-          autoComplete="phone"
-        />
-        <TextField
-          defaultValue={userData.address}
-          margin="normal"
-          required
-          fullWidth
-          name="address"
-          label="Address"
-          type="address"
-          id="address"
-          autoComplete="address"
-        />
+              margin="normal"
+              required
+              fullWidth
+              name="title"
+              label="Title"
+              type="name"
+              id="title"
+              autoComplete="title"
+              autoFocus
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="description"
+              label="Description"
+              type="description"
+              id="description"
+              autoComplete="description"
+            />
+
+            <InputLabel id="demo-simple-select-label" 
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Category</InputLabel>
+            <Select
+              labelId="category"
+              id="category"
+              value={categoryId}
+              label="Category"
+              fullWidth
+              name="categoryId"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleChangeCategory}
+            >
+            {categoryData.length > 0 && categoryData.map((category) => (
+              <MenuItem value={category.id}>{category.title}</MenuItem>
+            ))}
+            </Select>
         <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
             position: 'absolute',
             right: 8,
