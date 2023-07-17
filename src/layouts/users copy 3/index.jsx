@@ -101,7 +101,7 @@ function SubCategories() {
   }
 
   const handleClickDelete = (id) => {
-    id && SDK.SubCategoryType.deletebyId(id)
+    id && SDK.UserType.deletebyId(id)
     .then((res) => {
       console.log("RES: ", res);
       window.location.reload();
@@ -129,7 +129,7 @@ function SubCategories() {
       {user.description  || "-"}
       </MDTypography>),
       category: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-      {user.categoryId  || "-"}
+      {user.categoryTitle  || "-"}
       </MDTypography>),
       action: (
         <Box >

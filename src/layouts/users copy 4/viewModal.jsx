@@ -81,7 +81,7 @@ export default function FormDialogView({open, setOpen, userId}) {
       <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle>View User</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, ml: 2 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
          
         <Typography  variant="h6" >

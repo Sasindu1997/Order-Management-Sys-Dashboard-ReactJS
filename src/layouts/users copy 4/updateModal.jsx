@@ -18,7 +18,6 @@ import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
 
 import {SDK} from "../../api/index";
 
@@ -27,55 +26,44 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
-  const [initData, setInitData] = useState({email: '',
-  password: '',
-  fullName: '',
-  userName: '',
-  role: '',
-  phoneNumber: '',
-  address: ''});
-  const { register, handleSubmit, errors, reset } = useForm({
-    defaultValues: initData,
-  });
-  const form = new FormData();
 
   useEffect(() => {
     userId && SDK.UserType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
-      setUserData(res?.data);
-      reset(res?.data);
+      setUserData(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
     })
-  }, [reset])
+  }, [])
 
-  const onSubmit = (values) => {
-    // event.preventDefault();
-    // const data = new FormData(event.currentTarget);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
     const obj = {
-        email: values.email,
-        password: values.password,
-        fullName: values.fullName,
-        userName: values.userName,
-        role: values.role,
-        phoneNumber: values.phoneNumber,
-        address: values.address,
+        email: data.get('email'),
+        password: data.get('password'),
+        fullName: data.get('fullName'),
+        userName: data.get('userName'),
+        role: data.get('role'),
+        phoneNumber: data.get('phone'),
+        address: data.get('address'),
         isActive: true
       }
-      console.log(values);
+      console.log(obj);
       
       SDK.UserType.update(userId, obj)
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      setOpen(false, 'success');
+      window.history.pushState("", "", "/users");
+      setOpen(false);
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false, 'error');
+      setOpen(false);
     })
   };
 
@@ -87,85 +75,82 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     setOpen(false);
   };
 
-  const handleFormChange = (event) => {
-    console.log(event.currentTarget)
-  }
-
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Update User</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }} form={form} onChange={handleFormChange}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
           <TextField
-            margin="normal"
-            required
-            {...register("fullName")}
-            fullWidth
-            name="fullName"
-            label="Full Name"
-            type="fullName"
-            id="fullName"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            {...register("email")}
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-          />
-          <TextField
-            margin="normal"
-            required
-            {...register("userName")}
-            fullWidth
-            name="userName"
-            label="User Name"
-            type="userName"
-            id="userName"
-            autoComplete="userName"
-          />
-          <TextField
-            margin="normal"
-            required
-            {...register("password")}
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <TextField
+          defaultValue={userData.fullName}
           margin="normal"
           required
-            {...register("role")}
           fullWidth
-          name="role"
-          label="Role"
-          type="role"
-          id="role"
-          autoComplete="role"
+          name="fullName"
+          label="Full Name"
+          type="fullName"
+          id="fullName"
+          autoFocus
         />
         <TextField
+          defaultValue={userData.email}
           margin="normal"
           required
-          {...register("phoneNumber")}
           fullWidth
-          name="phoneNumber"
+          id="email"
+          label="Email Address"
+          name="email"
+          autoComplete="email"
+        />
+        <TextField
+          defaultValue={userData.userName}
+          margin="normal"
+          required
+          fullWidth
+          name="userName"
+          label="User Name"
+          type="userName"
+          id="userName"
+          autoComplete="userName"
+        />
+        <TextField
+          defaultValue={userData.password}
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+        />
+        <TextField
+        defaultValue={userData.role}
+        margin="normal"
+        required
+        fullWidth
+        name="role"
+        label="Role"
+        type="role"
+        id="role"
+        autoComplete="role"
+      />
+        <TextField
+          defaultValue={userData.phoneNumber}
+          margin="normal"
+          required
+          fullWidth
+          name="phone"
           label="Phone"
           type="number"
-          id="phoneNumber"
+          id="phone"
+          autoComplete="phone"
         />
         <TextField
+          defaultValue={userData.address}
           margin="normal"
           required
-            {...register("address")}
           fullWidth
           name="address"
           label="Address"
@@ -178,7 +163,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
         <Button
             type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2, color: 'wheat', }}
+            sx={{ mt: 3, mb: 2, color: 'wheat' }}
             >
             Update
             </Button>

@@ -10,16 +10,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Snackbar from '@mui/material/Snackbar';
-import Typography from '@mui/material/Typography';
 
 import {SDK} from "../../api/index";
 
@@ -45,16 +43,16 @@ export default function FormDialog({open, setOpen, id}) {
       console.log(obj);
       
       SDK.UserType.add(obj)
-      .then((res) => {
+    .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      // window.history.pushState("", "", "/users");
-      setOpen(false, 'success');
+      window.history.pushState("", "", "/users");
+      setOpen(false);
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false, 'error');
+      setOpen(false);
     })
   };
 
@@ -73,16 +71,16 @@ export default function FormDialog({open, setOpen, id}) {
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="fullName"
-            label="Full Name"
-            type="fullName"
-            id="fullName"
-            autoComplete="fullName"
-            autoFocus
-          />
+          margin="normal"
+          required
+          fullWidth
+          name="fullName"
+          label="Full Name"
+          type="fullName"
+          id="fullName"
+          autoComplete="fullName"
+          autoFocus
+        />
             <TextField
               margin="normal"
               required
@@ -142,15 +140,20 @@ export default function FormDialog({open, setOpen, id}) {
               id="address"
               autoComplete="address"
             />
-            <div style={{display: "flex", alignItems: "right", justifyContent: "end"}} >
-              <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
-              <Button
+            <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}>
+            <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
+            <Button
                 type="submit"
                 variant="contained"
-                sx={{ mt: 3, mb: 2, color: 'wheat'}}
+                sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
                 >
-                  Add
-              </Button>
+                Add
+                </Button>
             </div>
             </Box>
         </DialogContent>

@@ -93,14 +93,14 @@ export default function FormDialogView({open, setOpen, userId}) {
            Category
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.categoryId}
+            {data.categoryTitle}
           </Typography>
 
           <Typography  variant="h6" >
            Sub Category
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.subCategoryId}
+            {data.subCategoryTitle}
           </Typography>
 
           <Typography  variant="h6" >

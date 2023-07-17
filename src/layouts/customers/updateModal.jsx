@@ -18,6 +18,7 @@ import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 import {SDK} from "../../api/index";
 
@@ -26,42 +27,54 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [data, setData] = useState({});
+  const [initData, setInitData] = useState({
+    email: "",
+    fullName: "",
+    district: "",
+    phone: "",
+    address: "",
+    isActive: true
+  });
+  const { register, handleSubmit, errors, reset } = useForm({
+    defaultValues: initData,
+  });
+  const form = new FormData();
 
   useEffect(() => {
     userId && SDK.CustomerType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
-      setData(res?.data)
+      setData(res?.data);
+      reset(res?.data);
     })
     .catch((error) => {
       console.log("Error: ", error)
     })
-  }, [])
+  }, [reset])
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const onSubmit = (values) => {
+    // event.preventDefault();
+    // const data = new FormData(event.currentTarget);
     const obj = {
-        email: data.get('email'),
-        fullName: data.get('fullName'),
-        district: data.get('district'),
-        phone: data.get('phone'),
-        address: data.get('address'),
+        email: values.email,
+        fullName: values.fullName,
+        district: values.district,
+        phone: values.phone,
+        address: values.address,
         isActive: true
       }
-      console.log(obj);
+      console.log(values);
       
       SDK.CustomerType.update(userId, obj)
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/customers");
-      setOpen(false);
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -78,10 +91,9 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Update Customer</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }} form={form} >
           {console.log("data.fullName", data.fullName)}
           <TextField
-          defaultValue={data.fullName}
           margin="normal"
           required
           fullWidth
@@ -90,9 +102,9 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           type="fullName"
           id="fullName"
           autoFocus
+          {...register("fullName")}
         />
         <TextField
-          defaultValue={data.email}
           margin="normal"
           required
           fullWidth
@@ -100,9 +112,9 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           label="Email Address"
           name="email"
           autoComplete="email"
+          {...register("email")}
         />
         <TextField
-        defaultValue={data.district}
         margin="normal"
         required
         fullWidth
@@ -111,9 +123,9 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
         type="district"
         id="district"
         autoComplete="district"
+        {...register("district")}
       />
         <TextField
-          defaultValue={data.phone}
           margin="normal"
           required
           fullWidth
@@ -121,10 +133,9 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           label="Phone"
           type="number"
           id="phone"
-          autoComplete="phone"
+          {...register("phone")}
         />
         <TextField
-          defaultValue={data.address}
           margin="normal"
           required
           fullWidth
@@ -133,18 +144,14 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           type="address"
           id="address"
           autoComplete="address"
+          {...register("address")}
         />
-        <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button
             type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+            sx={{ mt: 3, mb: 2, color: 'wheat', }}
             >
             Update
             </Button>

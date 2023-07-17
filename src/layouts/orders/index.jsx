@@ -114,7 +114,8 @@ function Orders() {
 
   const columns = [
       { Header: "id", accessor: "id", width: "10%", align: "left" },
-      { Header: "customer Id", accessor: "customerId",  align: "left" },
+      { Header: "customer Name", accessor: "customerName",  align: "left" },
+      { Header: "customer Phone", accessor: "customerPhone",  align: "left" },
       { Header: "itemCount", accessor: "itemCount", align: "left" },
       { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
       { Header: "total", accessor: "total", align: "center" },
@@ -128,9 +129,12 @@ function Orders() {
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        customerId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.customerId  || "-"}
+        customerName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.cfullName  || "-"}
         </MDTypography>),
+        customerPhone: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.cphone  || "-"}
+      </MDTypography>),
         itemCount: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {user.itemCount  || "-"}
         </MDTypography>),

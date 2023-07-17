@@ -8,6 +8,8 @@ import { StockType } from './services/stocks';
 import { SubCategoryType } from './services/subCategories';
 import { UserType } from './services/users';
 import { ExpenseType } from './services/expenses';
+import { ChemicalsType } from './services/chemicals';
+
 
 export const SDK = {
     tutorialType,
@@ -19,5 +21,6 @@ export const SDK = {
     StockType,
     SubCategoryType,
     UserType,
-    ExpenseType
+    ExpenseType,
+    ChemicalsType
 }

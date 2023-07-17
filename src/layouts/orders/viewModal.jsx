@@ -57,9 +57,9 @@ export default function FormDialogView({open, setOpen, userId}) {
           <Typography  variant="h6" >
            Products
           </Typography>
-          {Array.isArray(data.productId) ? data.productId?.map((product) => (
+          {Array.isArray(data.productDetails) ? data.productDetails?.map((product) => (
             <Typography  variant="body2" sx={{ mb: 3 }}>
-              {product || "-"}
+              {product.pName || "-"}
             </Typography>)) : <Typography  variant="body2" sx={{ mb: 3 }}>
             {data.productId  || "-"}
           </Typography>}
@@ -68,15 +68,22 @@ export default function FormDialogView({open, setOpen, userId}) {
            User
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.userId || "-"}
+            {data.ufullName || "-"}
           </Typography>
 
           <Typography  variant="h6" >
-           Customer
+           Customer Name
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.customerId || "-"}
+            {data.cfullName || "-"}
           </Typography>
+
+          <Typography  variant="h6" >
+          Customer Phone Number
+         </Typography>
+         <Typography  variant="body2" sx={{ mb: 3 }}>
+           {data.cphone || "-"}
+         </Typography>
 
           <Typography  variant="h6" >
           Weight

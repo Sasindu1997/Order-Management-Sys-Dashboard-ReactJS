@@ -173,6 +173,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 aria-haspopup="true"
                 variant="contained"
                 onClick={handleOpenMenu}
+                hidden
               >
                 <Icon sx={iconsStyle}>notifications</Icon>
               </IconButton>

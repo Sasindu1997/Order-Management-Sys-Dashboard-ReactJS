@@ -59,6 +59,7 @@ function Store() {
     const { columns: pColumns, rows: pRows } = projectsTableData();
     const [productData, setProductsData] = useState([]);
     const [rawMatsData, setRawMatssData] = useState([]);
+    const [chemicals, setChemicals] = useState([]);
     const [open, setOpen] = React.useState(false);
 
   const [userId, setUserId] = React.useState(false);
@@ -66,23 +67,32 @@ function Store() {
     const navigate = useNavigate();
 
     useEffect(() => {
-    SDK.ProductType.getAll()
-    .then((res) => {
-      console.log("RES: ", res);
-      setProductsData(res?.data)
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-    }, [])
+      SDK.ProductType.getAll()
+      .then((res) => {
+        console.log("RES: ", res);
+        setProductsData(res?.data)
+      })
+      .catch((error) => {
+        console.log("Error: ", error)
+      }, [])
 
-    SDK.RawMatsType.getAll()
-    .then((res) => {
-      console.log("RES: ", res);
-      setRawMatssData(res?.data)
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-    })
+      SDK.RawMatsType.getAll()
+      .then((res) => {
+        console.log("RES: ", res);
+        setRawMatssData(res?.data)
+      })
+      .catch((error) => {
+        console.log("Error: ", error)
+      })
+
+      SDK.ChemicalsType.getAll()
+      .then((res) => {
+        console.log("RES: ", res);
+        setChemicals(res?.data)
+      })
+      .catch((error) => {
+        console.log("Error: ", error)
+      })
   }, [])
 
   const handleClickOpen = () => {
@@ -167,6 +177,42 @@ function Store() {
       <MDBox py={3}>
         <Grid container spacing={3}>
           {rawMatsData.length > 0 && rawMatsData.map((product) => <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5} on>
+              <ComplexStatisticsCard
+                onClickCard={() => handleClick(product.id)}
+                color="dark"
+                icon="weekend"
+                count={product.name}
+                // count={281}
+                // percentage={{
+                //   color: "success",
+                //   amount: "+55%",
+                //   label: "than lask week",
+                // }}
+              />
+            </MDBox>
+          </Grid>)}
+        </Grid>
+      </MDBox>
+
+      <MDBox pt={6} pb={3}>
+        <Grid container spacing={3}>
+          <Grid item lg={12} >
+            <MDBox height="100%" width="100%"  mt={0.5} mb={1}  lineHeight={1}>
+              <MDTypography variant="h5" fontWeight="medium">
+                Chemicals
+              </MDTypography>
+              <MDTypography variant="button" color="text" fontWeight="regular">
+                Chemicals
+              </MDTypography>
+            </MDBox>
+          </Grid>
+        </Grid>
+      </MDBox>
+
+      <MDBox py={3}>
+        <Grid container spacing={3}>
+          {chemicals.length > 0 && chemicals.map((product) => <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5} on>
               <ComplexStatisticsCard
                 onClickCard={() => handleClick(product.id)}

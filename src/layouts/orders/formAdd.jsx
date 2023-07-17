@@ -141,7 +141,7 @@ export default function FormDialog({open, setOpen, id}) {
       .then((res) => {
         console.log("RES: ", res);
         res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-        window.history.pushState("", "", "/orders");
+        // window.history.pushState("", "", "/orders");
         setOpen(false);
       })
       .catch((error) => {
@@ -236,7 +236,7 @@ export default function FormDialog({open, setOpen, id}) {
     <DialogTitle>Add Order</DialogTitle>
     <DialogContent>
       <Box component="form" 
-      // onSubmit={handleSubmit} 
+      onSubmit={handleSubmit} 
       noValidate sx={{ mt: 1 }}>
 
         <InputLabel id="demo-multiple-name-label" 
@@ -355,16 +355,6 @@ export default function FormDialog({open, setOpen, id}) {
           <MenuItem value={"Delivered"}>Delivered</MenuItem>
           <MenuItem value={"Returned"}>Returned</MenuItem>
         </Select>
-
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="shippingAddress"
-          label="Shipping Address"
-          id="shippingAddress"
-          autoComplete="shippingAddress"
-        />
 
         <InputLabel id="demo-simple-select-label" 
         sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Payment Method</InputLabel>

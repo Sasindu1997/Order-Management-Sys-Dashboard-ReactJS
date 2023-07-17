@@ -118,7 +118,7 @@ function Products() {
       { Header: "Code", accessor: "productCode", align: "left" },
       { Header: "description", accessor: "description", align: "center" },
       { Header: "price", accessor: "price", align: "left" },
-      { Header: "category", accessor: "categoryId", align: "center" },
+      // { Header: "category", accessor: "categoryId", align: "center" },
       { Header: "status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
     ]
@@ -144,11 +144,11 @@ function Products() {
             <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
         ),
-        categoryId: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.categoryId  || "-"}
-          </MDTypography>
-        ),
+        // categoryId: (
+        //   <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        //     {user.categoryId  || "-"}
+        //   </MDTypography>
+        // ),
         action: (
           <Box >
           <Stack direction="row" spacing={1}>

@@ -41,16 +41,16 @@ export default function FormDialog({open, setOpen, id}) {
       console.log(obj);
       
       SDK.CustomerType.add(obj)
-    .then((res) => {
+      .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/customers");
-      setOpen(false);
+      // window.history.pushState("", "", "/customers");
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -68,17 +68,17 @@ export default function FormDialog({open, setOpen, id}) {
         <DialogTitle>Add Customer</DialogTitle>
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="fullName"
-          label="Full Name"
-          type="fullName"
-          id="fullName"
-          autoComplete="fullName"
-          autoFocus
-        />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="fullName"
+              label="Full Name"
+              type="fullName"
+              id="fullName"
+              autoComplete="fullName"
+              autoFocus
+            />
             <TextField
               margin="normal"
               required
@@ -109,29 +109,24 @@ export default function FormDialog({open, setOpen, id}) {
               autoComplete="address"
             />
             <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="district"
-            label="District"
-            type="district"
-            id="district"
-            autoComplete="district"
-          />
-            <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}>
-            <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
-            <Button
+              margin="normal"
+              required
+              fullWidth
+              name="district"
+              label="District"
+              type="district"
+              id="district"
+              autoComplete="district"
+            />
+            <div style={{display: "flex", alignItems: "right", justifyContent: "end"}} >
+              <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
+              <Button
                 type="submit"
                 variant="contained"
-                sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+                sx={{ mt: 3, mb: 2, color: 'wheat'}}
                 >
-                Add
-                </Button>
+                  Add
+              </Button>
             </div>
             </Box>
         </DialogContent>
