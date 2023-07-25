@@ -21,6 +21,12 @@ const getById = async(id) => {
     return data;
 };
 
+const searchBy = async(value, searchby) => {
+    const data = await axios.get(extendedUrl + `/orders/${searchby}/${value}`);
+    console.log(data);
+    return data;
+};
+
 const update = async(id, req) => {
     const data = await axios.put(extendedUrl + `/orders/${id}`, req);
     console.log(data);
@@ -38,5 +44,6 @@ export const OrderType = {
     add,
     getById,
     update,
-    deletebyId
+    deletebyId,
+    searchBy
 }

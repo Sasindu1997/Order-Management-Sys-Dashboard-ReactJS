@@ -47,7 +47,8 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
       reset(res?.data);
     })
     .catch((error) => {
-      console.log("Error: ", error)
+      console.log("Error: ", error);
+      setOpen(false, 'error');
     })
   }, [reset])
 

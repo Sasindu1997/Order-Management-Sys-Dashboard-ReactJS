@@ -50,13 +50,13 @@ import Orders from "layouts/orders";
 import Products from "layouts/products";
 import Store from "layouts/store";
 import Customers from "layouts/customers";
-import Expenses from "layouts/users copy";
-import Settings from "layouts/store copy";
-import Categories from "layouts/users copy 2";
-import SubCategories from "layouts/users copy 3";
+import Expenses from "layouts/expenses";
+import Settings from "layouts/settings";
+import Categories from "layouts/categories";
+import SubCategories from "layouts/subCategories";
 import ProductStock from "layouts/store/users";
-
-
+import Chemicals from "layouts/chemicals";
+import ScanPage from "layouts/Scanning";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -175,26 +175,24 @@ const routes = [{
     //isVisible: true
   
   // },
-    // {
-    //     type: "collapse",
-    //     name: "Sign In",
-    //     key: "sign-in",
-    //     icon: <Icon fontSize = "small" > login </Icon>,
-    //     route: "/authentication/sign-in",
-    //     component: <SignIn /> ,
-    //isVisible: true
-  
-  // },
-    // {
-    //     type: "collapse",
-    //     name: "Sign Up",
-    //     key: "sign-up",
-    //     icon: <Icon fontSize = "small" > assignment </Icon>,
-    //     route: "/authentication/sign-up",
-    //     component: <SignUp /> ,
-    //isVisible: true
-  
-  // },
+    {
+        type: "collapse",
+        name: "Sign In",
+        key: "sign-in",
+        icon: <Icon fontSize = "small" > login </Icon>,
+        route: "/authentication/sign-in",
+        component: <SignIn /> ,
+        isVisible: false
+    },
+    {
+        type: "collapse",
+        name: "Sign Up",
+        key: "sign-up",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/authentication/sign-up",
+        component: <SignUp /> ,
+        isVisible: false
+    },
     {
         type: "collapse",
         name: "Settings",
@@ -229,6 +227,15 @@ const routes = [{
         route: `/stocks/product-stock/:id`,
         component: <ProductStock />,
         isVisible: false
+    },
+    {
+        type: "collapse",
+        name: "barcodescanner",
+        key: "barcodescanner",
+        route: `/barcodescanner`,
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        component: <ScanPage />,
+        isVisible: true
     },
 ];
 

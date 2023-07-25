@@ -49,7 +49,7 @@ import FormDialog from "./formTest";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
 
-function Users() {
+function Chemicals() {
   const [open, setOpen] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
@@ -178,7 +178,7 @@ function Users() {
               >
                 <row>
                 <MDTypography variant="h6" color="white">
-                  Users Table
+                  Chemicals Table
                 </MDTypography>
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
@@ -210,4 +210,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default Chemicals;

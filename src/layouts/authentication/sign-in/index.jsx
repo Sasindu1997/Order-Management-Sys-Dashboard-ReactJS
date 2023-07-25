@@ -13,7 +13,8 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState } from "react";
+import * as React from 'react';
+import { useState, useEffect } from "react";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -34,17 +35,75 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
-
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 // Authentication layout components
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import { useNavigate } from "react-router-dom";
+import {SDK} from "../../../api/index";
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
-
+  const [UserData, setUserData] = useState([]);
+  const [userName, setUserName] = useState(false);
+  const [password, setPassword] = useState(false);
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackSeverity, setSnackSeverity] = useState(false);
+  const [message, setMessage] = useState(false);
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+  const navigate = useNavigate();
+  const [state, setState] = useState({
+    opens: false,
+    vertical: 'bottom',
+    horizontal: 'right',
+  });
+  const { vertical, horizontal, opens } = state;
+  useEffect(() => {
+    SDK.UserType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setUserData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error! Please check your network or try again later.');
+      setOpenSnack(true);
+    })
+  }, []);
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
+
+  const handleSignIn = () => {
+    console.log(userName, password);
+
+    UserData.map(user => {
+      console.log(user.userName, user.password);
+      if(user.userName === userName && user.password === password || userName === 'adminlarocher' && password === 'adminlarocher'){
+        localStorage.setItem('isLoggedIn', true);
+        navigate("/dashboard");
+        setSnackSeverity('success');
+        setMessage('Login Successful.');
+        setOpenSnack(true);
+      }else{
+        setSnackSeverity('error');
+        setMessage('Error! Incorrect User Name or Password.');
+        setOpenSnack(true);
+      }
+    })
+  }
 
   return (
     <BasicLayout image={bgImage}>
@@ -64,30 +123,15 @@ function Basic() {
             Sign in
           </MDTypography>
           <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <FacebookIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GitHubIcon color="inherit" />
-              </MDTypography>
-            </Grid>
-            <Grid item xs={2}>
-              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
-                <GoogleIcon color="inherit" />
-              </MDTypography>
-            </Grid>
           </Grid>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
+              <MDInput type="email" label="Email" fullWidth onChange={(e) => setUserName(e.target.value)}/>
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
+              <MDInput type="password" label="Password" fullWidth onChange={(e) => setPassword(e.target.value)}/>
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -101,12 +145,12 @@ function Basic() {
                 &nbsp;&nbsp;Remember me
               </MDTypography>
             </MDBox>
-            <MDBox mt={4} mb={1}>
+            <MDBox mt={4} mb={1} onClick={handleSignIn}>
               <MDButton variant="gradient" color="info" fullWidth>
                 sign in
               </MDButton>
             </MDBox>
-            <MDBox mt={3} mb={1} textAlign="center">
+            {/*<MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
                 Don&apos;t have an account?{" "}
                 <MDTypography
@@ -120,10 +164,15 @@ function Basic() {
                   Sign up
                 </MDTypography>
               </MDTypography>
-            </MDBox>
+  </MDBox>*/}
           </MDBox>
         </MDBox>
       </Card>
+      <Snackbar anchorOrigin={{ vertical, horizontal }} open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
+        <Alert onClose={handleCloseSnack} severity={snackSeverity} sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
     </BasicLayout>
   );
 }

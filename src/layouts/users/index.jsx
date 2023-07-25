@@ -89,7 +89,10 @@ function Users() {
       setUserData(res?.data)
     })
     .catch((error) => {
-      console.log("Error: ", error)
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
     })
   }, [open, openConformDelete, openUpdate])
 

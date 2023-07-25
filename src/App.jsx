@@ -53,6 +53,8 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
+import SignIn from "layouts/authentication/sign-in";
+
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
   const {
@@ -115,10 +117,15 @@ export default function App() {
         return getRoutes(route.collapse);
       }
 
-      if (route.route) {
-        return <Route exact path={route.route} element={route.component} key={route.key} />;
-      }
 
+
+      if (route.route) {
+        if (localStorage.getItem('isLoggedIn')) {  
+        return <Route exact path={route.route} element={route.component} key={route.key} />;
+      } else {
+        return <Route exact path='/authentication/sign-in' element={<SignIn />} />
+      }
+    }
       return null;
     });
 
@@ -191,7 +198,7 @@ export default function App() {
       {layout === "vr" && <Configurator />}
       <Routes>
         {getRoutes(routes)}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+        <Route path='*' element={<SignIn />} />
       </Routes>
     </ThemeProvider>
   );

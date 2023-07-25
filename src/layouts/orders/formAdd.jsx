@@ -24,7 +24,6 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import {SDK} from "../../api/index";
-
 import CSVReader from 'react-csv-reader';
 import axios from 'axios';
 
@@ -70,10 +69,13 @@ export default function FormDialog({open, setOpen, id}) {
   const [checked, setChecked] = React.useState(true);
   const [value, setValue] = React.useState(0);
   const [csvfile, setCsvfile] = React.useState(0);
+  const [csvfileName, setCsvfileName] = React.useState('');
 
+  let filesInput = '';
   const handleChangeTabs = (event, newValue) => {
     setValue(newValue);
   };
+  const [checkedToDelivery, setCheckedToDelivery] = React.useState(true);
 
   function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -115,6 +117,11 @@ export default function FormDialog({open, setOpen, id}) {
       typeof value === 'string' ? value.split(',') : value,
     );
   };
+
+  const handleChangeSwitchDelivery = (event) => {
+    setCheckedToDelivery(event.target.checked);
+  };
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -191,6 +198,7 @@ export default function FormDialog({open, setOpen, id}) {
   const handleChangeFile = event => {
     console.log(event.target.files[0])
     setCsvfile(event.target.files[0]);
+    setCsvfileName(event.target.files[0].name)
   };
 
   const importCSV = (e) => {
@@ -418,34 +426,28 @@ export default function FormDialog({open, setOpen, id}) {
         </Box>
     </DialogContent>
     </TabPanel>
-    <TabPanel value={value} index={1}>
-      <DialogTitle>Add Order</DialogTitle>
-      <DialogContent>
+    <TabPanel  sx={{width: '100px'}} value={value} index={1} >
+      <DialogTitle >Add Bulk Order</DialogTitle>
+      <DialogContent sx={{width: '350px'}} >
         <Box component="form"  fullWidth noValidate sx={{ minWidth: 120,  minHeight: 40, mt: 1 }}>
-          <InputLabel id="demo-multiple-name-label" 
-          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, }}>Products</InputLabel>
 
           <div className="App">
-          <h2>Import CSV File!</h2>
-          <input
-              className="csv-input"
-              type="file"
-              // ref={input => {
-              //     filesInput = input;
-              // }}
-              name="file"
-              placeholder={null}
-              onChange={handleChangeFile}
-          />
-          <p />
-      </div>
+          <h4>Upload CSV File Here.</h4>
+          {console.log(csvfile.name)}
+          <input type="file" name='file' id='file' value={''} title=" "  onChange={handleChangeFile} />
+          </div>
 
-          <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-              position: 'absolute',
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[500],
-            }}>
+          <div style={{marginTop:'20px', display: "flex", flexDirection: 'row'}}>
+          <h4 style={{paddingTop:'6px'}}>Add all records to delivery: </h4>
+          <Switch
+            checked={checkedToDelivery}
+            name="addMat"
+            onChange={handleChangeSwitchDelivery}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+          </div>
+
+          <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
           <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
           <Button
               onClick={importCSV}
