@@ -18,6 +18,7 @@ import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 import {SDK} from "../../api/index";
 
@@ -26,24 +27,34 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
+  const [initData, setInitData] = useState({
+    title: '',
+    description: '',
+    categoryId: '',
+  });
+  const { register, handleSubmit, errors, reset } = useForm({
+    defaultValues: initData,
+  });
+  const form = new FormData();
 
   useEffect(() => {
-    userId && SDK.UserType.getById(userId)
+    userId && SDK.CategoryType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
+      setUserData(res?.data)
+      reset(res?.data);
     })
     .catch((error) => {
       console.log("Error: ", error)
+      setOpen(false, 'error');
     })
   }, [])
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const onSubmit = (values) => {
     const obj = {
-        title: data.get('title'),
-        description: data.get('description'),
+        title: values.title,
+        description: values.description,
         isActive: true
       }
       console.log(obj);
@@ -52,13 +63,12 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/settings/categories");
-      setOpen(false);
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -75,9 +85,10 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Update Category</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
           <TextField
+          {...register("title")}
           margin="normal"
           required
           fullWidth
@@ -89,6 +100,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           autoFocus
         />
         <TextField
+          {...register("description")}
           margin="normal"
           required
           fullWidth
@@ -98,12 +110,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           id="description"
           autoComplete="description"
         />
-        <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button
             type="submit"

@@ -28,7 +28,7 @@ import MDTypography from "components/MDTypography";
 function ComplexStatisticsCard({ color, title, count, percentage, icon, onClickCard }) {
   return (
     <Card onClick={onClickCard}>
-      <MDBox display="flex" justifyContent="space-between" pt={1} px={2}>
+      <MDBox display="flex" justifyContent="space-between" pt={1} px={2} >
         <MDBox
           variant="gradient"
           bgColor={color}
@@ -54,12 +54,13 @@ function ComplexStatisticsCard({ color, title, count, percentage, icon, onClickC
         </MDBox>
       </MDBox>
       <Divider />
-      <MDBox pb={2} px={2}>
-        <MDTypography component="p" variant="button" color="text" display="flex">
+      <MDBox pb={2} px={2} style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
+        <MDTypography component="p" variant="button" color="text" display="flex" fontSize="1.25rem">
           <MDTypography
             component="span"
             variant="button"
             fontWeight="bold"
+            fontSize="1.5rem"
             color={percentage.color}
           >
             {percentage.amount}

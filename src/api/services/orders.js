@@ -39,11 +39,55 @@ const deletebyId = async(id) => {
     return data;
 };
 
+const weeklyOrderCount = async() => {
+    const data = await axios.get(extendedUrl + "/dashboard/weeklyOrderCount");
+    console.log(data);
+    return data;
+};
+const yearlyOrderCount = async() => {
+    const data = await axios.get(extendedUrl + "/dashboard/yearlyOrderCount");
+    console.log(data);
+    return data;
+};
+const getAllProductOrders = async() => {
+    const data = await axios.get(extendedUrl + "/dashboard/getAllProductOrders");
+    console.log(data);
+    return data;
+};
+const thisMonthOrderCount = async() => {
+    const data = await axios.get(extendedUrl + "/dashboard/thisMonthOrderCount");
+    console.log(data);
+    return data;
+};
+const monthlyOrderCount = async() => {
+    const data = await axios.get(extendedUrl + "/dashboard/monthlyOrderCount");
+    console.log(data);
+    return data;
+};
+const todayOrderCount = async() => {
+    const data = await axios.get(extendedUrl + "/dashboard/todayOrderCount");
+    console.log(data);
+    return data;
+};
+const newCustomersCount = async() => {
+    const data = await axios.get(extendedUrl + "/dashboard/newCustomersCount");
+    console.log(data);
+    return data;
+};
+
+
 export const OrderType = {
     getAll,
     add,
     getById,
     update,
     deletebyId,
-    searchBy
+    searchBy,
+    weeklyOrderCount,
+    yearlyOrderCount,
+    getAllProductOrders,
+    thisMonthOrderCount,
+    monthlyOrderCount,
+    todayOrderCount,
+    newCustomersCount
 }

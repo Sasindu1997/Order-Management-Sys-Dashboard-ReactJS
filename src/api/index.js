@@ -9,7 +9,7 @@ import { SubCategoryType } from './services/subCategories';
 import { UserType } from './services/users';
 import { ExpenseType } from './services/expenses';
 import { ChemicalsType } from './services/chemicals';
-
+import { DeliveryType } from './services/delivery';
 
 export const SDK = {
     tutorialType,
@@ -22,5 +22,6 @@ export const SDK = {
     SubCategoryType,
     UserType,
     ExpenseType,
-    ChemicalsType
+    ChemicalsType,
+    DeliveryType
 }

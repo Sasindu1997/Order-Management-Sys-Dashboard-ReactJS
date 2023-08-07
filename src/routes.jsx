@@ -48,6 +48,7 @@ import SignUp from "layouts/authentication/sign-up";
 
 import Orders from "layouts/orders";
 import Products from "layouts/products";
+import Materials from "layouts/users copy";
 import Store from "layouts/store";
 import Customers from "layouts/customers";
 import Expenses from "layouts/expenses";
@@ -55,8 +56,11 @@ import Settings from "layouts/settings";
 import Categories from "layouts/categories";
 import SubCategories from "layouts/subCategories";
 import ProductStock from "layouts/store/users";
-import Chemicals from "layouts/chemicals";
+import Chemicals from "layouts/users copy 2";
 import ScanPage from "layouts/Scanning";
+import Delivery from "layouts/users copy 3";
+import Invoice from "layouts/invoice"; 
+
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -74,8 +78,8 @@ const routes = [{
     {
         type: "collapse",
         name: "Store",
-        key: "store",
-        icon: <StoreIcon fontSize = "small" />,
+        key: "store ",
+        icon: <StoreIcon fontSize = "small">  dashboard </StoreIcon>,
         route: "/stocks",
         component: <Store /> ,
         isVisible: true
@@ -98,7 +102,24 @@ const routes = [{
         component: <Products /> ,
         isVisible: true
     },
-   
+    {
+        type: "collapse",
+        name: "Materials",
+        key: "materials",
+        icon: <Icon fontSize = "small" > receipt </Icon>,
+        route: "/materials",
+        component: <Materials /> ,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Chemicals",
+        key: "chemicals",
+        icon: <Icon fontSize = "small" > receipt </Icon>,
+        route: "/chemicals",
+        component: <Chemicals /> ,
+        isVisible: true
+    },
     {
         type: "collapse",
         name: "Customers",
@@ -235,6 +256,24 @@ const routes = [{
         route: `/barcodescanner`,
         icon: <Icon fontSize = "small" > assignment </Icon>,
         component: <ScanPage />,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Delivey Account",
+        key: "DeliveyAccount",
+        route: `/deliveyAccount`,
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        component: <Delivery />,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Invoices",
+        key: "Invoices",
+        route: `/invoices`,
+        icon: <Icon fontSize = "small" > receipt_long </Icon>,
+        component: <Invoice />,
         isVisible: true
     },
 ];

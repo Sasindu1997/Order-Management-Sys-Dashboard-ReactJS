@@ -57,13 +57,13 @@ export default function FormDialog({open, setOpen, id}) {
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/settings/subcategories");
-      setOpen(false);
+      // window.history.pushState("", "", "/settings/subcategories");
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -125,12 +125,7 @@ export default function FormDialog({open, setOpen, id}) {
             ))}
             </Select>
             
-            <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}>
+            <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
             <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
             <Button
                 type="submit"

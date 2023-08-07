@@ -39,8 +39,9 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 
+// Dashboard React example components
+import TimelineItem from "examples/Timeline/TimelineItem";
 // Data
 import {SDK} from "../../../api/index";
 
@@ -56,6 +57,7 @@ function ProductStock() {
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [userData, setUserData] = useState([]);
+  const [productData, setProductData] = useState();
   const params = useParams();
 
 
@@ -70,6 +72,16 @@ function ProductStock() {
     .catch((error) => {
       console.log("Error: ", error)
     })
+
+    params.id && SDK.ProductType.getById(params.id)
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+
   }, [])
 
   const handleClickOpen = () => {
@@ -122,7 +134,6 @@ function ProductStock() {
     { Header: "id", accessor: "id", width: "5%", align: "left" },
       { Header: "product Id", accessor: "productId", align: "center" },
       { Header: "product Name", accessor: "productName", align: "center" },
-      { Header: "category", accessor: "categoryId", align: "left" },
       { Header: "quantity", accessor: "quantity", align: "center" },
       { Header: "status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", width: "8%", align: "center" },
@@ -168,6 +179,34 @@ function ProductStock() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <Card sx={{ height: "100%" }}>
+      <MDBox pt={3} px={3}>
+        <MDTypography variant="h6" fontWeight="medium">
+          Product Stock overview
+        </MDTypography>
+        <MDBox mt={0} mb={2}>
+        </MDBox>
+      </MDBox>
+      <MDBox p={2}>
+        <TimelineItem
+          color="success"
+          icon="notifications"
+          title={productData && productData.productName}
+        />
+        <MDBox ml={1.25} mt={0} mb={2}>
+          <MDTypography variant="button" color="text" fontWeight="regular" fontSize="0.85rem">
+            <MDTypography display="inline" variant="body2" verticalAlign="middle">
+              <Icon sx={{ color: ({ palette: { success } }) => success.main }}>arrow_upward</Icon>
+            </MDTypography>
+            &nbsp;
+            Available stock upto today: &nbsp;
+            <MDTypography variant="button" color="text" fontWeight="medium" fontSize="1.25rem">
+            {productData && productData.maxStockLevel}
+            </MDTypography>{" "}
+          </MDTypography>
+        </MDBox>
+      </MDBox>
+    </Card>
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>

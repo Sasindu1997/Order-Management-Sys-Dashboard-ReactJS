@@ -1,5 +1,5 @@
 import React , {Component} from 'react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -58,6 +58,8 @@ export default function FormDialog({open, setOpen, id}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState([]);
+  const [customerData, setCustomerData] = useState([]);
+  const [productData, setProductData] = useState([]);
   const [customerId, setCustomerId] = React.useState('');
   const [userId, setUserId] = React.useState('');
   const [productId, setProductId] = React.useState('');
@@ -70,6 +72,26 @@ export default function FormDialog({open, setOpen, id}) {
   const [value, setValue] = React.useState(0);
   const [csvfile, setCsvfile] = React.useState(0);
   const [csvfileName, setCsvfileName] = React.useState('');
+
+  useEffect(() => {
+    SDK.ProductType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+
+    SDK.CustomerType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setCustomerData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+  }, [])
 
   let filesInput = '';
   const handleChangeTabs = (event, newValue) => {
@@ -149,12 +171,12 @@ export default function FormDialog({open, setOpen, id}) {
         console.log("RES: ", res);
         res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
         // window.history.pushState("", "", "/orders");
-        setOpen(false);
+        setOpen(false, 'success');
       })
       .catch((error) => {
         console.log("Error: ", error)
         setErrorSB(true);
-        setOpen(false);
+        setOpen(false, 'error');
       })
   };
 
@@ -203,13 +225,18 @@ export default function FormDialog({open, setOpen, id}) {
 
   const importCSV = (e) => {
     e.preventDefault();
-    console.log(csvfile);
+    let user = localStorage.getItem('loggedInUser')
+    console.log(csvfile, user);
+
     var fileName = csvfile.name;
     const formData = new FormData();
     formData.append(
         "file",
         csvfile,
     );
+    formData.append("isDeliveryAdded", checkedToDelivery);
+    formData.append("userId", user.id);
+
     console.log(formData);
 
     axios.post( 'http://localhost:8080/api/csv/upload', formData, {
@@ -261,18 +288,18 @@ export default function FormDialog({open, setOpen, id}) {
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
         >
-          {names.map((obj) => (
+          {productData?.map((obj) => (
             <MenuItem
               key={obj.id}
               value={obj.id}
               style={getStyles(obj.name, personName, theme)}
             >
-              {obj.name}
+              {obj.productName}
             </MenuItem>
           ))}
         </Select>
 
-        <InputLabel id="demo-simple-select-label" 
+        {/*<InputLabel id="demo-simple-select-label" 
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>User</InputLabel>
         <Select
           labelId="userId"
@@ -287,7 +314,7 @@ export default function FormDialog({open, setOpen, id}) {
           <MenuItem value={1}>user 1</MenuItem>
           <MenuItem value={2}>user 2</MenuItem>
           <MenuItem value={3}>user 3</MenuItem>
-        </Select>
+          </Select>*/}
 
         <InputLabel id="demo-simple-select-label" 
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Customer</InputLabel>
@@ -301,9 +328,15 @@ export default function FormDialog({open, setOpen, id}) {
           sx={{ minWidth: 120,  minHeight: 40 }}
           onChange={handleChangeCustomerId}
         >
-          <MenuItem value={1}>customer 1</MenuItem>
-          <MenuItem value={2}>customer 2</MenuItem>
-          <MenuItem value={3}>customer 3</MenuItem>
+        {customerData?.map((obj) => (
+            <MenuItem
+              key={obj.id}
+              value={obj.id}
+              style={getStyles(obj.name, personName, theme)}
+            >
+              {obj.fullName}
+            </MenuItem>
+          ))}
         </Select>
         
         <TextField
@@ -378,6 +411,7 @@ export default function FormDialog({open, setOpen, id}) {
         >
           <MenuItem value={"cash"}>Cash</MenuItem>
           <MenuItem value={"card"}>Card</MenuItem>
+          <MenuItem value={"card"}>Cheque</MenuItem>
           <MenuItem value={"gift"}>Gift</MenuItem>
         </Select>
 
@@ -433,7 +467,6 @@ export default function FormDialog({open, setOpen, id}) {
 
           <div className="App">
           <h4>Upload CSV File Here.</h4>
-          {console.log(csvfile.name)}
           <input type="file" name='file' id='file' value={''} title=" "  onChange={handleChangeFile} />
           </div>
 

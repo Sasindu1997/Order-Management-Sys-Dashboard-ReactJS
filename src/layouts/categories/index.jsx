@@ -40,14 +40,26 @@ import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 // Data
 import {SDK} from "../../api/index";
 
 import { useState, useEffect } from "react";
 import FormDialog from "./formTest";
 import FormDialogUpdate from "./updateModal";
-import FormDialogView from "./viewModal"
+import FormDialogView from "./viewModal";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function Categories() {
   const [open, setOpen] = React.useState(false);
@@ -55,32 +67,66 @@ function Categories() {
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [userData, setUserData] = useState([]);
-
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [snackSeverity, setSnackSeverity] = React.useState(false);
+  const [message, setMessage] = React.useState(false);
+  const [state, setState] = React.useState({
+    opens: false,
+    vertical: 'bottom',
+    horizontal: 'right',
+  });
+  const { vertical, horizontal, opens } = state;
+  const [openConformDelete, setOpenConformDelete] = React.useState(false);
+  const theme = useTheme();
+  const [recordId, setRecordId] = React.useState(false);
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  
   useEffect(() => {
     SDK.CategoryType.getAll()
     .then((res) => {
       console.log("RES: ", res);
-      setUserData(res?.data)
+      setUserData(res?.data);
     })
     .catch((error) => {
-      console.log("Error: ", error)
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
     })
-  }, [])
+  }, [open, openConformDelete, openUpdate])
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const handleCloseOpen = (state) => {
-    console.log("here")
-    setOpen(state);
-    window.location.reload();
+  const handleCloseConformDelete = () => {
+    setOpenConformDelete(false);
   };
 
-  const handleCloseOpenUpdate = (state) => {
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
+
+  const handleCloseOpen = (state, msg) => {
+    console.log("here")
+    setOpen(state);
+    setSnackSeverity(msg == 'success' ? 'success' : 'error');
+    setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
+    setOpenSnack(true);
+    // window.location.reload();
+  };
+
+  const handleCloseOpenUpdate = (state, msg) => {
     console.log("here 2")
     setOpenUpdate(state);
-    window.location.reload();
+    setSnackSeverity(msg == 'success' ? 'success' : 'error');
+    setMessage(msg == 'success' ? 'Record Updated Sucessfully!' : 'Error In Record Update!');
+    setOpenSnack(true);
+    // window.location.reload();
   };
 
   const handleCloseOpenView = (state) => {
@@ -101,15 +147,35 @@ function Categories() {
   }
 
   const handleClickDelete = (id) => {
-    id && SDK.CategoryType.deletebyId(id)
+    setOpenConformDelete(true);
+    setRecordId(id);
+    // id && SDK.UserType.deletebyId(id)
+    // .then((res) => {
+    //   console.log("RES: ", res);
+    //   window.location.reload();
+    // })
+    // .catch((error) => {
+    //   console.log("Error: ", error)
+    // })
+  }
+
+  const handleConformDelete = () => {
+    recordId && SDK.CategoryType.deletebyId(recordId)
     .then((res) => {
       console.log("RES: ", res);
-      window.location.reload();
+      setOpenConformDelete(false);
+      setSnackSeverity('success');
+      setMessage('Record Deleted Sucessfully!');
+      setOpenSnack(true);
     })
     .catch((error) => {
-      console.log("Error: ", error)
+      setOpenConformDelete(false);
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error In Record Deletion!');
+      setOpenSnack(true);
     })
-  }
+  };
 
   const columns = [
     { Header: "id", accessor: "id", width: "5%", align: "left" },
@@ -169,7 +235,30 @@ function Categories() {
                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
                {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
                {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
-                </row>
+               {<Dialog
+                fullScreen={fullScreen}
+                open={openConformDelete}
+                onClose={handleCloseConformDelete}
+                aria-labelledby="responsive-dialog-title"
+              >
+                <DialogTitle id="responsive-dialog-title">
+                  {"Confirm Delete"}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    This action will delete this record permanantly from the list.
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button autoFocus onClick={handleCloseConformDelete}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleConformDelete} autoFocus>
+                    Confirm
+                  </Button>
+                </DialogActions>
+              </Dialog>}  
+               </row>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
@@ -184,6 +273,11 @@ function Categories() {
           </Grid>
         </Grid>
       </MDBox>
+      <Snackbar anchorOrigin={{ vertical, horizontal }} open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
+        <Alert onClose={handleCloseSnack} severity={snackSeverity} sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
       <Footer />
     </DashboardLayout>
   );

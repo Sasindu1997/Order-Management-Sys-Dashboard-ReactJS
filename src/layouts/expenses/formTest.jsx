@@ -37,19 +37,17 @@ export default function FormDialog({open, setOpen, id}) {
         isActive: true
       }
       console.log(obj);
-      
       SDK.ExpenseType.add(obj)
-    .then((res) => {
-      console.log("RES: ", res);
-      res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/expenses");
-      setOpen(false);
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-      setErrorSB(true);
-      setOpen(false);
-    })
+      .then((res) => {
+        console.log("RES: ", res);
+        res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
+        setOpen(false, 'success');
+      })
+      .catch((error) => {
+        console.log("Error: ", error)
+        setErrorSB(true);
+        setOpen(false, 'error');
+      })
   };
 
   const handleClickOpen = () => {

@@ -18,6 +18,7 @@ import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 import {SDK} from "../../api/index";
 
@@ -26,25 +27,35 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
+  const [initData, setInitData] = useState({
+    title: '',
+    description: '',
+    categoryId: '',
+  });
+  const { register, handleSubmit, errors, reset } = useForm({
+    defaultValues: initData,
+  });
+  const form = new FormData();
 
   useEffect(() => {
-    userId && SDK.UserType.getById(userId)
+    userId && SDK.ExpenseType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
-      setUserData(res?.data)
+      setUserData(res?.data);
+      reset(res?.data);
     })
     .catch((error) => {
       console.log("Error: ", error)
     })
   }, [])
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const onSubmit = (values) => {
+    // event.preventDefault();
+    // const data = new FormData(event.currentTarget);
     const obj = {
-        name: data.get('name'),
-        description: data.get('description'),
-        amount: data.get('amount'),
+        name: values.name,
+        description: values.description,
+        amount: values.amount,
         isActive: true
       }
       console.log(obj);
@@ -53,13 +64,12 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/expenses");
-      setOpen(false);
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -76,9 +86,10 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Update User</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
           <TextField
+          {...register("name")}
               margin="normal"
               required
               fullWidth
@@ -90,6 +101,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               autoFocus
             />
             <TextField
+            {...register("description")}
               margin="normal"
               required
               fullWidth
@@ -99,6 +111,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               autoComplete="description"
             />
             <TextField
+            {...register("amount")}
               margin="normal"
               required
               fullWidth

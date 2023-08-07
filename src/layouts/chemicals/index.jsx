@@ -113,11 +113,10 @@ function Chemicals() {
 
   const columns = [
     { Header: "id", accessor: "id", width: "5%", align: "left" },
-      { Header: "fullName", accessor: "fullName",  align: "left" },
-      { Header: "role", accessor: "role", align: "left" },
-      { Header: "email", accessor: "email", align: "left" },
-      { Header: "phoneNumber", accessor: "phoneNumber", align: "center" },
-      { Header: "address", accessor: "address", align: "center" },
+      { Header: "name", accessor: "name",  align: "left" },
+      { Header: "code", accessor: "code", align: "left" },
+      { Header: "unitPrice", accessor: "unitPrice", align: "left" },
+      { Header: "supplier", accessor: "supplier", align: "center" },
       { Header: "status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", width: "8%", align: "center" },
     ]
@@ -126,27 +125,22 @@ function Chemicals() {
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.fullName  || "-"}
+        name: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.name  || "-"}
         </MDTypography>),
-        role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.role  || "-"}
+        code: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.code  || "-"}
         </MDTypography>),
-        email: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.email  || "-"}
+        unitPrice: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.unitPrice  || "-"}
         </MDTypography>),
-        phoneNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.phoneNumber  || "-"}
+        supplier: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.supplier  || "-"}
         </MDTypography>),
         status: (
           <MDBox ml={-1}>
             <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
-        ),
-        address: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.address  || "-"}
-          </MDTypography>
         ),
         action: (
           <Box >
@@ -184,7 +178,7 @@ function Chemicals() {
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
                   <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                    &nbsp;Add New User
+                    &nbsp;Add New Chemical
                   </MDButton>
               </MDBox>
                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}

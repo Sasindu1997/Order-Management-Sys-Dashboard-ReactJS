@@ -158,6 +158,7 @@ export default function FormDialog({open, setOpen, id}) {
         quantity: data.get('quantity'),
         measureUnit: data.get('measureUnit'),
         rawMattdata: arrayNames,
+        stockType: "prod",
         isActive: true
       }
 

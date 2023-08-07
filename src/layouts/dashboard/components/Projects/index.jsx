@@ -29,10 +29,10 @@ import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 
 // Data
-import data from "layouts/dashboard/components/Projects/data";
+import Data from "layouts/dashboard/components/Projects/data";
 
 function Projects() {
-  const { columns, rows } = data();
+  const { columns, rows, count } = Data();
   const [menu, setMenu] = useState(null);
 
   const openMenu = ({ currentTarget }) => setMenu(currentTarget);
@@ -61,6 +61,7 @@ function Projects() {
 
   return (
     <Card>
+    {console.log("hhhhhhhhhhhhhhhh", count)}
       <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
         <MDBox>
           <MDTypography variant="h6" gutterBottom>
@@ -77,7 +78,7 @@ function Projects() {
               done
             </Icon>
             <MDTypography variant="button" fontWeight="regular" color="text">
-              &nbsp;<strong>30 done</strong> this month
+              &nbsp;<strong>{count} done</strong> this month
             </MDTypography>
           </MDBox>
         </MDBox>

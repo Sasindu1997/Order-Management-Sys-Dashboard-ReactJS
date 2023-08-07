@@ -17,6 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 import {SDK} from "../../api/index";
 
@@ -25,34 +26,74 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [data, setData] = useState({});
+  const [dataCategory, setDataCategory] = useState([]);
+  const [dataSubCategory, setDataSubCategory] = useState([]);
   const [category, setCategory] = React.useState('');
   const [subCategory, setSubCategory] = React.useState('');
+  const [initData, setInitData] = useState({
+        productName: '',
+        description: '',
+        productCode: '',
+        price: '',
+        sku: '',
+        categoryId: '',
+        subCategoryId: '',
+        brand: '',
+        type: '',
+        imageURL: '',
+        isActive: true
+  });
+  const { register, handleSubmit, errors, reset } = useForm({
+    defaultValues: initData,
+  });
+  const form = new FormData();
 
   useEffect(() => {
     userId && SDK.ProductType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
-      setData(res?.data)
+      setData(res?.data);
+      setCategory(res?.data?.categoryId);
+      setSubCategory(res?.data?.subCategoryId);
+      reset(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+
+    SDK.CategoryType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setDataCategory(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+
+    SDK.SubCategoryType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setDataSubCategory(res?.data);
     })
     .catch((error) => {
       console.log("Error: ", error)
     })
   }, [])
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const onSubmit = (values) => {
+    // event.preventDefault();
+    // const data = new FormData(event.currentTarget);
     const obj = {
-        productName: data.get('productName'),
-        description: data.get('description'),
-        productCode: data.get('productCode'),
-        price: data.get('price'),
-        sku: data.get('sku'),
-        categoryId: data.get('category'),
-        subCategoryId: data.get('subCategory'),
-        brand: data.get('brand'),
-        type: data.get('type'),
-        imageURL: data.get('imageURL'),
+        productName: values.productName,
+        description: values.description,
+        productCode: values.productCode,
+        price: values.price,
+        sku: values.sku,
+        categoryId: category,
+        subCategoryId: subCategory,
+        brand: values.brand,
+        type: values.type,
+        imageURL: values.imageURL,
         isActive: true
       }
       console.log(obj);
@@ -61,13 +102,12 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/products");
-      setOpen(false);
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -94,10 +134,11 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Update Product</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
           {console.log("data.fullName", data.fullName)}
           
           <TextField
+          {...register("productName")}
           margin="normal"
           required
           fullWidth
@@ -109,6 +150,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           autoFocus
         />
         <TextField
+        {...register("description")}
           margin="normal"
           required
           fullWidth
@@ -118,6 +160,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           autoComplete="description"
         />
         <TextField
+        {...register("productCode")}
           margin="normal"
           required
           fullWidth
@@ -127,6 +170,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           autoComplete="productCode"
         />
         <TextField
+        {...register("price")}
           margin="normal"
           required
           fullWidth
@@ -138,6 +182,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
         />
 
         <TextField
+        {...register("type")}
           margin="normal"
           required
           fullWidth
@@ -159,9 +204,9 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           sx={{ minWidth: 120,  minHeight: 40 }}
           onChange={handleChangeCategory}
         >
-          <MenuItem value={1}>Category 1</MenuItem>
-          <MenuItem value={2}>Category 2</MenuItem>
-          <MenuItem value={3}>Category 3</MenuItem>
+        {dataCategory.length > 0 && dataCategory.map((category) => (
+              <MenuItem value={category.id}>{category.title}</MenuItem>
+            ))}
         </Select>
 
         <InputLabel id="demo-simple-select-label" 
@@ -176,12 +221,13 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           sx={{ minWidth: 120,  minHeight: 40 }}
           onChange={handleChangeSubCategory}
         >
-          <MenuItem value={1}>Sub Category 1</MenuItem>
-          <MenuItem value={2}>Sub Category 2</MenuItem>
-          <MenuItem value={3}>Sub Category 3</MenuItem>
+        {dataSubCategory.length > 0 && dataSubCategory.map((category) => (
+              <MenuItem value={category.id}>{category.title}</MenuItem>
+            ))}
         </Select>
 
         <TextField
+        {...register("brand")}
           margin="normal"
           required
           fullWidth
@@ -191,6 +237,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           autoComplete="brand"
         />
         <TextField
+        {...register("imageURL")}
           margin="normal"
           required
           fullWidth

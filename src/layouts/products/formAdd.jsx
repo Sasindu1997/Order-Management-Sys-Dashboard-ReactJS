@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -27,7 +27,28 @@ export default function FormDialog({open, setOpen, id}) {
   const [userData, setUserData] = useState([]);
   const [category, setCategory] = React.useState('');
   const [subCategory, setSubCategory] = React.useState('');
+  const [dataCategory, setDataCategory] = useState([]);
+  const [dataSubCategory, setDataSubCategory] = useState([]);
 
+  useEffect(() => {
+    SDK.CategoryType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setDataCategory(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+
+    SDK.SubCategoryType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setDataSubCategory(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+  }, [])
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -51,13 +72,12 @@ export default function FormDialog({open, setOpen, id}) {
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/products");
-      setOpen(false);
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       setErrorSB(true);
-      setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -148,9 +168,9 @@ export default function FormDialog({open, setOpen, id}) {
               sx={{ minWidth: 120,  minHeight: 40 }}
               onChange={handleChangeCategory}
             >
-              <MenuItem value={1}>Category 1</MenuItem>
-              <MenuItem value={2}>Category 2</MenuItem>
-              <MenuItem value={3}>Category 3</MenuItem>
+            {dataCategory.length > 0 && dataCategory.map((category) => (
+              <MenuItem value={category.id}>{category.title}</MenuItem>
+            ))}
             </Select>
 
             <InputLabel id="demo-simple-select-label" 
@@ -165,9 +185,9 @@ export default function FormDialog({open, setOpen, id}) {
               sx={{ minWidth: 120,  minHeight: 40 }}
               onChange={handleChangeSubCategory}
             >
-              <MenuItem value={1}>Sub Category 1</MenuItem>
-              <MenuItem value={2}>Sub Category 2</MenuItem>
-              <MenuItem value={3}>Sub Category 3</MenuItem>
+            {dataSubCategory.length > 0 && dataSubCategory.map((category) => (
+              <MenuItem value={category.id}>{category.title}</MenuItem>
+            ))}
             </Select>
 
             <TextField
@@ -188,12 +208,7 @@ export default function FormDialog({open, setOpen, id}) {
               id="imageURL"
               autoComplete="imageURL"
             />
-            <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}>
+            <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
             <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
             <Button
                 type="submit"

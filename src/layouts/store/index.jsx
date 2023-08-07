@@ -60,6 +60,7 @@ function Store() {
     const [productData, setProductsData] = useState([]);
     const [rawMatsData, setRawMatssData] = useState([]);
     const [chemicals, setChemicals] = useState([]);
+
     const [open, setOpen] = React.useState(false);
 
   const [userId, setUserId] = React.useState(false);
@@ -138,8 +139,8 @@ function Store() {
         </Grid>
       </MDBox>
 
-      <MDBox py={3}>
-        <Grid container spacing={3}>
+      <MDBox py={3} >
+        <Grid container spacing={3} >
           {productData.length > 0 && productData.map((product) => <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5} on>
               <ComplexStatisticsCard
@@ -147,12 +148,11 @@ function Store() {
                 color="dark"
                 icon="weekend"
                 count={product.productName}
-                // count={281}
-                // percentage={{
-                //   color: "success",
-                //   amount: "+55%",
-                //   label: "than lask week",
-                // }}
+                percentage={{
+                  color: product.maxStockLevel > '100' ? "success" : "danger",
+                  amount: `${product.maxStockLevel}`,
+                  label: "are available.",
+                }}
               />
             </MDBox>
           </Grid>)}
@@ -183,12 +183,11 @@ function Store() {
                 color="dark"
                 icon="weekend"
                 count={product.name}
-                // count={281}
-                // percentage={{
-                //   color: "success",
-                //   amount: "+55%",
-                //   label: "than lask week",
-                // }}
+                percentage={{
+                  color: product.maxStockLevel > '100' ? "success" : "danger",
+                  amount: `${product.maxStockLevel}`,
+                  label: "are available.",
+                }}
               />
             </MDBox>
           </Grid>)}
@@ -219,12 +218,11 @@ function Store() {
                 color="dark"
                 icon="weekend"
                 count={product.name}
-                // count={281}
-                // percentage={{
-                //   color: "success",
-                //   amount: "+55%",
-                //   label: "than lask week",
-                // }}
+                percentage={{
+                  color: product.maxStockLevel > '100' ? "success" : "danger",
+                  amount: `${product.maxStockLevel}`,
+                  label: "are available.",
+                }}
               />
             </MDBox>
           </Grid>)}

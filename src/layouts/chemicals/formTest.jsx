@@ -18,6 +18,9 @@ import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
+import InputLabel from '@mui/material/InputLabel';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 import {SDK} from "../../api/index";
 
@@ -26,27 +29,28 @@ export default function FormDialog({open, setOpen, id}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState([]);
+  const [measureUnit, setMeasureUnit] = React.useState('');
+  const [payemntMethod, setPayemntMethod] = React.useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const obj = {
-        email: data.get('email'),
-        password: data.get('password'),
-        fullName: data.get('fullName'),
-        userName: data.get('userName'),
-        role: data.get('role'),
-        phoneNumber: data.get('phone'),
-        address: data.get('address'),
+        name : data.get('name'),
+        code : data.get('code'),
+        supplier : data.get('supplier'),
+        unitOfMeasure : measureUnit,
+        unitPrice : data.get('unitPrice'),
+        paymentMethod : data.get('payemntMethod'),
         isActive: true
       }
       console.log(obj);
       
-      SDK.UserType.add(obj)
+      SDK.ChemicalsType.add(obj)
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      window.history.pushState("", "", "/users");
+      window.history.pushState("", "", "/chemicals");
       setOpen(false);
     })
     .catch((error) => {
@@ -56,6 +60,11 @@ export default function FormDialog({open, setOpen, id}) {
     })
   };
 
+  const handleChangeMeasureUnit = (event) => {
+    console.log(event.target.value)
+    setMeasureUnit(event.target.value);
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -63,32 +72,37 @@ export default function FormDialog({open, setOpen, id}) {
   const handleClose = () => {
     setOpen(false);
   };
+  
+  const handleChangePayment = (event) => {
+    console.log(event.target.value)
+    setPayemntMethod(event.target.value);
+  };
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add User</DialogTitle>
+        <DialogTitle>Add Chemical</DialogTitle>
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="fullName"
-          label="Full Name"
-          type="fullName"
-          id="fullName"
-          autoComplete="fullName"
-          autoFocus
-        />
             <TextField
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
+              name="name"
+              label="Chemical Name"
+              type="name"
+              id="name"
+              autoComplete="name"
+              autoFocus
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="code"
+              label="Chemical Code"
+              name="code"
+              autoComplete="code"
             />
             <TextField
               margin="normal"
@@ -104,42 +118,60 @@ export default function FormDialog({open, setOpen, id}) {
               margin="normal"
               required
               fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              name="supplier"
+              label="Supplier"
+              type="supplier"
+              id="supplier"
+              autoComplete="supplier"
             />
+            <InputLabel id="demo-simple-select-label" 
+              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Measured Unit</InputLabel>
+              <Select
+                labelId="measureUnit"
+                id="measureUnit"
+                value={measureUnit}
+                label="Measured Unit"
+                fullWidth
+                name="measureUnit"
+                sx={{ minWidth: 120,  minHeight: 40 }}
+                onChange={handleChangeMeasureUnit}
+              >
+                <MenuItem value={"unit"}>Unit</MenuItem>
+                <MenuItem value={"kg"}>Kilo Gram</MenuItem>
+                <MenuItem value={"g"}>Gram</MenuItem>
+                <MenuItem value={"mg"}>Mili Gram</MenuItem>
+                <MenuItem value={"l"}>Litre</MenuItem>
+                <MenuItem value={"ml"}>Mili Litre</MenuItem>
+                <MenuItem value={"m"}>Metre</MenuItem>
+                <MenuItem value={"mm"}>Mili Metre</MenuItem>
+            </Select>
             <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="role"
-            label="Role"
-            type="role"
-            id="role"
-            autoComplete="role"
-          />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="phone"
-              label="Phone"
-              type="number"
-              id="phone"
-              autoComplete="phone"
+                margin="normal"
+                required
+                fullWidth
+                name="unitPrice"
+                label="Unit Price"
+                type="unitPrice"
+                id="unitPrice"
+                autoComplete="unitPrice"
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="address"
-              label="Address"
-              type="address"
-              id="address"
-              autoComplete="address"
-            />
+            <InputLabel id="demo-simple-select-label" 
+              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Payment Method</InputLabel>
+              <Select
+                labelId="payemntMethod"
+                id="payemntMethod"
+                value={payemntMethod}
+                label="payemntMethod"
+                fullWidth
+                name="payemntMethod"
+                sx={{ minWidth: 120,  minHeight: 40 }}
+                onChange={handleChangePayment}
+              >
+                <MenuItem value={"cash"}>Cash</MenuItem>
+                <MenuItem value={"card"}>Card</MenuItem>
+                <MenuItem value={"card"}>Cheque</MenuItem>
+                <MenuItem value={"gift"}>Gift</MenuItem>
+              </Select>
             <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
                 position: 'absolute',
                 right: 8,
