@@ -118,10 +118,10 @@ function Store() {
       <DashboardNavbar />
       <MDBox pt={2} px={2} display="flex" justifyContent="space-between" alignItems="center">
               <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-              <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+              {/*<MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
                     &nbsp;Add New Stock
-                  </MDButton>
+  </MDButton>*/}
             </MDBox>
 
       <MDBox pt={6} pb={3}>

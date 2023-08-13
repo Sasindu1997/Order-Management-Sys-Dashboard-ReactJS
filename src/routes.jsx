@@ -60,6 +60,9 @@ import Chemicals from "layouts/users copy 2";
 import ScanPage from "layouts/Scanning";
 import Delivery from "layouts/users copy 3";
 import Invoice from "layouts/invoice"; 
+import Incomes from "layouts/expenses copy"; 
+import UtilityExpenses from "layouts/expenses copy 2"; 
+
 
 
 // @mui icons
@@ -79,7 +82,7 @@ const routes = [{
         type: "collapse",
         name: "Store",
         key: "store ",
-        icon: <StoreIcon fontSize = "small">  dashboard </StoreIcon>,
+        icon: <StoreIcon fontSize = "small">  inventory </StoreIcon>,
         route: "/stocks",
         component: <Store /> ,
         isVisible: true
@@ -88,7 +91,7 @@ const routes = [{
         type: "collapse",
         name: "Orders",
         key: "orders",
-        icon: <Icon fontSize = "small" > receipt </Icon>,
+        icon: <Icon fontSize = "small" > add_shopping_cart </Icon>,
         route: "/orders",
         component: <Orders /> ,
         isVisible: true
@@ -97,7 +100,7 @@ const routes = [{
         type: "collapse",
         name: "Products",
         key: "products",
-        icon: <Icon fontSize = "small" > receipt </Icon>,
+        icon: <Icon fontSize = "small" > store_front </Icon>,
         route: "/products",
         component: <Products /> ,
         isVisible: true
@@ -106,7 +109,7 @@ const routes = [{
         type: "collapse",
         name: "Materials",
         key: "materials",
-        icon: <Icon fontSize = "small" > receipt </Icon>,
+        icon: <Icon fontSize = "small" > shape_line </Icon>,
         route: "/materials",
         component: <Materials /> ,
         isVisible: true
@@ -115,7 +118,7 @@ const routes = [{
         type: "collapse",
         name: "Chemicals",
         key: "chemicals",
-        icon: <Icon fontSize = "small" > receipt </Icon>,
+        icon: <Icon fontSize = "small" > science </Icon>,
         route: "/chemicals",
         component: <Chemicals /> ,
         isVisible: true
@@ -124,7 +127,7 @@ const routes = [{
         type: "collapse",
         name: "Customers",
         key: "customers",
-        icon: <Icon fontSize = "small" > Customers </Icon>,
+        icon: <Icon fontSize = "small" > supervised_user_circle </Icon>,
         route: "/customers",
         component: <Customers /> ,
         isVisible: true
@@ -133,7 +136,7 @@ const routes = [{
         type: "collapse",
         name: "Users",
         key: "users",
-        icon: <Icon fontSize = "small" > Users </Icon>,
+        icon: <Icon fontSize = "small" > manage_accounts </Icon>,
         route: "/users",
         component: <Users /> ,
         isVisible: true
@@ -142,9 +145,27 @@ const routes = [{
         type: "collapse",
         name: "Expenses",
         key: "expenses",
-        icon: <Icon fontSize = "small" > receipt_long </Icon>,
+        icon: <Icon fontSize = "small" > money </Icon>,
         route: "/expenses",
         component: <Expenses /> ,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Incomes",
+        key: "incomes",
+        icon: <Icon fontSize = "small" > price_check </Icon>,
+        route: "/incomes",
+        component: <Incomes /> ,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Utility Expenses",
+        key: "utilityExpenses",
+        icon: <Icon fontSize = "small" > receipt_long </Icon>,
+        route: "/utilityExpenses",
+        component: <UtilityExpenses /> ,
         isVisible: true
     },
     // {
@@ -218,7 +239,7 @@ const routes = [{
         type: "collapse",
         name: "Settings",
         key: "sign-up",
-        icon: <Icon fontSize = "small" > assignment </Icon>,
+        icon: <Icon fontSize = "small" > settings </Icon>,
         route: "/settings",
         component: <Settings /> ,
         isVisible: true
@@ -254,7 +275,7 @@ const routes = [{
         name: "barcodescanner",
         key: "barcodescanner",
         route: `/barcodescanner`,
-        icon: <Icon fontSize = "small" > assignment </Icon>,
+        icon: <Icon fontSize = "small" > qr_code_scanner </Icon>,
         component: <ScanPage />,
         isVisible: true
     },
@@ -263,7 +284,7 @@ const routes = [{
         name: "Delivey Account",
         key: "DeliveyAccount",
         route: `/deliveyAccount`,
-        icon: <Icon fontSize = "small" > assignment </Icon>,
+        icon: <Icon fontSize = "small" > local_shipping </Icon>,
         component: <Delivery />,
         isVisible: true
     },
@@ -272,7 +293,16 @@ const routes = [{
         name: "Invoices",
         key: "Invoices",
         route: `/invoices`,
-        icon: <Icon fontSize = "small" > receipt_long </Icon>,
+        icon: <Icon fontSize = "small" > receipt </Icon>,
+        component: <Invoice />,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Reports",
+        key: "Reports",
+        route: `/reports`,
+        icon: <Icon fontSize = "small" > assessment</Icon>,
         component: <Invoice />,
         isVisible: true
     },

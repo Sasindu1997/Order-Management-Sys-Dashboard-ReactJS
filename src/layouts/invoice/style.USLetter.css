@@ -47,7 +47,7 @@ here.
 
 body {
     margin: 0;
-    padding: 1cm 1cm;
+    /* padding: 1cm 1cm; */
     color: var(--font-color);
     font-family: 'Montserrat', sans-serif;
     font-size: 10pt;
@@ -98,7 +98,7 @@ header {
 }
 
 header .headerStart {
-    height: 8cm;
+    /* height: 8cm; */
     padding: 0 2cm;
     position: running(header);
     background-color: var(--header-bg-color);

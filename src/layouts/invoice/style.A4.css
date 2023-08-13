@@ -89,7 +89,7 @@ invoice.
 */
 
 header .headerStart {
-    height: 8cm;
+    /* height: 8cm; */
     padding: 0 2cm;
     position: running(header);
     background-color: var(--header-bg-color);

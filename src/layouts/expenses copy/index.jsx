@@ -44,7 +44,6 @@ import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import moment from 'moment';
-import { CSVLink, CSVDownload } from "react-csv";
 
 // Data
 import {SDK} from "../../api/index";
@@ -57,6 +56,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { CSVLink, CSVDownload } from "react-csv";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -66,19 +66,12 @@ let csvData = [
   ["id", "name", "description", "amount", "date"],
 ];
 
-function Expenses() {
+function Incomes() {
   const [open, setOpen] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [userData, setUserData] = useState([]);
-
-  const [rIDData, setRIdData] = useState([]);
-  const [rNameData, setRNameData] = useState([]);
-  const [rDescriptionData, setRDescriptionData] = useState([]);
-  const [rAmountData, setRAmountData] = useState([]);
-  const [rDateData, setRDateData] = useState([]);
-
   const [openSnack, setOpenSnack] = React.useState(false);
   const [snackSeverity, setSnackSeverity] = React.useState(false);
   const [message, setMessage] = React.useState(false);
@@ -91,23 +84,13 @@ function Expenses() {
   const [openConformDelete, setOpenConformDelete] = React.useState(false);
   const theme = useTheme();
   const [recordId, setRecordId] = React.useState(false);
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md')); 
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
-    SDK.ExpenseType.getAll()
+    SDK.IncomesType.getAll()
     .then(async (res) => {
-      setUserData(res?.data);
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-      setSnackSeverity('error');
-      setMessage('Error!');
-      setOpenSnack(true);
-    })
-
-    SDK.ExpenseType.getAllThisMonth()
-    .then(async (res) => {
-      console.log(res.data.length, csvData.length)
+      console.log("RES: ", res);
+      setUserData(res?.data)
       if(res.data.length >  csvData.length - 1){
         await res?.data.map((ex) => {
           return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('DD-MM-YYYY')  || "-"}`])
@@ -116,6 +99,9 @@ function Expenses() {
     })
     .catch((error) => {
       console.log("Error: ", error)
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
     })
   }, [open, openConformDelete, openUpdate])
 
@@ -184,7 +170,7 @@ function Expenses() {
   }
 
   const handleConformDelete = () => {
-    recordId && SDK.ExpenseType.deletebyId(recordId)
+    recordId && SDK.IncomesType.deletebyId(recordId)
     .then((res) => {
       console.log("RES: ", res);
       setOpenConformDelete(false);
@@ -200,6 +186,7 @@ function Expenses() {
       setOpenSnack(true);
     })
   };
+
 
   const columns = [
     { Header: "id", accessor: "id", width: "15%", align: "left" },
@@ -256,12 +243,13 @@ function Expenses() {
               >
                 <row>
                 <MDTypography variant="h6" color="white">
-                  Expenses Table
+                  Incomes Table
                 </MDTypography>
                 <MDBox px={2} display="flex" justifyContent="end" alignItems="center">
-                  <MDButton px={2} variant="gradient" color="dark" onClick={handleClickOpen}>
+                  <MDTypography variant="h6" fontWeight="medium"></MDTypography>
+                  <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                    &nbsp;Add New Expense
+                    &nbsp;Add New Income
                   </MDButton>
                   <MDButton sx={{ marginLeft: "5px" }} px={2} variant="gradient" color="dark">
                     <Icon sx={{ fontWeight: "bold" }}>download</Icon>
@@ -319,4 +307,4 @@ function Expenses() {
   );
 }
 
-export default Expenses;
+export default Incomes;

@@ -60,18 +60,18 @@ export default function FormDialog({open, setOpen, id}) {
   const [userData, setUserData] = useState([]);
   const [customerData, setCustomerData] = useState([]);
   const [productData, setProductData] = useState([]);
-  const [customerId, setCustomerId] = React.useState('');
-  const [userId, setUserId] = React.useState('');
-  const [productId, setProductId] = React.useState('');
-  const [payemntMethod, setPayemntMethod] = React.useState('');
-  const [status, setStatus] = React.useState('');
-  const [shippingMethod, setShippingMethod] = React.useState('');
+  const [customerId, setCustomerId] = useState('');
+  const [userId, setUserId] = useState('');
+  const [productId, setProductId] = useState('');
+  const [payemntMethod, setPayemntMethod] = useState('');
+  const [status, setStatus] = useState('');
+  const [shippingMethod, setShippingMethod] = useState('');
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
-  const [checked, setChecked] = React.useState(true);
-  const [value, setValue] = React.useState(0);
-  const [csvfile, setCsvfile] = React.useState(0);
-  const [csvfileName, setCsvfileName] = React.useState('');
+  const [personName, setPersonName] = useState([]);
+  const [checked, setChecked] = useState(true);
+  const [value, setValue] = useState(0);
+  const [csvfile, setCsvfile] = useState(0);
+  const [csvfileName, setCsvfileName] = useState('');
 
   useEffect(() => {
     SDK.ProductType.getAll()
@@ -299,23 +299,6 @@ export default function FormDialog({open, setOpen, id}) {
           ))}
         </Select>
 
-        {/*<InputLabel id="demo-simple-select-label" 
-          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>User</InputLabel>
-        <Select
-          labelId="userId"
-          id="userId"
-          value={userId}
-          label="userId"
-          fullWidth
-          name="userId"
-          sx={{ minWidth: 120,  minHeight: 40 }}
-          onChange={handleChangeUserId}
-        >
-          <MenuItem value={1}>user 1</MenuItem>
-          <MenuItem value={2}>user 2</MenuItem>
-          <MenuItem value={3}>user 3</MenuItem>
-          </Select>*/}
-
         <InputLabel id="demo-simple-select-label" 
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Customer</InputLabel>
         <Select
@@ -347,7 +330,6 @@ export default function FormDialog({open, setOpen, id}) {
           type="number"
           label="Weight"
           name="weight"
-          autoComplete="weight"
         />
         <TextField
           margin="normal"
@@ -357,7 +339,6 @@ export default function FormDialog({open, setOpen, id}) {
           label="Item Count"
           type="number"
           id="itemCount"
-          autoComplete="itemCount"
         />
 
         <InputLabel id="demo-simple-select-label" 
@@ -377,14 +358,13 @@ export default function FormDialog({open, setOpen, id}) {
           label="total"
           type="number"
           id="total"
-          autoComplete="total"
         />
 
         <InputLabel id="demo-simple-select-label" 
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Status</InputLabel>
         <Select
           labelId="status"
-          id="status"
+          id="status" 
           value={status}
           label="status"
           fullWidth
@@ -439,15 +419,9 @@ export default function FormDialog({open, setOpen, id}) {
           name="trackingNumber"
           label="Tracking Number"
           id="trackingNumber"
-          autoComplete="trackingNumber"
         />
 
-        <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button
             type="submit"
@@ -485,6 +459,7 @@ export default function FormDialog({open, setOpen, id}) {
           <Button
               onClick={importCSV}
               variant="contained"
+              disabled
               sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
               >
               Upload

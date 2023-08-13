@@ -58,7 +58,7 @@ function Settings() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-                icon="item"
+                icon="category"
                 title="Categories"
                 onClickCard={handleClickCategories}
               />
@@ -67,7 +67,7 @@ function Settings() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                icon="item"
+                icon="apps"
                 title="Sub Categories"
                 onClickCard={handleClickSubCategories}
               />

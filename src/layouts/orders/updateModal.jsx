@@ -12,6 +12,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import { useForm } from "react-hook-form";
 
 import { Theme, useTheme } from '@mui/material/styles';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -55,19 +56,66 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
   const [errorSB, setErrorSB] = useState(false);
   const [customerId, setCustomerId] = React.useState('');
   const [userId, setUserId] = React.useState('');
-  const [productId, setProductId] = React.useState('');
+  const [productId, setProductId] = React.useState([]);
   const [payemntMethod, setPayemntMethod] = React.useState('');
   const [status, setStatus] = React.useState('');
   const [shippingMethod, setShippingMethod] = React.useState('');
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
-  const [checked, setChecked] = React.useState(true);
+  const [checked, setChecked] = React.useState(false);
+  const [customerData, setCustomerData] = useState([]);
+  const [productData, setProductData] = useState([]);
+  const [initData, setInitData] = useState({
+        customerId : '',
+        userId : '',
+        productId :'',
+        barcode : '',
+        weight : '',
+        itemCount :'',
+        paid : false,
+        total : '',
+        status : '',
+        shippingAddress : '',
+        paymentMethod : '',
+        shippingMethod : '',
+        trackingNumber : '',
+  });
+  const { register, handleSubmit, errors, reset } = useForm({
+    defaultValues: initData,
+  });
+  const form = new FormData();
+
 
   useEffect(() => {
+    console.log("orderId", orderId)
     orderId && SDK.OrderType.getById(orderId)
     .then((res) => {
-      console.log("RES: ", res);
+      console.log("RES order: ", res.data?.productId[0]);
       setData(res?.data)
+      reset(res?.data);
+      setCustomerId(res?.data?.customerId);
+      setProductId(res?.data?.productId);
+      setPayemntMethod(res?.data?.paymentMethod)
+      setShippingMethod(res?.data?.shippingMethod)
+      setStatus(res?.data?.status);
+      setChecked(res?.data?.paid);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    SDK.ProductType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+
+    SDK.CustomerType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setCustomerData(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
@@ -82,44 +130,44 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
     const {
       target: { value },
     } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
+    console.log(value)
+    setProductId(
       typeof value === 'string' ? value.split(',') : value,
     );
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const onSubmit = (values) => {
+    // event.preventDefault();
+    const loggedUser = localStorage.getItem('loggedInUser');
+    // const data = new FormData(event.currentTarget);
     const obj = {
-        customerId : data.get('customerId'),
-        userId : data.get('userId'),
-        productId :data.get('products').split(','),
-        barcode : data.get('barcode'),
-        weight : data.get('weight'),
-        itemCount :data.get('itemCount'),
-        paid : data.get('paid') === "on" ? true : false,
-        total : data.get('total'),
-        status : data.get('status'),
-        shippingAddress : data.get('shippingAddress'),
-        paymentMethod : data.get('paymentMethod'),
-        shippingMethod : data.get('shippingMethod'),
-        trackingNumber : data.get('trackingNumber'),
+        customerId : customerId,
+        userId : loggedUser.id,
+        productId : productId,
+        barcode : values.barcode,
+        weight : values.weight,
+        itemCount :values.itemCount,
+        paid : checked,
+        total : values.total,
+        status : status,
+        shippingAddress : values.shippingAddress,
+        paymentMethod : payemntMethod,
+        shippingMethod :shippingMethod,
+        trackingNumber : values.trackingNumber,
         isActive: true
       }
       console.log(obj);
       
-      SDK.OrderType.update(userId, obj)
+      SDK.OrderType.update(orderId, obj)
       .then((res) => {
         console.log("RES: ", res);
         res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-        window.history.pushState("", "", "/orders");
-        setOpen(false);
+        setOpen(false, 'success');
       })
       .catch((error) => {
         console.log("Error: ", error)
         setErrorSB(true);
-        setOpen(false);
+        setOpen(false, 'error');
       })
   };
 
@@ -161,7 +209,7 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Update Order</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
           
           <InputLabel id="demo-multiple-name-label" 
             sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Products</InputLabel>
@@ -171,38 +219,21 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
               id="demo-multiple-name"
               multiple
               name="products"
-              value={personName}
+              value={productId}
               fullWidth
               onChange={handleChange}
               input={<OutlinedInput label="Name" />}
               MenuProps={MenuProps}
             >
-              {names.map((obj) => (
-                <MenuItem
-                  key={obj.id}
-                  value={obj.id}
-                  style={getStyles(obj.name, personName, theme)}
-                >
-                  {obj.name}
-                </MenuItem>
-              ))}
-            </Select>
-
-            <InputLabel id="demo-simple-select-label" 
-              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>User</InputLabel>
-            <Select
-              labelId="userId"
-              id="userId"
-              value={userId}
-              label="userId"
-              fullWidth
-              name="userId"
-              sx={{ minWidth: 120,  minHeight: 40 }}
-              onChange={handleChangeUserId}
+            {productData?.map((obj) => (
+            <MenuItem
+              key={obj.id}
+              value={obj.id}
+              style={getStyles(obj.name, personName, theme)}
             >
-              <MenuItem value={1}>user 1</MenuItem>
-              <MenuItem value={2}>user 2</MenuItem>
-              <MenuItem value={3}>user 3</MenuItem>
+              {obj.productName}
+            </MenuItem>
+          ))}
             </Select>
 
             <InputLabel id="demo-simple-select-label" 
@@ -217,22 +248,30 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
               sx={{ minWidth: 120,  minHeight: 40 }}
               onChange={handleChangeCustomerId}
             >
-              <MenuItem value={1}>customer 1</MenuItem>
-              <MenuItem value={2}>customer 2</MenuItem>
-              <MenuItem value={3}>customer 3</MenuItem>
+            {customerData?.map((obj) => (
+              <MenuItem
+                key={obj.id}
+                value={obj.id}
+                style={getStyles(obj.name, personName, theme)}
+              >
+                {obj.fullName}
+              </MenuItem>
+            ))}
             </Select>
             
             <TextField
+            {...register("weight")}
               margin="normal"
               required
               fullWidth
-              id="weight (Kg)"
+              id="weight"
               type="number"
               label="Weight"
               name="weight"
               autoComplete="weight"
             />
             <TextField
+            {...register("itemCount")}
               margin="normal"
               required
               fullWidth
@@ -253,6 +292,7 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
             />
 
             <TextField
+            {...register("total")}
               margin="normal"
               required
               fullWidth
@@ -275,12 +315,13 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
               sx={{ minWidth: 120,  minHeight: 40 }}
               onChange={handleChangeStatus}
             >
-              <MenuItem value={"Packing"}>Packing</MenuItem>
-              <MenuItem value={"Delivered"}>Delivered</MenuItem>
-              <MenuItem value={"Returned"}>Returned</MenuItem>
+              <MenuItem value={"packing"}>Packing</MenuItem>
+              <MenuItem value={"delivered"}>Delivered</MenuItem>
+              <MenuItem value={"returned"}>Returned</MenuItem>
             </Select>
 
             <TextField
+            {...register("shippingAddress")}
               margin="normal"
               required
               fullWidth
@@ -325,6 +366,7 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
             </Select>
 
             <TextField
+              {...register("trackingNumber")}
               margin="normal"
               required
               fullWidth

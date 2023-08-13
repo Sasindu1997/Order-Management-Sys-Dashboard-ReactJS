@@ -114,9 +114,9 @@ function Products() {
   const handleCloseOpen = (state, msg) => {
     console.log("here")
     setOpen(state);
-    setSnackSeverity(msg == 'success' ? 'success' : 'error');
-    setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
-    setOpenSnack(true);
+    setSnackSeverity(msg == 'success' ? 'success' : msg == 'error' ? 'error' : '');
+    setMessage(msg == 'success' ? 'Record Created Sucessfully!' : msg == 'error' ? 'Error In Record Creation!' : '');
+    setOpenSnack(msg == 'success' || msg == 'error' ? true : false);
     // window.location.reload();
   };
 
