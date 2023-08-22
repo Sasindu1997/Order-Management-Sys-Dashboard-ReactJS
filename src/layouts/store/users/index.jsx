@@ -39,7 +39,12 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-
+import Snackbar from '@mui/material/Snackbar';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 // Dashboard React example components
 import TimelineItem from "examples/Timeline/TimelineItem";
 // Data
@@ -50,6 +55,15 @@ import FormDialog from "./formTest";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
 import { useHistory, useParams } from "react-router-dom";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import MuiAlert from '@mui/material/Alert';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function ProductStock() {
   const [open, setOpen] = React.useState(false);
@@ -59,12 +73,26 @@ function ProductStock() {
   const [userData, setUserData] = useState([]);
   const [productData, setProductData] = useState();
   const params = useParams();
-
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [snackSeverity, setSnackSeverity] = React.useState(false);
+  const [message, setMessage] = React.useState(false);
+  const [state, setState] = React.useState({
+    opens: false,
+    vertical: 'bottom',
+    horizontal: 'right',
+  });
+  const { vertical, horizontal, opens } = state;
+  const [openConformDelete, setOpenConformDelete] = React.useState(false);
+  const theme = useTheme();
+  const [recordId, setRecordId] = React.useState(false);
+  const [qty, setQty] = React.useState(false);
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     console.log("params: ", params);
-
-    params.id && SDK.StockType.getByProductId(params.id)
+    setOpenBackDrop(true)
+    params.id && SDK.StockType.findByProductIdAndType(params.id, params.type)
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
@@ -73,7 +101,8 @@ function ProductStock() {
       console.log("Error: ", error)
     })
 
-    params.id && SDK.ProductType.getById(params.id)
+    if(params.type == 'prod'){
+      params.id && SDK.ProductType.getById(params.id)
     .then((res) => {
       console.log("RES: ", res);
       setProductData(res?.data)
@@ -81,23 +110,68 @@ function ProductStock() {
     .catch((error) => {
       console.log("Error: ", error)
     })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+    }else if(params.type == 'chem'){
+      params.id && SDK.ChemicalsType.getById(params.id)
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+    }else if(params.type == 'raw'){
+      params.id && SDK.RawMatsType.getById(params.id)
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+    }
+  }, [open, openConformDelete, openUpdate])
 
-  }, [])
-
+  const handleCloseConformDelete = () => {
+    setOpenConformDelete(false);
+  };
+  
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const handleCloseOpen = (state) => {
-    console.log("here")
-    setOpen(state);
-    window.location.reload();
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
   };
 
-  const handleCloseOpenUpdate = (state) => {
+  const handleCloseOpen = (state, msg) => {
+    console.log("here")
+    setOpen(state);
+    setSnackSeverity(msg == 'success' ? 'success' : 'error');
+    setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
+    setOpenSnack(true);
+    // window.location.reload();
+  };
+
+  const handleCloseOpenUpdate = (state, msg) => {
     console.log("here 2")
     setOpenUpdate(state);
-    window.location.reload();
+    setSnackSeverity(msg == 'success' ? 'success' : 'error');
+    setMessage(msg == 'success' ? 'Record Updated Sucessfully!' : 'Error In Record Update!');
+    setOpenSnack(true);
+    // window.location.reload();
   };
 
   const handleCloseOpenView = (state) => {
@@ -117,23 +191,42 @@ function ProductStock() {
     id && setOpenUpdate(true);
   }
 
-  const handleClickDelete = (id) => {
-    id && SDK.UserType.deletebyId(id)
-    .then((res) => {
-      console.log("RES: ", res);
-      window.location.reload();
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-    })
+  const handleClickDelete = (id, qty) => {
+    setOpenConformDelete(true);
+    setRecordId(id);
+    setQty(qty);
+
+    // id && SDK.UserType.deletebyId(id)
+    // .then((res) => {
+    //   console.log("RES: ", res);
+    //   window.location.reload();
+    // })
+    // .catch((error) => {
+    //   console.log("Error: ", error)
+    // })
   }
 
-  
+  // const handleConformDelete = () => {
+  //   recordId && SDK.StockType.deletebyId(params.id, params.type, qty, recordId)
+  //   .then((res) => {
+  //     console.log("RES: ", res);
+  //     setOpenConformDelete(false);
+  //     setSnackSeverity('success');
+  //     setMessage('Record Deleted Sucessfully!');
+  //     setOpenSnack(true);
+  //   })
+  //   .catch((error) => {
+  //     setOpenConformDelete(false);
+  //     console.log("Error: ", error);
+  //     setSnackSeverity('error');
+  //     setMessage('Error In Record Deletion!');
+  //     setOpenSnack(true);
+  //   })
+  // };
 
   const columns = [
     { Header: "id", accessor: "id", width: "5%", align: "left" },
       { Header: "product Id", accessor: "productId", align: "center" },
-      { Header: "product Name", accessor: "productName", align: "center" },
       { Header: "quantity", accessor: "quantity", align: "center" },
       { Header: "status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", width: "8%", align: "center" },
@@ -142,9 +235,6 @@ function ProductStock() {
     const rows = userData?.map((user) =>  ({
         id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
-        </MDTypography>),
-        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.fullName  || "-"}
         </MDTypography>),
         role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {user.role  || "-"}
@@ -169,8 +259,6 @@ function ProductStock() {
           <Box >
           <Stack direction="row" spacing={1}>
             <Button onClick={() => handleClickView(user.id)}> View </Button>           
-            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
-            <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
           </Stack>
         </Box>
         )
@@ -191,7 +279,7 @@ function ProductStock() {
         <TimelineItem
           color="success"
           icon="notifications"
-          title={productData && productData.productName}
+          title={productData && productData.productName || productData?.name}
         />
         <MDBox ml={1.25} mt={0} mb={2}>
           <MDTypography variant="button" color="text" fontWeight="regular" fontSize="0.85rem">
@@ -200,8 +288,8 @@ function ProductStock() {
             </MDTypography>
             &nbsp;
             Available stock upto today: &nbsp;
-            <MDTypography variant="button" color="text" fontWeight="medium" fontSize="1.25rem">
-            {productData && productData.maxStockLevel}
+            <MDTypography variant="button" color={productData?.maxStockLevel > 0 ? "success" : "primary"} fontWeight="medium" fontSize="1.25rem">
+            {productData && productData?.maxStockLevel}
             </MDTypography>{" "}
           </MDTypography>
         </MDBox>
@@ -227,14 +315,14 @@ function ProductStock() {
                 </MDTypography>
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-                  {/*<MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+                  <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
                     &nbsp;Add New Stock
-  </MDButton>*/}
+                  </MDButton>
               </MDBox>
-               {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
+               {open &&  <FormDialog setOpen={handleCloseOpen} open={open} type={params.type} id={params.id}/>}
                {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
-               {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
+               {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId} type={params.type} id={params.id}/>}
                 </row>
               </MDBox>
               <MDBox pt={3}>
@@ -250,7 +338,42 @@ function ProductStock() {
           </Grid>
         </Grid>
       </MDBox>
+      {<Dialog
+        fullScreen={fullScreen}
+        open={openConformDelete}
+        onClose={handleCloseConformDelete}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">
+          {"Confirm Delete"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This action will delete this record permanantly from the list.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConformDelete}>
+            Cancel
+          </Button>
+          <Button>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>}
+      <Snackbar anchorOrigin={{ vertical, horizontal }} open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
+        <Alert onClose={handleCloseSnack} severity={snackSeverity} sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
       <Footer />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </DashboardLayout>
   );
 }

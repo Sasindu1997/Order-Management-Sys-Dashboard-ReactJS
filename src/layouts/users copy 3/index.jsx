@@ -196,6 +196,8 @@ function Delivery() {
       { Header: "user Name", accessor: "userName",  align: "left" },
       { Header: "passWord", accessor: "passWord", align: "left" },
       { Header: "description", accessor: "description", align: "left" },
+      { Header: "client Id", accessor: "clientId", align: "left" },
+      { Header: "api Key", accessor: "apiKey", align: "left" },
       { Header: "Status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", width: "8%", align: "center" },
     ]
@@ -212,6 +214,12 @@ function Delivery() {
         </MDTypography>),
         description: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             {user.description  || "-"}
+        </MDTypography>),
+        clientId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.clientId  || "-"}
+        </MDTypography>),
+        apiKey: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.apiKey  || "-"}
         </MDTypography>),
         status: (
           <MDBox ml={-1}>

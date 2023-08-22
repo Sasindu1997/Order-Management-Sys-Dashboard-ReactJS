@@ -57,6 +57,8 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
       userName: values.userName,
       passWord: values.passWord,
       description: values.description,
+      clientId: values.clientId,
+      apiKey: values.apiKey,
       isActive: true
     }
       console.log(values);
@@ -125,6 +127,28 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               type="description"
               id="description"
               autoComplete="description"
+            />
+            <TextField
+            {...register("clientId")}
+              margin="normal"
+              required
+              fullWidth
+              name="clientId"
+              label="Client ID"
+              type="clientId"
+              id="clientId"
+              autoComplete="clientId"
+            />
+            <TextField
+            {...register("apiKey")}
+              margin="normal"
+              required
+              fullWidth
+              name="apiKey"
+              label="API Key"
+              type="apiKey"
+              id="apiKey"
+              autoComplete="apiKey"
             />
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>

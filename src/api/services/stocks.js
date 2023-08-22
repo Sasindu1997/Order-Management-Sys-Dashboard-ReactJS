@@ -27,14 +27,20 @@ const getByProductId = async(id) => {
     return data;
 };
 
+const findByProductIdAndType = async(id, type) => {
+    const data = await axios.get(extendedUrl + `/stocks/byproduct/${type}/${id}`);
+    console.log(data);
+    return data;
+};
+
 const update = async(id, req) => {
     const data = await axios.put(extendedUrl + `/stocks/${id}`, req);
     console.log(data);
     return data;
 };
 
-const deletebyId = async(id) => {
-    const data = await axios.delete(extendedUrl + `/stocks/${id}`);
+const deletebyId = async(stocktype, id) => {
+    const data = await axios.delete(extendedUrl + `/stocks/${id}/${stocktype}`);
     console.log(data);
     return data;
 };
@@ -45,5 +51,6 @@ export const StockType = {
     getById,
     update,
     deletebyId,
-    getByProductId
+    getByProductId,
+    findByProductIdAndType
 }

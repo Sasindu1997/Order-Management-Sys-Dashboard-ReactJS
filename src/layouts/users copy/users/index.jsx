@@ -57,6 +57,8 @@ import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -81,8 +83,10 @@ function Users() {
   const [openConformDelete, setOpenConformDelete] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
+  
   useEffect(() => {
+    setOpenBackDrop(true)
     SDK.UserType.getAll()
     .then((res) => {
       console.log("RES: ", res);
@@ -94,6 +98,9 @@ function Users() {
       setMessage('Error!');
       setOpenSnack(true);
     })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
   }, [open, openConformDelete, openUpdate])
 
   const handleClickOpen = () => {
@@ -305,6 +312,13 @@ function Users() {
         </Alert>
       </Snackbar>
       <Footer />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </DashboardLayout>
   );
 }

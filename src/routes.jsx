@@ -60,6 +60,7 @@ import Chemicals from "layouts/users copy 2";
 import ScanPage from "layouts/Scanning";
 import Delivery from "layouts/users copy 3";
 import Invoice from "layouts/invoice"; 
+import OrdersForInvoice from "layouts/invoice/index2"; 
 import Incomes from "layouts/expenses copy"; 
 import UtilityExpenses from "layouts/expenses copy 2"; 
 
@@ -266,7 +267,7 @@ const routes = [{
         type: "collapse",
         name: "product-stock",
         key: "product-stock",
-        route: `/stocks/product-stock/:id`,
+        route: `/stocks/product-stock/:type/:id`,
         component: <ProductStock />,
         isVisible: false
     },
@@ -295,6 +296,15 @@ const routes = [{
         route: `/invoices`,
         icon: <Icon fontSize = "small" > receipt </Icon>,
         component: <Invoice />,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Invoicesss",
+        key: "Invoicesss",
+        route: `/invoicesss`,
+        icon: <Icon fontSize = "small" > receipt </Icon>,
+        component: <OrdersForInvoice />,
         isVisible: true
     },
     {

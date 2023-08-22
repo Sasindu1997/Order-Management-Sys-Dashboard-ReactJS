@@ -56,6 +56,8 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -80,8 +82,10 @@ function Categories() {
   const theme = useTheme();
   const [recordId, setRecordId] = React.useState(false);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
   
   useEffect(() => {
+    setOpenBackDrop(true)
     SDK.CategoryType.getAll()
     .then((res) => {
       console.log("RES: ", res);
@@ -93,6 +97,9 @@ function Categories() {
       setMessage('Error!');
       setOpenSnack(true);
     })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
   }, [open, openConformDelete, openUpdate])
 
   const handleClickOpen = () => {
@@ -279,6 +286,13 @@ function Categories() {
         </Alert>
       </Snackbar>
       <Footer />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </DashboardLayout>
   );
 }

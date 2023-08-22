@@ -166,9 +166,10 @@ To ensure the top right section "Invoice #100" starts on the same level as the L
 Name we set a padding top of 1cm for this element.
 */
 
-header .headerSection .invoiceDetails {
+
+/* header .headerSection .invoiceDetails {
     padding-top: .5cm;
-}
+} */
 
 
 /*
@@ -218,11 +219,17 @@ header p {
 The invoice details should not be uppercase and also be aligned to the right.
 */
 
-header .invoiceDetails,
-header .invoiceDetails h2 {
+header .invoiceDetails {
     text-align: right;
-    font-size: 1em;
+    font-size: 3em;
+    padding-top: -5cm;
     text-transform: none;
+}
+
+header .invoiceDetails h2 {
+    /* text-align: right; */
+    font-size: 3em;
+    /* text-transform: none; */
 }
 
 

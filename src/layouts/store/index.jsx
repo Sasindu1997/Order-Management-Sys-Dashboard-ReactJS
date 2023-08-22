@@ -53,6 +53,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import FormDialog from "./formTest";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import { useTheme } from '@mui/material/styles';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function Store() {
     const { columns, rows } = authorsTableData();
@@ -60,14 +69,25 @@ function Store() {
     const [productData, setProductsData] = useState([]);
     const [rawMatsData, setRawMatssData] = useState([]);
     const [chemicals, setChemicals] = useState([]);
-
+    const [openBackDrop, setOpenBackDrop] = React.useState(false);
     const [open, setOpen] = React.useState(false);
-
-  const [userId, setUserId] = React.useState(false);
+    const [userId, setUserId] = React.useState(false);
     const { sales, tasks } = reportsLineChartData;
-    const navigate = useNavigate();
+    const navigate = useNavigate();  
+    const [openSnack, setOpenSnack] = React.useState(false);
+    const [snackSeverity, setSnackSeverity] = React.useState(false);
+    const [message, setMessage] = React.useState(false);
+    const [state, setState] = React.useState({
+      opens: false,
+      vertical: 'bottom',
+      horizontal: 'right',
+    });
+    const { vertical, horizontal, opens } = state;
+    const [openConformDelete, setOpenConformDelete] = React.useState(false);
+    const theme = useTheme();
 
     useEffect(() => {
+      setOpenBackDrop(true)
       SDK.ProductType.getAll()
       .then((res) => {
         console.log("RES: ", res);
@@ -94,36 +114,57 @@ function Store() {
       .catch((error) => {
         console.log("Error: ", error)
       })
-  }, [])
+      setTimeout(function(){
+        setOpenBackDrop(false);
+      }, 1000);
+  }, [open, openConformDelete])
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
-  const handleCloseOpen = (state) => {
-    console.log("here")
-    setOpen(state);
-    window.location.reload();
+    setOpenSnack(false);
   };
 
+  const handleCloseOpen = (state, msg) => {
+    console.log("here")
+    setOpen(state);
+    setSnackSeverity(msg == 'success' ? 'success' : 'error');
+    setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
+    setOpenSnack(true);
+    // window.location.reload();
+  };
 
-  const handleClick = (id) => {
+  const handleClickPro = (id) => {
     console.log("id", id);
-    navigate(`/stocks/product-stock/${id}`);
+    navigate(`/stocks/product-stock/prod/${id}`);
+  }
+
+  const handleClickRaw = (id) => {
+    console.log("id", id);
+    navigate(`/stocks/product-stock/raw/${id}`);
+  }
+
+  const handleClickChem = (id) => {
+    console.log("id", id);
+    navigate(`/stocks/product-stock/chem/${id}`);
   }
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox pt={2} px={2} display="flex" justifyContent="space-between" alignItems="center">
-              <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-              {/*<MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
-                    <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                    &nbsp;Add New Stock
-  </MDButton>*/}
-            </MDBox>
-
+        <MDTypography variant="h6" fontWeight="medium"></MDTypography>
+        <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+              <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+              &nbsp;Add New Stock
+        </MDButton>
+      </MDBox>
       <MDBox pt={6} pb={3}>
         <Grid container spacing={3}>
           <Grid item lg={12} >
@@ -138,20 +179,19 @@ function Store() {
           </Grid>
         </Grid>
       </MDBox>
-
       <MDBox py={3} >
         <Grid container spacing={3} >
           {productData.length > 0 && productData.map((product) => <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5} on>
               <ComplexStatisticsCard
-                onClickCard={() => handleClick(product.id)}
+                onClickCard={() => handleClickPro(product.id)}
                 color="dark"
                 icon="weekend"
                 count={product.productName}
                 percentage={{
-                  color: product.maxStockLevel > '100' ? "success" : "danger",
-                  amount: `${product.maxStockLevel}`,
-                  label: "are available.",
+                  color: product.maxStockLevel > 100 ? "success" : product.maxStockLevel > 1 ? "secondary" : "primary",
+                  amount: `${product.maxStockLevel} `,
+                  label: " are available.",
                 }}
               />
             </MDBox>
@@ -179,14 +219,14 @@ function Store() {
           {rawMatsData.length > 0 && rawMatsData.map((product) => <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5} on>
               <ComplexStatisticsCard
-                onClickCard={() => handleClick(product.id)}
+                onClickCard={() => handleClickRaw(product.id)}
                 color="dark"
                 icon="weekend"
                 count={product.name}
                 percentage={{
-                  color: product.maxStockLevel > '100' ? "success" : "danger",
-                  amount: `${product.maxStockLevel}`,
-                  label: "are available.",
+                  color: product.maxStockLevel > 100 ? "success" : product.maxStockLevel > 1 ? "secondary" : "primary",
+                  amount: `${product.maxStockLevel} `,
+                  label: " are available.",
                 }}
               />
             </MDBox>
@@ -214,22 +254,34 @@ function Store() {
           {chemicals.length > 0 && chemicals.map((product) => <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5} on>
               <ComplexStatisticsCard
-                onClickCard={() => handleClick(product.id)}
+                onClickCard={() => handleClickChem(product.id)}
                 color="dark"
                 icon="weekend"
                 count={product.name}
                 percentage={{
-                  color: product.maxStockLevel > '100' ? "success" : "danger",
-                  amount: `${product.maxStockLevel}`,
-                  label: "are available.",
+                  color: product.maxStockLevel > 100 ? "success" : product.maxStockLevel > 1 ? "secondary" : "primary",
+                  amount: `${product.maxStockLevel} `,
+                  label: " are available.",
                 }}
               />
             </MDBox>
           </Grid>)}
         </Grid>
       </MDBox>
+      <Snackbar anchorOrigin={{ vertical, horizontal }} open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
+      <Alert onClose={handleCloseSnack} severity={snackSeverity} sx={{ width: '100%' }}>
+        {message}
+      </Alert>
+    </Snackbar>
       {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
       <Footer />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </DashboardLayout>
   );
 }

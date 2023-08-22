@@ -83,6 +83,7 @@ function Invoice() {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+
   // useEffect(() => {
     // SDK.InvoiceType.getAll()
     // .then((res) => {
@@ -222,12 +223,27 @@ function Invoice() {
         .then(function (dataUrl) {
           var link = document.createElement('a');
           link.download = 'my-image-name.jpeg';
-          const pdf = new jsPDF();
+          const pdf = new jsPDF('p', 'mm');
           const imgProps= pdf.getImageProperties(dataUrl);
           const pdfWidth = pdf.internal.pageSize.getWidth() / 2;
           const pdfHeight = ((imgProps.height * pdfWidth) / imgProps.width);
+          var imgWidth = 210; 
+          var pageHeight = 295;  
+          var imgHeight = imgProps.height;
+          var heightLeft = imgHeight;
+          var position = 10;
           pdf.addImage(dataUrl, 'PNG', 0, 0,pdfWidth, pdfHeight);
-          pdf.save("download.pdf"); 
+          // pdf.save("download.pdf"); 
+          // pdf.addImage(dataUrl, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+
+          while (heightLeft >= 0) {
+            position += heightLeft - imgHeight; // top padding for other pages
+            pdf.addPage();
+            pdf.addImage(dataUrl, 'PNG', 0, 0,pdfWidth, pdfHeight);
+            heightLeft -= pageHeight;
+          }
+          pdf.save( 'file.pdf');
         });
     }
 
@@ -237,14 +253,15 @@ function Invoice() {
     <div className="mb5">
         <button onClick={printDocument}>Print</button>
       </div>
-    <div id="divToPrint">
+    <div  id="divToPrint">
+    <div>
       <header className="headerStart">
-        <div class="headerSection">
+        <div class="headerSection1">
           <div class="logoAndName">
-              <img src='logo.jpg' alt="larocher" width="100" style={{width: '30%'}}
+              <img src='logo.jpg' alt="larocher" width="50" style={{width: '20%'}}
                 height="100"/>
             <div class="logoAnd">
-              <h1>La Rocher</h1>
+              <h1>La Rocher Ceylon pvt ltd</h1>
             </div>
           </div>
           <div class="invoiceDetails">
@@ -286,17 +303,18 @@ function Invoice() {
       </header>
       
       <footer>
-          <a href="https://companywebsite.com">
-            companywebsite.com
+          <a>
+            http://www.larocherceylon.com
           </a>
-          <a href="mailto:company@website.com">
-            company@website.com
+          <a>
+            larocherbeauty@gmail.com / 
+            larocherceylon@gmail.com
           </a>
           <span>
-            317.123.8765
+            Hot line - 0711 752 090 / 0777 284 644
           </span>
           <span>
-            123 Alphabet Road, Suite 01, Indianapolis, IN 46260
+            83/1/1, Pagoda, Nugegoda. 
           </span>
       </footer>
       
@@ -362,22 +380,6 @@ function Invoice() {
           </tbody>
         </table>
         <table class="summary">
-          <tr>
-            <th>
-              Subtotal
-            </th>
-            <td>
-              $1200.00
-            </td>
-          </tr>
-          <tr>
-            <th>
-              Tax 4.7%
-            </th>
-            <td>
-              $000.00
-            </td>
-          </tr>
           <tr class="total">
             <th>
               Total
@@ -394,18 +396,800 @@ function Invoice() {
           <div>
             <b>Terms &amp; Conditions</b>
             <p>
-              Please make payment within 30 days of issue of the invoice.
+              Please make payment on delivery.
             </p>
           </div>
           <div>
             <b>Payment Options</b>
             <ul>
-              <li>Paypal</li>
-              <li>Credit Card</li>
+              <li>Cash On Delivery</li>
+              <li>Bank Transfer</li>
+              <li>One Pay ( Master / Visa / Amex)</li>
             </ul>
           </div>
         </div>
       </aside>
+    </div>
+    <div>
+      <header className="headerStart">
+        <div class="headerSection1">
+          <div class="logoAndName">
+              <img src='logo.jpg' alt="larocher" width="50" style={{width: '20%'}}
+                height="100"/>
+            <div class="logoAnd">
+              <h1>La Rocher Ceylon pvt ltd</h1>
+            </div>
+          </div>
+          <div class="invoiceDetails">
+            <h2>Invoice #100</h2>
+            <p>
+              07 March 2021
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div class="headerSection">
+          <div>
+            <h3>Invoice to</h3>
+            <p>
+              <b>Client Name</b>
+              <br />
+              123 Alphabet Road, Suite 01
+              <br />
+              Indianapolis, IN 46260
+              <br />
+              <a href="mailto:clientname@clientwebsite.com">
+                clientname@clientwebsite.com
+              </a>
+              <br />
+              317.123.8765
+            </p>
+          </div>
+          <div>
+            <h3>Due Date</h3>
+            <p>
+              <b>07 April 2021</b>
+            </p>
+            <h3>Amount</h3>
+            <p>
+              <b>$3,500</b>
+            </p>
+          </div>
+        </div>
+      </header>
+      
+      <footer>
+          <a>
+            http://www.larocherceylon.com
+          </a>
+          <a>
+            larocherbeauty@gmail.com / 
+            larocherceylon@gmail.com
+          </a>
+          <span>
+            Hot line - 0711 752 090 / 0777 284 644
+          </span>
+          <span>
+            83/1/1, Pagoda, Nugegoda. 
+          </span>
+      </footer>
+      
+      <main>
+        <table>
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>Item Names Goes Here</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $100
+              </td>
+              <td>
+                4
+              </td>
+              <td>
+                $400.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Lorem Ipsum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $250
+              </td>
+              <td>
+                2
+              </td>
+              <td>
+                $500.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Dolor Set Amit Caslum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $300
+              </td>
+              <td>
+                1
+              </td>
+              <td>
+                $300.00
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="summary">
+          <tr class="total">
+            <th>
+              Total
+            </th>
+            <td>
+              $12,000.00
+            </td>
+          </tr>
+        </table>
+      </main>
+      <aside>
+        <hr />
+        <div>
+          <div>
+            <b>Terms &amp; Conditions</b>
+            <p>
+              Please make payment on delivery.
+            </p>
+          </div>
+          <div>
+            <b>Payment Options</b>
+            <ul>
+              <li>Cash On Delivery</li>
+              <li>Bank Transfer</li>
+              <li>One Pay ( Master / Visa / Amex)</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <div>
+      <header className="headerStart">
+        <div class="headerSection1">
+          <div class="logoAndName">
+              <img src='logo.jpg' alt="larocher" width="50" style={{width: '20%'}}
+                height="100"/>
+            <div class="logoAnd">
+              <h1>La Rocher Ceylon pvt ltd</h1>
+            </div>
+          </div>
+          <div class="invoiceDetails">
+            <h2>Invoice #100</h2>
+            <p>
+              07 March 2021
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div class="headerSection">
+          <div>
+            <h3>Invoice to</h3>
+            <p>
+              <b>Client Name</b>
+              <br />
+              123 Alphabet Road, Suite 01
+              <br />
+              Indianapolis, IN 46260
+              <br />
+              <a href="mailto:clientname@clientwebsite.com">
+                clientname@clientwebsite.com
+              </a>
+              <br />
+              317.123.8765
+            </p>
+          </div>
+          <div>
+            <h3>Due Date</h3>
+            <p>
+              <b>07 April 2021</b>
+            </p>
+            <h3>Amount</h3>
+            <p>
+              <b>$3,500</b>
+            </p>
+          </div>
+        </div>
+      </header>
+      
+      <footer>
+          <a>
+            http://www.larocherceylon.com
+          </a>
+          <a>
+            larocherbeauty@gmail.com / 
+            larocherceylon@gmail.com
+          </a>
+          <span>
+            Hot line - 0711 752 090 / 0777 284 644
+          </span>
+          <span>
+            83/1/1, Pagoda, Nugegoda. 
+          </span>
+      </footer>
+      
+      <main>
+        <table>
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>Item Names Goes Here</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $100
+              </td>
+              <td>
+                4
+              </td>
+              <td>
+                $400.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Lorem Ipsum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $250
+              </td>
+              <td>
+                2
+              </td>
+              <td>
+                $500.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Dolor Set Amit Caslum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $300
+              </td>
+              <td>
+                1
+              </td>
+              <td>
+                $300.00
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="summary">
+          <tr class="total">
+            <th>
+              Total
+            </th>
+            <td>
+              $12,000.00
+            </td>
+          </tr>
+        </table>
+      </main>
+      <aside>
+        <hr />
+        <div>
+          <div>
+            <b>Terms &amp; Conditions</b>
+            <p>
+              Please make payment on delivery.
+            </p>
+          </div>
+          <div>
+            <b>Payment Options</b>
+            <ul>
+              <li>Cash On Delivery</li>
+              <li>Bank Transfer</li>
+              <li>One Pay ( Master / Visa / Amex)</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <div>
+      <header className="headerStart">
+        <div class="headerSection1">
+          <div class="logoAndName">
+              <img src='logo.jpg' alt="larocher" width="50" style={{width: '20%'}}
+                height="100"/>
+            <div class="logoAnd">
+              <h1>La Rocher Ceylon pvt ltd</h1>
+            </div>
+          </div>
+          <div class="invoiceDetails">
+            <h2>Invoice #100</h2>
+            <p>
+              07 March 2021
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div class="headerSection">
+          <div>
+            <h3>Invoice to</h3>
+            <p>
+              <b>Client Name</b>
+              <br />
+              123 Alphabet Road, Suite 01
+              <br />
+              Indianapolis, IN 46260
+              <br />
+              <a href="mailto:clientname@clientwebsite.com">
+                clientname@clientwebsite.com
+              </a>
+              <br />
+              317.123.8765
+            </p>
+          </div>
+          <div>
+            <h3>Due Date</h3>
+            <p>
+              <b>07 April 2021</b>
+            </p>
+            <h3>Amount</h3>
+            <p>
+              <b>$3,500</b>
+            </p>
+          </div>
+        </div>
+      </header>
+      
+      <footer>
+          <a>
+            http://www.larocherceylon.com
+          </a>
+          <a>
+            larocherbeauty@gmail.com / 
+            larocherceylon@gmail.com
+          </a>
+          <span>
+            Hot line - 0711 752 090 / 0777 284 644
+          </span>
+          <span>
+            83/1/1, Pagoda, Nugegoda. 
+          </span>
+      </footer>
+      
+      <main>
+        <table>
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>Item Names Goes Here</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $100
+              </td>
+              <td>
+                4
+              </td>
+              <td>
+                $400.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Lorem Ipsum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $250
+              </td>
+              <td>
+                2
+              </td>
+              <td>
+                $500.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Dolor Set Amit Caslum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $300
+              </td>
+              <td>
+                1
+              </td>
+              <td>
+                $300.00
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="summary">
+          <tr class="total">
+            <th>
+              Total
+            </th>
+            <td>
+              $12,000.00
+            </td>
+          </tr>
+        </table>
+      </main>
+      <aside>
+        <hr />
+        <div>
+          <div>
+            <b>Terms &amp; Conditions</b>
+            <p>
+              Please make payment on delivery.
+            </p>
+          </div>
+          <div>
+            <b>Payment Options</b>
+            <ul>
+              <li>Cash On Delivery</li>
+              <li>Bank Transfer</li>
+              <li>One Pay ( Master / Visa / Amex)</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <div>
+      <header className="headerStart">
+        <div class="headerSection1">
+          <div class="logoAndName">
+              <img src='logo.jpg' alt="larocher" width="50" style={{width: '20%'}}
+                height="100"/>
+            <div class="logoAnd">
+              <h1>La Rocher Ceylon pvt ltd</h1>
+            </div>
+          </div>
+          <div class="invoiceDetails">
+            <h2>Invoice #100</h2>
+            <p>
+              07 March 2021
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div class="headerSection">
+          <div>
+            <h3>Invoice to</h3>
+            <p>
+              <b>Client Name</b>
+              <br />
+              123 Alphabet Road, Suite 01
+              <br />
+              Indianapolis, IN 46260
+              <br />
+              <a href="mailto:clientname@clientwebsite.com">
+                clientname@clientwebsite.com
+              </a>
+              <br />
+              317.123.8765
+            </p>
+          </div>
+          <div>
+            <h3>Due Date</h3>
+            <p>
+              <b>07 April 2021</b>
+            </p>
+            <h3>Amount</h3>
+            <p>
+              <b>$3,500</b>
+            </p>
+          </div>
+        </div>
+      </header>
+      
+      <footer>
+          <a>
+            http://www.larocherceylon.com
+          </a>
+          <a>
+            larocherbeauty@gmail.com / 
+            larocherceylon@gmail.com
+          </a>
+          <span>
+            Hot line - 0711 752 090 / 0777 284 644
+          </span>
+          <span>
+            83/1/1, Pagoda, Nugegoda. 
+          </span>
+      </footer>
+      
+      <main>
+        <table>
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>Item Names Goes Here</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $100
+              </td>
+              <td>
+                4
+              </td>
+              <td>
+                $400.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Lorem Ipsum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $250
+              </td>
+              <td>
+                2
+              </td>
+              <td>
+                $500.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Dolor Set Amit Caslum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $300
+              </td>
+              <td>
+                1
+              </td>
+              <td>
+                $300.00
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="summary">
+          <tr class="total">
+            <th>
+              Total
+            </th>
+            <td>
+              $12,000.00
+            </td>
+          </tr>
+        </table>
+      </main>
+      <aside>
+        <hr />
+        <div>
+          <div>
+            <b>Terms &amp; Conditions</b>
+            <p>
+              Please make payment on delivery.
+            </p>
+          </div>
+          <div>
+            <b>Payment Options</b>
+            <ul>
+              <li>Cash On Delivery</li>
+              <li>Bank Transfer</li>
+              <li>One Pay ( Master / Visa / Amex)</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <div>
+      <header className="headerStart">
+        <div class="headerSection1">
+          <div class="logoAndName">
+              <img src='logo.jpg' alt="larocher" width="50" style={{width: '20%'}}
+                height="100"/>
+            <div class="logoAnd">
+              <h1>La Rocher Ceylon pvt ltd</h1>
+            </div>
+          </div>
+          <div class="invoiceDetails">
+            <h2>Invoice #100</h2>
+            <p>
+              07 March 2021
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div class="headerSection">
+          <div>
+            <h3>Invoice to</h3>
+            <p>
+              <b>Client Name</b>
+              <br />
+              123 Alphabet Road, Suite 01
+              <br />
+              Indianapolis, IN 46260
+              <br />
+              <a href="mailto:clientname@clientwebsite.com">
+                clientname@clientwebsite.com
+              </a>
+              <br />
+              317.123.8765
+            </p>
+          </div>
+          <div>
+            <h3>Due Date</h3>
+            <p>
+              <b>07 April 2021</b>
+            </p>
+            <h3>Amount</h3>
+            <p>
+              <b>$3,500</b>
+            </p>
+          </div>
+        </div>
+      </header>
+      
+      <footer>
+          <a>
+            http://www.larocherceylon.com
+          </a>
+          <a>
+            larocherbeauty@gmail.com / 
+            larocherceylon@gmail.com
+          </a>
+          <span>
+            Hot line - 0711 752 090 / 0777 284 644
+          </span>
+          <span>
+            83/1/1, Pagoda, Nugegoda. 
+          </span>
+      </footer>
+      
+      <main>
+        <table>
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th>Rate</th>
+              <th>Amount</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>Item Names Goes Here</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $100
+              </td>
+              <td>
+                4
+              </td>
+              <td>
+                $400.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Lorem Ipsum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $250
+              </td>
+              <td>
+                2
+              </td>
+              <td>
+                $500.00
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>Dolor Set Amit Caslum</b>
+                <br />
+                Description goes here
+              </td>
+              <td>
+                $300
+              </td>
+              <td>
+                1
+              </td>
+              <td>
+                $300.00
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="summary">
+          <tr class="total">
+            <th>
+              Total
+            </th>
+            <td>
+              $12,000.00
+            </td>
+          </tr>
+        </table>
+      </main>
+      <aside>
+        <hr />
+        <div>
+          <div>
+            <b>Terms &amp; Conditions</b>
+            <p>
+              Please make payment on delivery.
+            </p>
+          </div>
+          <div>
+            <b>Payment Options</b>
+            <ul>
+              <li>Cash On Delivery</li>
+              <li>Bank Transfer</li>
+              <li>One Pay ( Master / Visa / Amex)</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
     </div>
       <Snackbar anchorOrigin={{ vertical, horizontal }} open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
         <Alert onClose={handleCloseSnack} severity={snackSeverity} sx={{ width: '100%' }}>

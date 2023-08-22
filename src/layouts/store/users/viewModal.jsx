@@ -19,17 +19,22 @@ import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
 import Divider from '@mui/material/Divider';
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import {SDK} from "../../../api/index";
+import moment from 'moment';
 
-export default function FormDialogView({open, setOpen, userId}) {
+export default function FormDialogView({open, setOpen, userId, type, id}) {
   const [successSB, setSuccessSB] = useState(false);
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
+  const [productData, setProductData] = useState();
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
 
   useEffect(() => {
-    userId && SDK.UserType.getById(userId)
+    setOpenBackDrop(true)
+    userId && SDK.StockType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
@@ -37,6 +42,45 @@ export default function FormDialogView({open, setOpen, userId}) {
     .catch((error) => {
       console.log("Error: ", error)
     })
+    if(type == 'prod'){
+      id && SDK.ProductType.getById(id)
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+
+    }else if(type == 'chem'){
+      id && SDK.ChemicalsType.getById(id)
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+    
+    }else if(type == 'raw'){
+      id && SDK.RawMatsType.getById(id)
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+    }
   }, [])
 
   const handleSubmit = (event) => {
@@ -79,69 +123,49 @@ export default function FormDialogView({open, setOpen, userId}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>View User</DialogTitle>
-        <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <DialogTitle sx={{ ml: 1 }}>View Stock Record</DialogTitle>
+        <DialogContent sx={{ ml: 2 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, mr: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
          
         <Typography  variant="h6" >
-          Full Name
+          Stock Item Name
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }}>
-          {userData.fullName}
+          {productData?.productName || productData?.name}
         </Typography>
 
         <Typography  variant="h6" >
-        Email
+        Added Quantity
       </Typography>
       <Typography  variant="body2" sx={{ mb: 3 }}>
-        {userData.email}
+        {userData?.quantity}
       </Typography>
 
         <Typography  variant="h6" >
-          User Name
+          Total Stock Available
         </Typography>
-        <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.userName}
-        </Typography>
-        
-        <Typography  variant="h6" >
-          Password
-        </Typography>
-        <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.password}
+        <Typography  variant="body2" sx={{ mb: 3, color: productData?.maxStockLevel > 0 ? '#00FF00' : '#ff0000' }} >
+          {productData?.maxStockLevel}
         </Typography>
         
         <Typography  variant="h6" >
-         Role
+          Added Date
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.role}
+          {moment(userData.createdAt).format('DD-MM-YYYY')  || "-"}
         </Typography>
-       
-        <Typography  variant="h6" >
-          Phone Number
-        </Typography>
-        <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.phoneNumber}
-        </Typography>
-        
-        <Typography  variant="h6" >
-          Address
-        </Typography>
-        <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.address}
-        </Typography>
-
-        <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         </div>
         </Box>
+        <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
         </DialogContent>
       </Dialog>
     </div>

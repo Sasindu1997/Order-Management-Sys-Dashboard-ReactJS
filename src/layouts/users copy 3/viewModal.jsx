@@ -100,6 +100,20 @@ export default function FormDialogView({open, setOpen, userId}) {
         <Typography  variant="body2" sx={{ mb: 3 }} >
           {userData.description}
         </Typography>
+
+        <Typography  variant="h6" >
+         Client ID
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }} >
+          {userData.clientId}
+        </Typography>
+
+        <Typography  variant="h6" >
+         API Key
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }} >
+          {userData.apiKey}
+        </Typography>
        
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>

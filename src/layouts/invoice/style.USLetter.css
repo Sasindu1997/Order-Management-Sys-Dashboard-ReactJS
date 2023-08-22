@@ -13,7 +13,7 @@ Define all colors used in this template
 :root {
     --font-color: black;
     --highlight-color: #000971;
-    --header-bg-color: #44bef3;
+    --header-bg-color: #8cd1ee;
     --footer-bg-color: #141a2f;
     --table-row-separator-color: #BFC0C3;
 }
@@ -142,7 +142,11 @@ each headerSection element should only take 35% of the headers width.
 */
 
 header .headerSection div:last-child {
-    width: 35%;
+    width: 19%;
+}
+
+header .headerSection1 div:last-child {
+    width: 100%;
 }
 
 
@@ -154,15 +158,16 @@ to align them correctly.
 header .logoAnd {
     display: flex;
     /* align-items: center; */
-    width: 100%;
-    padding-left: 1cm;
+    width: 10%;
+    padding-left: 5cm;
     justify-content: space-between;
 }
 
 header .logoAndName {
     display: flex;
-    width: 60%;
-    /* align-items: center; */
+    width: 80%;
+    align-items: center;
+    padding-top: 1cm;
     justify-content: space-between;
 }
 
@@ -184,8 +189,8 @@ To ensure the top right section "Invoice #100" starts on the same level as the L
 Name we set a padding top of 1cm for this element.
 */
 
-header .headerSection .invoiceDetails {
-    padding-top: .5cm;
+header .headerSection1 .invoiceDetails {
+    padding-top: -5cm;
 }
 
 
@@ -196,7 +201,7 @@ Additionally this header text gets the hightlight color as font color.
 */
 
 header .headerSection h3 {
-    margin: 0 .75cm 0 0;
+    /* margin: 0 .75cm 0 0; */
     color: var(--highlight-color);
 }
 

@@ -59,14 +59,16 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-
+// import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import Checkbox from '@mui/material/Checkbox';
 // Data
 import {SDK} from "../../api/index";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import FormDialog from "./formAdd";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
+import { MaterialReactTable } from 'material-react-table';
 // import { Br, Cut, Line, Printer, Text, Row, render } from 'react-thermal-printer';
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -105,7 +107,28 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-function Orders() {
+const data = [
+  {
+    id: '3f', //we'll use this as a unique row id
+    customerName: 'Dylan',
+    customerPhone: 'Murray',
+    itemCount: 22,
+    trackingNumber: '261 Erdman Ford',
+    total: 'East Daphne',
+    status: 'Kentucky',
+  },
+  {
+    id: '4f', //we'll use this as a unique row id
+    customerName: 'xx',
+    customerPhone: 'j',
+    itemCount: 33,
+    trackingNumber: 't ttt',
+    total: 'yyy yyy',
+    status: 'hh',
+  }
+];
+
+function OrdersForInvoice() {
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
@@ -127,7 +150,12 @@ function Orders() {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const  ZebraBrowserPrintWrapper = require('zebra-browser-print-wrapper');
   const [openBackDrop, setOpenBackDrop] = React.useState(false);
-  
+  const [rowCount, setRowCount] = React.useState(0);
+  const [selected, setSelected] = React.useState({});
+
+
+  const [rowSelection, setRowSelection] = useState({});
+
   useEffect(() => {
     setOpenBackDrop(true)
     SDK.OrderType.getAll()
@@ -145,6 +173,11 @@ function Orders() {
       setOpenBackDrop(false);
     }, 1000);
   }, [open, openConformDelete, openUpdate])
+
+  useEffect(() => {
+    //do something when the row selection changes...
+    console.info({ rowSelection });
+  }, [rowSelection]);
 
   const handleChangeSearch = (event) => {
     console.log(event.target.value);
@@ -298,23 +331,58 @@ function Orders() {
         }
   }
 
+  const onSelectAllClick = () => {
+
+  }
+
+  const handleSelect = (event, id) => {
+    console.log("clicked", event.target.checked, id)
+    setSelected(...selected, { id: id, check: event.target.checked });
+  };
+
   const columns = [
-      { Header: "id", accessor: "id", width: "10%", align: "left" },
-      { Header: "customer Name", accessor: "customerName",  align: "left" },
+      { Header: "id", accessor: "id", width: "5%", align: "left" },
+      { Header: "customer Name", width: "15%", accessor: "customerName",  align: "left" },
       { Header: "customer Phone", accessor: "customerPhone",  align: "left" },
-      { Header: "itemCount", accessor: "itemCount", align: "left" },
+      { Header: "itemCount", accessor: "itemCount", width: "3%", align: "left" },
       { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
       { Header: "total", accessor: "total", align: "center" },
       { Header: "paid", accessor: "paid", align: "center" },
-      { Header: "status", accessor: "isActive", align: "center" },
       { Header: "Order status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
     ]
-
-    const rows = orderData  ?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.id || "-"}
-        </MDTypography>),
+    
+    const columns1 = useMemo(
+      () => [
+        { header: "id", accessorKey: "id", width: "5%", align: "left"},
+        { header: "customer Name", accessorKey: "cfullName"},
+        { header: "customer Phone", accessorKey: "cphone"},
+        { header: "itemCount", accessorKey: "itemCount", width: "5%", align: "left"},
+        { header: "trackingNumber ", accessorKey: "trackingNumber",},
+        { header: "total", accessorKey: "total",},
+        { header: "paid", accessorKey: "paid",},
+        { header: "Order status", accessorKey: "status"},
+        { header: "action", accessorKey: "action"},
+      ],
+      [], //end
+    );
+    const rows = orderData?.map((user, i) =>  ({
+        selection: (
+          <Box >
+          <Stack direction="row" spacing={1}  key={i}>
+          <Checkbox
+            color="primary"
+            // indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={selected}
+            onChange={(e) => handleSelect(e, user.id)}
+            inputProps={{
+              'aria-label': 'select all desserts',
+            }}
+          />
+          </Stack>
+        </Box>
+        ),
+        id: user.id,
         customerName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.cfullName  || "-"}
         </MDTypography>),
@@ -328,7 +396,7 @@ function Orders() {
             {user.trackingNumber  || "-"}
         </MDTypography>),
         total: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.total  || "-"}
+          {(user.total).toFixed(2)  || "-"}
         </MDTypography>),
         paid: (
           <MDBox ml={-1}>
@@ -349,8 +417,6 @@ function Orders() {
           <Box >
           <Stack direction="row" spacing={1}>
             <Button onClick={() => handleClickView(user.id)}> View </Button>           
-            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
-            <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
             <Button onClick={() => handleClickBarcode(user)}> Print Barcode</Button>
           </Stack>
         </Box>
@@ -394,50 +460,50 @@ function Orders() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Orders
+                  Orders For Invoices
                 </MDTypography>
                 
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                 <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-                <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
-                  <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                  &nbsp;Add New Order
-                </MDButton>
                 </MDBox>
-                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
-                {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} orderId={userId}/>}
                 {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
-                {<Dialog
-                fullScreen={fullScreen}
-                open={openConformDelete}
-                onClose={handleCloseConformDelete}
-                aria-labelledby="responsive-dialog-title"
-              >
-                <DialogTitle id="responsive-dialog-title">
-                  {"Confirm Delete"}
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    This action will delete this record permanantly from the list.
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button autoFocus onClick={handleCloseConformDelete}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleConformDelete} autoFocus>
-                    Confirm
-                  </Button>
-                </DialogActions>
-              </Dialog>}  
                 </MDBox>
               <MDBox pt={3}>
-                <DataTable
+                {/*<DataGrid
+                  rows={rows}
+                  columns={columns}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: 5 },
+                    },
+                  }}
+                  pageSizeOptions={[5, 10]}
+                  checkboxSelection
+                />*/}
+                {/*<DataTable
                   table={{ columns, rows }}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}
                   noEndBorder
+                />*/}
+                <MaterialReactTable
+                  columns={columns1}
+                  data={rows}
+                  getRowId={(row) => row.id}
+                  muiTableBodyRowProps={({ row }) => ({
+                    //implement row selection click events manually
+                    onClick: () =>
+                      setRowSelection((prev) => ({
+                        ...prev,
+                        [row.id]: !prev[row.id],
+                      })),
+                    selected: rowSelection[row.id],
+                    sx: {
+                      cursor: 'pointer',
+                    },
+                  })}
+                  state={{ rowSelection }}
                 />
               </MDBox>
             </Card>
@@ -461,4 +527,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default OrdersForInvoice;

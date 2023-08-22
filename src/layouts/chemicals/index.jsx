@@ -40,6 +40,8 @@ import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // Data
 import {SDK} from "../../api/index";
@@ -55,8 +57,10 @@ function Chemicals() {
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [userData, setUserData] = useState([]);
-
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
+  
   useEffect(() => {
+    setOpenBackDrop(true)
     SDK.ChemicalsType.getAll()
     .then((res) => {
       console.log("RES: ", res);
@@ -65,6 +69,9 @@ function Chemicals() {
     .catch((error) => {
       console.log("Error: ", error)
     })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
   }, [])
 
   const handleClickOpen = () => {
@@ -200,6 +207,13 @@ function Chemicals() {
         </Grid>
       </MDBox>
       <Footer />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </DashboardLayout>
   );
 }

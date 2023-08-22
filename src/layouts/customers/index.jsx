@@ -58,6 +58,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -83,8 +85,10 @@ function Customers() {
   const [openConformDelete, setOpenConformDelete] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
+  
   useEffect(() => {
+    setOpenBackDrop(true)
     SDK.CustomerType.getAll()
     .then((res) => {
       console.log("RES: ", res);
@@ -96,6 +100,9 @@ function Customers() {
       setMessage('Error!');
       setOpenSnack(true);
     })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
   }, [open, openConformDelete, openUpdate])
 
   const handleClickOpen = () => {
@@ -304,6 +311,13 @@ function Customers() {
         </Alert>
       </Snackbar>
       <Footer />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </DashboardLayout>
   );
 }

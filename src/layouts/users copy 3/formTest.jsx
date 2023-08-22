@@ -36,6 +36,8 @@ export default function FormDialog({open, setOpen, id}) {
         userName: data.get('userName'),
         passWord: data.get('password'),
         description: data.get('description'),
+        clientId: data.get('clientId'),
+        apiKey: data.get('apiKey'),
         isActive: true
       }
       console.log(obj);
@@ -97,6 +99,26 @@ export default function FormDialog({open, setOpen, id}) {
               type="description"
               id="description"
               autoComplete="description"
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="clientId"
+              label="Client ID"
+              type="clientId"
+              id="clientId"
+              autoComplete="clientId"
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="apiKey"
+              label="API Key"
+              type="apiKey"
+              id="apiKey"
+              autoComplete="apiKey"
             />
             <div style={{display: "flex", alignItems: "right", justifyContent: "end"}} >
               <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>

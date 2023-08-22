@@ -57,6 +57,8 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -72,7 +74,7 @@ function Expenses() {
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [userData, setUserData] = useState([]);
-
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
   const [rIDData, setRIdData] = useState([]);
   const [rNameData, setRNameData] = useState([]);
   const [rDescriptionData, setRDescriptionData] = useState([]);
@@ -91,7 +93,25 @@ function Expenses() {
   const [openConformDelete, setOpenConformDelete] = React.useState(false);
   const theme = useTheme();
   const [recordId, setRecordId] = React.useState(false);
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md')); 
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  
+  useEffect(() => {
+    setOpenBackDrop(true)
+    SDK.ExpenseType.getAllThisMonth()
+    .then(async (res) => {
+      if(res.data.length >=  csvData.length){
+        await res?.data.map((ex) => {
+          return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('DD-MM-YYYY')  || "-"}`])
+         })
+      }
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+  }, [])
 
   useEffect(() => {
     SDK.ExpenseType.getAll()
@@ -107,8 +127,7 @@ function Expenses() {
 
     SDK.ExpenseType.getAllThisMonth()
     .then(async (res) => {
-      console.log(res.data.length, csvData.length)
-      if(res.data.length >  csvData.length - 1){
+      if(res.data.length >=  csvData.length){
         await res?.data.map((ex) => {
           return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('DD-MM-YYYY')  || "-"}`])
          })
@@ -315,6 +334,13 @@ function Expenses() {
         </Alert>
       </Snackbar>
       <Footer />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </DashboardLayout>
   );
 }

@@ -57,6 +57,8 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -81,8 +83,10 @@ function SubCategories() {
   const theme = useTheme();
   const [recordId, setRecordId] = React.useState(false);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
   
   useEffect(() => {
+    setOpenBackDrop(true)
     SDK.SubCategoryType.getAll()
     .then((res) => {
       console.log("RES: ", res);
@@ -94,6 +98,9 @@ function SubCategories() {
       setMessage('Error!');
       setOpenSnack(true);
     })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
   }, [open, openConformDelete, openUpdate])
 
   const handleClickOpen = () => {
@@ -231,10 +238,10 @@ function SubCategories() {
                 </MDTypography>
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-                  {/*<MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+                  <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
                     &nbsp;Add New Sub Category
-                  </MDButton>*/}
+                  </MDButton>
               </MDBox>
                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
                {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
@@ -283,6 +290,13 @@ function SubCategories() {
         </Alert>
       </Snackbar>
       <Footer />
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackDrop}
+        // onClick={handleCloseBackDrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </DashboardLayout>
   );
 }

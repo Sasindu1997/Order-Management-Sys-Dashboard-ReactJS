@@ -28,7 +28,8 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { useState, useEffect } from "react";
-
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -103,8 +104,10 @@ export default function FormDialog({open, setOpen, id}) {
   const [measureUnit, setMeasureUnit] = React.useState('');
   const theme = useTheme();
   const [checked, setChecked] = React.useState(true);
-
+  const [checked1, setChecked1] = React.useState(true);
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
   useEffect(() => {
+    setOpenBackDrop(true)
     SDK.RawMatsType.getAll()
     .then((res) => {
       console.log("RES mats: ", res);
@@ -131,6 +134,9 @@ export default function FormDialog({open, setOpen, id}) {
     .catch((error) => {
       console.log("Error: ", error)
     })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
   }, []);
 
   const handleChangeTabs = (event, newValue) => {
@@ -141,40 +147,52 @@ export default function FormDialog({open, setOpen, id}) {
     setChecked(event.target.checked);
   };
 
+  const handleChangeSwitch1 = (event) => {
+    setChecked1(event.target.checked);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     let arrayNames = [];
+    let arrayNameschem = [];
+
     rawMattdata.map((raw, index) => {
-        arrayNames.push({ initName: raw.name, initValue: data.get(`${raw.name}`), index: index})  
+        arrayNames.push({ initName: raw.name, initValue: data.get(`${raw.name}`), id: raw.id})  
     })
 
-    console.log("array2", arrayNames);
+    chemicalData.map((raw, index) => {
+      console.log(raw)
+      arrayNameschem.push({ initName: raw.name, initValue: data.get(`${raw.name}`), id: raw.id})  
+    })
+
+    console.log("array2", arrayNames, arrayNameschem);
 
     const obj = {
-        product: data.get('product'),
+        productId: data.get('product'),
         userId: data.get('userId'),
         quantity: data.get('quantity'),
         measureUnit: data.get('measureUnit'),
         rawMattdata: arrayNames,
+        chemicaldata: arrayNameschem,
         stockType: "prod",
         isActive: true
       }
 
     console.log("objobj", obj);
-    //SDK.UserType.add(obj)
-    // .then((res) => {
-    //   console.log("RES: ", res);
-    //   res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-    //   window.history.pushState("", "", "/users");
-    //   setOpen(false);
-    // })
-    // .catch((error) => {
-    //   console.log("Error: ", error)
-    //   setErrorSB(true);
-    //   setOpen(false);
-    // })
+    SDK.StockType.add(obj)
+    .then((res) => {
+      console.log("RES: ", res);
+      res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
+      // window.history.pushState("", "", "/users");
+      setOpen(false, 'success');
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+      setErrorSB(true);
+      setOpen(false, 'error');
+    })
   };
 
   const handleSubmitMat = (event) => {
@@ -196,13 +214,13 @@ export default function FormDialog({open, setOpen, id}) {
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      // window.history.pushState("", "", "/stocks");
-      setOpen(false);
+      // window.history.pushState("", "", "/users");
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       // setErrorSB(true);
-      // setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -224,13 +242,13 @@ export default function FormDialog({open, setOpen, id}) {
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
-      // window.history.pushState("", "", "/stocks");
-      setOpen(false);
+      // window.history.pushState("", "", "/users");
+      setOpen(false, 'success');
     })
     .catch((error) => {
       console.log("Error: ", error)
       // setErrorSB(true);
-      // setOpen(false);
+      setOpen(false, 'error');
     })
   };
 
@@ -269,7 +287,7 @@ export default function FormDialog({open, setOpen, id}) {
           <TabPanel value={value} index={0}>
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
               <InputLabel id="demo-multiple-name-label" 
-                sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Product</InputLabel>
+                sx={{ paddingTop: 2, paddingBottom: 2 }}>Product</InputLabel>
               <Select
                 sx={{ minWidth: 120,  minHeight: 40 }}
                 labelId="demo-multiple-name-label"
@@ -293,7 +311,7 @@ export default function FormDialog({open, setOpen, id}) {
               </Select>
 
               <InputLabel id="demo-simple-select-label" 
-                sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Add Materials</InputLabel>
+                sx={{ paddingTop: 2, fontWeight: 'bold', fontSize: '18' }}>Add Materials</InputLabel>
                 <Switch
                 checked={checked}
                 name="addMat"
@@ -303,16 +321,16 @@ export default function FormDialog({open, setOpen, id}) {
 
               {checked && rawMattdata.length > 0 ? 
                 rawMattdata.map((data) => ( 
-                <div>
+                <div sx={{ paddingTop: 1 }}>
                   <Grid container spacing={1}>
                     <Grid item xs={6} xl={4}>
                       <InputLabel id="demo-simple-select-label" 
-                        sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>{data.name}
+                        sx={{ paddingTop: 4 }}>{data.name}
                       </InputLabel>
                     </Grid>
                     <Grid item xs={6} xl={4}>
                       <InputLabel id="demo-simple-select-label" 
-                        sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>{data.unitOfMeasure}
+                        sx={{ paddingTop: 4 }}>{data.unitOfMeasure}
                       </InputLabel>
                     </Grid>
                     <Grid item xs={6} xl={4}>
@@ -322,15 +340,49 @@ export default function FormDialog({open, setOpen, id}) {
                         name={data.name}
                         type="number"
                         id={data.name}
-                        autoFocus
                       />
                     </Grid>
                   </Grid>
                 </div>
                 )) : ''}
+
+                <InputLabel id="demo-simple-select-label" 
+                sx={{ paddingTop: 2, fontWeight: 'bold', fontSize: '18' }}>Add Chemicals</InputLabel>
+                <Switch
+                checked={checked1}
+                name="addMat"
+                onChange={handleChangeSwitch1}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+
+                {checked1 && chemicalData.length > 0 ? 
+                  chemicalData.map((data) => ( 
+                  <div sx={{ paddingTop: 1 }}>
+                    <Grid container spacing={1}>
+                      <Grid item xs={6} xl={4}>
+                        <InputLabel id="demo-simple-select-label" 
+                          sx={{ paddingTop: 4 }}>{data.name}
+                        </InputLabel>
+                      </Grid>
+                      <Grid item xs={6} xl={4}>
+                        <InputLabel id="demo-simple-select-label" 
+                          sx={{ paddingTop: 4 }}>{data.unitOfMeasure}
+                        </InputLabel>
+                      </Grid>
+                      <Grid item xs={6} xl={4}>
+                        <TextField
+                          margin="normal"
+                          name={data.name}
+                          type="number"
+                          id={data.name}
+                        />
+                      </Grid>
+                    </Grid>
+                  </div>
+                  )) : ''}
         
               <InputLabel id="demo-simple-select-label" 
-              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Quantity</InputLabel>
+              sx={{ paddingTop: 2, paddingBottom: 2 }}>Quantity</InputLabel>
               <TextField
                 margin="normal"
                 required
@@ -340,7 +392,6 @@ export default function FormDialog({open, setOpen, id}) {
                 type="number"
                 id="quantity"
                 autoComplete="quantity"
-                autoFocus
               />
               <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
                   position: 'absolute',
@@ -362,7 +413,7 @@ export default function FormDialog({open, setOpen, id}) {
           <TabPanel value={value} index={1}>
               <Box component="form" onSubmit={handleSubmitMat} noValidate sx={{ mt: 1 }}>
               <InputLabel id="demo-multiple-name-label" 
-                sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Material</InputLabel>
+                sx={{ paddingTop: 2, paddingBottom: 2 }}>Material</InputLabel>
               <Select
                 sx={{ minWidth: 120,  minHeight: 40 }}
                 labelId="demo-multiple-name-label"
@@ -385,30 +436,32 @@ export default function FormDialog({open, setOpen, id}) {
                 ))}
               </Select>
 
-              <InputLabel id="demo-simple-select-label" 
-              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Measured Unit</InputLabel>
-              <Select
-                labelId="measureUnit"
-                id="measureUnit"
-                value={measureUnit}
-                label="Measured Unit"
-                fullWidth
-                name="measureUnit"
-                sx={{ minWidth: 120,  minHeight: 40 }}
-                onChange={handleChangeMeasureUnit}
-              >
-                <MenuItem value={"unit"}>Unit</MenuItem>
-                <MenuItem value={"kg"}>Kilo Gram</MenuItem>
-                <MenuItem value={"g"}>Gram</MenuItem>
-                <MenuItem value={"mg"}>Mili Gram</MenuItem>
-                <MenuItem value={"l"}>Litre</MenuItem>
-                <MenuItem value={"ml"}>Mili Litre</MenuItem>
-                <MenuItem value={"m"}>Metre</MenuItem>
-                <MenuItem value={"mm"}>Mili Metre</MenuItem>
-              </Select>
+               {
+               // <InputLabel id="demo-simple-select-label" 
+              // sx={{ paddingTop: 2, paddingBottom: 2 }}>Measured Unit</InputLabel>
+              // <Select
+              //   labelId="measureUnit"
+              //   id="measureUnit"
+              //   value={measureUnit}
+              //   label="Measured Unit"
+              //   fullWidth
+              //   name="measureUnit"
+              //   sx={{ minWidth: 120,  minHeight: 40 }}
+              //   onChange={handleChangeMeasureUnit}
+              // >
+              //   <MenuItem value={"unit"}>Unit</MenuItem>
+              //   <MenuItem value={"kg"}>Kilo Gram</MenuItem>
+              //   <MenuItem value={"g"}>Gram</MenuItem>
+              //   <MenuItem value={"mg"}>Mili Gram</MenuItem>
+              //   <MenuItem value={"l"}>Litre</MenuItem>
+              //   <MenuItem value={"ml"}>Mili Litre</MenuItem>
+              //   <MenuItem value={"m"}>Metre</MenuItem>
+              //   <MenuItem value={"mm"}>Mili Metre</MenuItem>
+              // </Select>
+            }
 
               <InputLabel id="demo-simple-select-label" 
-              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Quantity</InputLabel>
+              sx={{ paddingTop: 2, paddingBottom: 2 }}>Quantity</InputLabel>
               <TextField
                 margin="normal"
                 required
@@ -418,7 +471,6 @@ export default function FormDialog({open, setOpen, id}) {
                 type="number"
                 id="quantity"
                 autoComplete="quantity"
-                autoFocus
               />
 
               <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
@@ -441,7 +493,7 @@ export default function FormDialog({open, setOpen, id}) {
           <TabPanel value={value} index={2}>
             <Box component="form" onSubmit={handleSubmitChem} noValidate sx={{ mt: 1 }}>
               <InputLabel id="demo-multiple-name-label" 
-                sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Chemical</InputLabel>
+                sx={{ paddingTop: 2, paddingBottom: 2 }}>Chemical</InputLabel>
               <Select
                 sx={{ minWidth: 120,  minHeight: 40 }}
                 labelId="demo-multiple-name-label"
@@ -464,30 +516,32 @@ export default function FormDialog({open, setOpen, id}) {
                 ))}
               </Select>
 
-              <InputLabel id="demo-simple-select-label" 
-              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Measured Unit</InputLabel>
-              <Select
-                labelId="measureUnit"
-                id="measureUnit"
-                value={measureUnit}
-                label="Measured Unit"
-                fullWidth
-                name="measureUnit"
-                sx={{ minWidth: 120,  minHeight: 40 }}
-                onChange={handleChangeMeasureUnit}
-              >
-                <MenuItem value={"unit"}>Unit</MenuItem>
-                <MenuItem value={"kg"}>Kilo Gram</MenuItem>
-                <MenuItem value={"g"}>Gram</MenuItem>
-                <MenuItem value={"mg"}>Mili Gram</MenuItem>
-                <MenuItem value={"l"}>Litre</MenuItem>
-                <MenuItem value={"ml"}>Mili Litre</MenuItem>
-                <MenuItem value={"m"}>Metre</MenuItem>
-                <MenuItem value={"mm"}>Mili Metre</MenuItem>
-              </Select>
+              {
+              // <InputLabel id="demo-simple-select-label" 
+              // sx={{ paddingTop: 2, paddingBottom: 2 }}>Measured Unit</InputLabel>
+              // <Select
+              //   labelId="measureUnit"
+              //   id="measureUnit"
+              //   value={measureUnit}
+              //   label="Measured Unit"
+              //   fullWidth
+              //   name="measureUnit"
+              //   sx={{ minWidth: 120,  minHeight: 40 }}
+              //   onChange={handleChangeMeasureUnit}
+              // >
+              //   <MenuItem value={"unit"}>Unit</MenuItem>
+              //   <MenuItem value={"kg"}>Kilo Gram</MenuItem>
+              //   <MenuItem value={"g"}>Gram</MenuItem>
+              //   <MenuItem value={"mg"}>Mili Gram</MenuItem>
+              //   <MenuItem value={"l"}>Litre</MenuItem>
+              //   <MenuItem value={"ml"}>Mili Litre</MenuItem>
+              //   <MenuItem value={"m"}>Metre</MenuItem>
+              //   <MenuItem value={"mm"}>Mili Metre</MenuItem>
+              // </Select>
+            }
 
               <InputLabel id="demo-simple-select-label" 
-              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Quantity</InputLabel>
+              sx={{ paddingTop: 2, paddingBottom: 2 }}>Quantity</InputLabel>
               <TextField
                 margin="normal"
                 required
@@ -497,7 +551,6 @@ export default function FormDialog({open, setOpen, id}) {
                 type="number"
                 id="quantity"
                 autoComplete="quantity"
-                autoFocus
               />
               
               <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
@@ -517,6 +570,13 @@ export default function FormDialog({open, setOpen, id}) {
               </div>
             </Box>
           </TabPanel>
+          <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={openBackDrop}
+            // onClick={handleCloseBackDrop}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </Box>
         </DialogContent>
       </Dialog>
@@ -525,7 +585,7 @@ export default function FormDialog({open, setOpen, id}) {
 }
 
 // <InputLabel id="demo-simple-select-label" 
-//               sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Measured Unit</InputLabel>
+//               sx={{ paddingTop: 2, paddingBottom: 2 }}>Measured Unit</InputLabel>
 //               <Select
 //                 labelId="measureUnit"
 //                 id="measureUnit"
