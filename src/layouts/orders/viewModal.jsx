@@ -39,10 +39,6 @@ export default function FormDialogView({open, setOpen, userId}) {
     })
   }, [])
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };

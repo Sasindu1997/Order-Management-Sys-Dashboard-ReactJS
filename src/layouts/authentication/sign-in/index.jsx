@@ -65,6 +65,8 @@ function Basic() {
   });
   const { vertical, horizontal, opens } = state;
   useEffect(() => {
+    localStorage.setItem('isLoggedIn', false);
+    localStorage.setItem('loggedInUser', false);
     SDK.UserType.getAll()
     .then((res) => {
       console.log("RES: ", res);
@@ -93,8 +95,13 @@ function Basic() {
       console.log(user.userName, user.password);
       if(user.userName === userName && user.password === password || userName === 'adminlarocher' && password === 'adminlarocher'){
         localStorage.setItem('isLoggedIn', true);
-        localStorage.setItem('loggedInUser', user);
+        localStorage.setItem('loggedInUser', JSON.stringify({
+          userName: user.userName || 'adminlarocher', 
+          password: user.password || 'adminlarocher',
+          role: user.role || 'admin'
+        }));
         navigate("/dashboard");
+        window.location.reload()
         setSnackSeverity('success');
         setMessage('Login Successful.');
         setOpenSnack(true);

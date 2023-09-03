@@ -133,7 +133,7 @@ export default function FormDialog({open, setOpen, id}) {
   const [value, setValue] = useState(0);
   const [csvfile, setCsvfile] = useState(0);
   const [csvfileName, setCsvfileName] = useState('');
-  const [inputList, setInputList] = useState([{ firstName: "", lastName: "" }]);
+  const [inputList, setInputList] = useState([{ prid: "", prn: "", prw: "", prc: "" }]);
  
   const [openD, setOpenD] = React.useState(true);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -160,9 +160,13 @@ export default function FormDialog({open, setOpen, id}) {
   // handle input change
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
+    console.log( e.target)
+    console.log( value)
+    console.log( index)
+
     const list = [...inputList];
-    list[index][name] = value;
-    setInputList(list);
+    if(value) list[index][name] = value;
+    name && value && setInputList(list);
   };
  
   // handle click event of the Remove button
@@ -174,7 +178,7 @@ export default function FormDialog({open, setOpen, id}) {
  
   // handle click event of the Add button
   const handleAddClick = () => {
-    setInputList([...inputList, { firstName: "", lastName: "" }]);
+    setInputList([...inputList, { prid: "", prn: "", prw: "", prc: "" }]);
   };
 
   useEffect(() => {
@@ -259,15 +263,17 @@ export default function FormDialog({open, setOpen, id}) {
 
 
   const handleSubmit = (event) => {
+    console.log("inputList", inputList)
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const obj = {
         customerId : data.get('customerId'),
         userId : data.get('userId'),
-        productId :data.get('products').split(','),
+        // productId :data.get('products').split(','),
+        productDetails : inputList,
         barcode : data.get('barcode'),
-        weight : data.get('weight'),
-        itemCount :data.get('itemCount'),
+        // weight : data.get('weight'),
+        // itemCount :data.get('itemCount'),
         paid : data.get('paid') === "on" ? true : false,
         total : data.get('total'),
         status : data.get('status'),
@@ -275,6 +281,9 @@ export default function FormDialog({open, setOpen, id}) {
         paymentMethod : data.get('paymentMethod'),
         shippingMethod : data.get('shippingMethod'),
         trackingNumber : data.get('trackingNumber'),
+        orderId : data.get('orderId'),
+        isDeliveryAdded : shippingMethod === "Delivery Service" ? true : false,
+        deliveryId : shippingMethod === "Delivery Service" ? deliveryId : false,
         isActive: true
       }
       console.log(obj);
@@ -313,9 +322,10 @@ export default function FormDialog({open, setOpen, id}) {
     setPayemntMethod(event.target.value);
   };
 
-  const handleChangeShippingMethod = (event) => {
+  const handleShippingMethod = (event) => {
     console.log(event.target.value)
     setShippingMethod(event.target.value);
+    setCheckedToDelivery(true)
   };
 
   const handleClickOpen = () => {
@@ -431,7 +441,76 @@ export default function FormDialog({open, setOpen, id}) {
       onSubmit={handleSubmit} 
       noValidate sx={{ mt: 1 }}>
 
-        <InputLabel id="demo-multiple-name-label" 
+      {inputList.map((x, i) => {
+        return (
+          <div className="box">
+          <InputLabel id="demo-multiple-name-label" 
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Products</InputLabel>
+          <Select
+            sx={{ minWidth: 120,  minHeight: 40 }}
+            labelId="demo-multiple-name-label"
+            id="demo-multiple-name"
+            // multiple
+            name="prid"
+            // value={personName}
+            value={x.prid}
+            fullWidth
+            // onChange={handleChange}
+            onChange={e => handleInputChange(e, i)}
+            input={<OutlinedInput label="Name" />}
+            MenuProps={MenuProps}
+          >
+            {productData?.map((obj) => (
+              <MenuItem
+                key={obj.id}
+                value={obj.id}
+                extra={obj.productName}
+                style={getStyles(obj.name, personName, theme)}
+              >
+                {obj.productName}
+              </MenuItem>
+            ))}
+          </Select>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="prw"
+            label="Weight"
+            id="prw"
+            value={x.prw}
+            onChange={e => handleInputChange(e, i)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="prc"
+            label="Count"
+            id="prc"
+            value={x.prc}
+            onChange={e => handleInputChange(e, i)}
+          />
+            <div className="btn-box" style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
+              {inputList.length !== 1 && <Button
+                className="mr10"
+                onClick={() => handleRemoveClick(i)}
+                variant=""
+                sx={{ mt: 3, mb: 2, color: 'orange', }}
+                >Remove</Button>}
+              {inputList.length - 1 === i && 
+                  <Button
+                    variant=""
+                    sx={{ mt: 3, mb: 2, color: 'blue', }}
+                    onClick={handleAddClick}>Add
+                  </Button>}
+            </div>
+          </div>
+        );
+      })}
+      {/*<div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div>*/}
+
+        {/*<InputLabel id="demo-multiple-name-label" 
         sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Products</InputLabel>
         <Select
           sx={{ minWidth: 120,  minHeight: 40 }}
@@ -454,7 +533,7 @@ export default function FormDialog({open, setOpen, id}) {
               {obj.productName}
             </MenuItem>
           ))}
-        </Select>
+          </Select>*/}
 
         <InputLabel id="demo-simple-select-label" 
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Customer</InputLabel>
@@ -479,7 +558,7 @@ export default function FormDialog({open, setOpen, id}) {
           ))}
         </Select>
         
-        <TextField
+        {/*<TextField
           margin="normal"
           required
           fullWidth
@@ -487,8 +566,8 @@ export default function FormDialog({open, setOpen, id}) {
           type="number"
           label="Weight"
           name="weight"
-        />
-        <TextField
+        />*/}
+        {/*<TextField
           margin="normal"
           required
           fullWidth
@@ -496,7 +575,7 @@ export default function FormDialog({open, setOpen, id}) {
           label="Item Count"
           type="number"
           id="itemCount"
-        />
+        />*/}
 
         <InputLabel id="demo-simple-select-label" 
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Paid</InputLabel>
@@ -506,6 +585,24 @@ export default function FormDialog({open, setOpen, id}) {
           onChange={handleChangeSwitch}
           inputProps={{ 'aria-label': 'controlled' }}
         />
+
+        {checked && <><InputLabel id="demo-simple-select-label" 
+        sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Payment Method</InputLabel>
+        <Select
+          labelId="payemntMethod"
+          id="payemntMethod"
+          value={payemntMethod}
+          label="payemntMethod"
+          fullWidth
+          name="payemntMethod"
+          sx={{ minWidth: 120,  minHeight: 40 }}
+          onChange={handleChangePayment}
+        >
+          <MenuItem value={"cash"}>Cash</MenuItem>
+          <MenuItem value={"card"}>Card</MenuItem>
+          <MenuItem value={"cheque"}>Cheque</MenuItem>
+          <MenuItem value={"gift"}>Gift</MenuItem>
+        </Select></>}
 
         <TextField
           margin="normal"
@@ -518,7 +615,7 @@ export default function FormDialog({open, setOpen, id}) {
         />
 
         <InputLabel id="demo-simple-select-label" 
-          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Status</InputLabel>
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Order Status</InputLabel>
         <Select
           labelId="status"
           id="status" 
@@ -535,24 +632,6 @@ export default function FormDialog({open, setOpen, id}) {
         </Select>
 
         <InputLabel id="demo-simple-select-label" 
-        sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Payment Method</InputLabel>
-        <Select
-          labelId="payemntMethod"
-          id="payemntMethod"
-          value={payemntMethod}
-          label="payemntMethod"
-          fullWidth
-          name="payemntMethod"
-          sx={{ minWidth: 120,  minHeight: 40 }}
-          onChange={handleChangePayment}
-        >
-          <MenuItem value={"cash"}>Cash</MenuItem>
-          <MenuItem value={"card"}>Card</MenuItem>
-          <MenuItem value={"card"}>Cheque</MenuItem>
-          <MenuItem value={"gift"}>Gift</MenuItem>
-        </Select>
-
-        <InputLabel id="demo-simple-select-label" 
         sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Shipping Method</InputLabel>
         <Select
           labelId="shippingMethod"
@@ -562,55 +641,46 @@ export default function FormDialog({open, setOpen, id}) {
           fullWidth
           name="shippingMethod"
           sx={{ minWidth: 120,  minHeight: 40 }}
-          onChange={handleChangeShippingMethod}
+          onChange={handleShippingMethod}
         >
           <MenuItem value={"Rider"}>Rider</MenuItem>
           <MenuItem value={"Delivery Service"}>Delivery Service</MenuItem>
           <MenuItem value={"gift"}>Gift</MenuItem>
         </Select>
 
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="trackingNumber"
-          label="Tracking Number"
-          id="trackingNumber"
-        />
-
-      {inputList.map((x, i) => {
-        return (
-          <div className="box">
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="firstName"
-            label="Tracking Number"
-            id="trackingNumber"
-            value={x.firstName}
-            onChange={e => handleInputChange(e, i)}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="lastName"
-            label="Tracking Number"
-            id="trackingNumber"
-            value={x.lastName}
-            onChange={e => handleInputChange(e, i)}
-          />
-            <div className="btn-box">
-              {inputList.length !== 1 && <button
-                className="mr10"
-                onClick={() => handleRemoveClick(i)}>Remove</button>}
-              {inputList.length - 1 === i && <button onClick={handleAddClick}>Add</button>}
-            </div>
-          </div>
-        );
-      })}
-      <div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div>
+         {shippingMethod === "Delivery Service" && 
+              <>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="orderId"
+                label="Order ID"
+                id="orderId"
+              />
+              <InputLabel id="demo-simple-select-label" 
+         sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Select Delivery Account</InputLabel>
+              <Select
+              labelId="deliveryId"
+              id="deliveryId"
+              value={deliveryId}
+              label="deliveryId"
+              fullWidth
+              name="deliveryId"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleChangeDeliveryId}
+            >
+            {deliveryAccData?.map((obj) => (
+                <MenuItem
+                  key={obj.id}
+                  value={obj.id}
+                  style={getStyles(obj.name, personName, theme)}
+                >
+                  {obj.userName}
+                </MenuItem>
+              ))}
+            </Select>
+            </>}
 
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>

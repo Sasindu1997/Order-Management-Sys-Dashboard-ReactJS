@@ -39,44 +39,44 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import Snackbar from '@mui/material/Snackbar';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from '@mui/material/CircularProgress';
-import {
-  useLocation,
-} from "react-router-dom";
+// Dashboard React example components
+import TimelineItem from "examples/Timeline/TimelineItem";
 // Data
 import {SDK} from "../../../api/index";
 
 import { useState, useEffect } from "react";
 import FormDialog from "./formTest";
 import FormDialogUpdate from "./updateModal";
-import FormDialogView from "./viewModal";
-import Snackbar from '@mui/material/Snackbar';
+import FormDialogView from "./viewModal"
+import { useHistory, useParams } from "react-router-dom";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import MuiAlert from '@mui/material/Alert';
-import TimelineItem from "examples/Timeline/TimelineItem";
-import { withRouter } from "react-router-dom";
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-function ProductStock() {
+function ProductStock2() {
   const [open, setOpen] = React.useState(false);
-  const [openSnack, setOpenSnack] = React.useState(false);
-  const [snackSeverity, setSnackSeverity] = React.useState(false);
-  const [message, setMessage] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
-  const [recordId, setRecordId] = React.useState(false);
   const [userData, setUserData] = useState([]);
+  const [productData, setProductData] = useState();
+  const params = useParams();
+  const [openBackDrop, setOpenBackDrop] = React.useState(false);
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [snackSeverity, setSnackSeverity] = React.useState(false);
+  const [message, setMessage] = React.useState(false);
   const [state, setState] = React.useState({
     opens: false,
     vertical: 'bottom',
@@ -85,33 +85,24 @@ function ProductStock() {
   const { vertical, horizontal, opens } = state;
   const [openConformDelete, setOpenConformDelete] = React.useState(false);
   const theme = useTheme();
+  const [recordId, setRecordId] = React.useState(false);
+  const [qty, setQty] = React.useState(false);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-  const [openBackDrop, setOpenBackDrop] = React.useState(false);
-  const [productData, setProductData] = useState();
-  const location = useLocation();
 
-  // const params = useParams();
-  
   useEffect(() => {
-    setOpenBackDrop(true)
-    location?.pathname?.split("/")[4] && SDK.StockType.findByProductIdAndType(location?.pathname?.split("/")[4], location?.pathname?.split("/")[3])
+    console.log("params: ", params);
+    // setOpenBackDrop(true)
+    SDK.StockType.findByProductIdAndType(2, 'raw')
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
     })
     .catch((error) => {
-      console.log("Error: ", error);
-      setSnackSeverity('error');
-      setMessage('Error!');
-      setOpenSnack(true);
+      console.log("Error: ", error)
     })
-    setTimeout(function(){
-      setOpenBackDrop(false);
-    }, 1000);
 
-
-    if(location?.pathname?.split("/")[3] == 'prod'){
-      location?.pathname?.split("/")[4] && SDK.ProductType.getById(location?.pathname?.split("/")[4])
+    if(params.type == 'prod'){
+      params.id && SDK.ProductType.getById(params.id)
     .then((res) => {
       console.log("RES: ", res);
       setProductData(res?.data)
@@ -122,8 +113,8 @@ function ProductStock() {
     setTimeout(function(){
       setOpenBackDrop(false);
     }, 1000);
-    }else if(location?.pathname?.split("/")[3] == 'chem'){
-      location?.pathname?.split("/")[4] && SDK.ChemicalsType.getById(location?.pathname?.split("/")[4])
+    }else if(params.type == 'chem'){
+      params.id && SDK.ChemicalsType.getById(params.id)
     .then((res) => {
       console.log("RES: ", res);
       setProductData(res?.data)
@@ -134,8 +125,8 @@ function ProductStock() {
     setTimeout(function(){
       setOpenBackDrop(false);
     }, 1000);
-    }else if(location?.pathname?.split("/")[3] == 'raw'){
-      location?.pathname?.split("/")[4] && SDK.RawMatsType.getById(location?.pathname?.split("/")[4])
+    }else if(params.type == 'raw'){
+      params.id && SDK.RawMatsType.getById(params.id)
     .then((res) => {
       console.log("RES: ", res);
       setProductData(res?.data)
@@ -149,16 +140,12 @@ function ProductStock() {
     }
   }, [open, openConformDelete, openUpdate])
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClickOpenConformDelete = () => {
-    setOpenConformDelete(true);
-  };
-
   const handleCloseConformDelete = () => {
     setOpenConformDelete(false);
+  };
+  
+  const handleClickOpen = () => {
+    setOpen(true);
   };
 
   const handleCloseSnack = (event, reason) => {
@@ -204,9 +191,11 @@ function ProductStock() {
     id && setOpenUpdate(true);
   }
 
-  const handleClickDelete = (id) => {
+  const handleClickDelete = (id, qty) => {
     setOpenConformDelete(true);
     setRecordId(id);
+    setQty(qty);
+
     // id && SDK.UserType.deletebyId(id)
     // .then((res) => {
     //   console.log("RES: ", res);
@@ -217,23 +206,23 @@ function ProductStock() {
     // })
   }
 
-  const handleConformDelete = () => {
-    recordId && SDK.UserType.deletebyId(recordId)
-    .then((res) => {
-      console.log("RES: ", res);
-      setOpenConformDelete(false);
-      setSnackSeverity('success');
-      setMessage('Record Deleted Sucessfully!');
-      setOpenSnack(true);
-    })
-    .catch((error) => {
-      setOpenConformDelete(false);
-      console.log("Error: ", error);
-      setSnackSeverity('error');
-      setMessage('Error In Record Deletion!');
-      setOpenSnack(true);
-    })
-  };
+  // const handleConformDelete = () => {
+  //   recordId && SDK.StockType.deletebyId(params.id, params.type, qty, recordId)
+  //   .then((res) => {
+  //     console.log("RES: ", res);
+  //     setOpenConformDelete(false);
+  //     setSnackSeverity('success');
+  //     setMessage('Record Deleted Sucessfully!');
+  //     setOpenSnack(true);
+  //   })
+  //   .catch((error) => {
+  //     setOpenConformDelete(false);
+  //     console.log("Error: ", error);
+  //     setSnackSeverity('error');
+  //     setMessage('Error In Record Deletion!');
+  //     setOpenSnack(true);
+  //   })
+  // };
 
   const columns = [
     { Header: "id", accessor: "id", width: "5%", align: "left" },
@@ -322,41 +311,18 @@ function ProductStock() {
               >
                 <row>
                 <MDTypography variant="h6" color="white">
-                  ProductStock Table
+                  Product Stock Table
                 </MDTypography>
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
                   <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                    &nbsp;Add New User
+                    &nbsp;Add New Stock
                   </MDButton>
               </MDBox>
-              {open &&  <FormDialog setOpen={handleCloseOpen} open={open} type={location?.pathname?.split("/")[3]} id={location?.pathname?.split("/")[4]}/>}
-              {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
-              {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId} type={location?.pathname?.split("/")[3]} id={location?.pathname?.split("/")[4]}/>}
-               {<Dialog
-                fullScreen={fullScreen}
-                open={openConformDelete}
-                onClose={handleCloseConformDelete}
-                aria-labelledby="responsive-dialog-title"
-              >
-                <DialogTitle id="responsive-dialog-title">
-                  {"Confirm Delete"}
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    This action will delete this record permanantly from the list.
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button autoFocus onClick={handleCloseConformDelete}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleConformDelete} autoFocus>
-                    Confirm
-                  </Button>
-                </DialogActions>
-              </Dialog>}
+               {open &&  <FormDialog setOpen={handleCloseOpen} open={open} type={params.type} id={params.id}/>}
+               {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} userId={userId}/>}
+               {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId} type={params.type} id={params.id}/>}
                 </row>
               </MDBox>
               <MDBox pt={3}>
@@ -372,6 +338,29 @@ function ProductStock() {
           </Grid>
         </Grid>
       </MDBox>
+      {<Dialog
+        fullScreen={fullScreen}
+        open={openConformDelete}
+        onClose={handleCloseConformDelete}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">
+          {"Confirm Delete"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This action will delete this record permanantly from the list.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConformDelete}>
+            Cancel
+          </Button>
+          <Button>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>}
       <Snackbar anchorOrigin={{ vertical, horizontal }} open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
         <Alert onClose={handleCloseSnack} severity={snackSeverity} sx={{ width: '100%' }}>
           {message}
@@ -389,4 +378,4 @@ function ProductStock() {
   );
 }
 
-export default ProductStock;
+export default ProductStock2;

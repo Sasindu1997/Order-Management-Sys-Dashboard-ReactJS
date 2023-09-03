@@ -61,6 +61,7 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 // import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import Checkbox from '@mui/material/Checkbox';
+import Invoice from './index';
 // Data
 import {SDK} from "../../api/index";
 
@@ -69,6 +70,7 @@ import FormDialog from "./formAdd";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
 import { MaterialReactTable } from 'material-react-table';
+import { invalid } from 'moment';
 // import { Br, Cut, Line, Printer, Text, Row, render } from 'react-thermal-printer';
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -152,9 +154,10 @@ function OrdersForInvoice() {
   const [openBackDrop, setOpenBackDrop] = React.useState(false);
   const [rowCount, setRowCount] = React.useState(0);
   const [selected, setSelected] = React.useState({});
-
-
   const [rowSelection, setRowSelection] = useState({});
+  const [visibleDiv, setVisibleDiv] = useState(false);
+  const [invoiceData, setInvoiceData] = useState(false);
+  const [testact, setTestact] = useState(false);
 
   useEffect(() => {
     setOpenBackDrop(true)
@@ -175,9 +178,8 @@ function OrdersForInvoice() {
   }, [open, openConformDelete, openUpdate])
 
   useEffect(() => {
-    //do something when the row selection changes...
-    console.info({ rowSelection });
-  }, [rowSelection]);
+    setTestact(!testact)
+  }, [invoiceData])
 
   const handleChangeSearch = (event) => {
     console.log(event.target.value);
@@ -203,6 +205,85 @@ function OrdersForInvoice() {
   
   const handleClickOpen = () => {
     setOpen(true);
+  };
+
+  const handleClickOpenDownload = async () => {
+    setVisibleDiv(false)
+    setInvoiceData([])
+    var arr = [];
+    var arrSelectedID = [];
+    var orderDataSelectedArr = [];
+
+    for (var prop in rowSelection) {
+      if (rowSelection.hasOwnProperty(prop)) {
+          var innerObj = {};
+          innerObj[prop] = rowSelection[prop];
+          arr.push(innerObj)
+      }
+    }
+    console.log(arr);
+
+    await arr.map(object => {
+      let value = Object.keys(object).find((key, value) => object[key] === true)
+      return value && arrSelectedID.push(value)
+    })    
+    console.log(arrSelectedID)
+
+    if(arrSelectedID.length > 0)
+    {
+      for(let i = 0; i < arrSelectedID.length; i++){
+       await SDK.OrderType.getById(arrSelectedID[i])
+        .then((res) => {
+          console.log("RES: ", res);
+          orderDataSelectedArr.push(res.data)
+        })
+        .catch((error) => {
+          console.log("Error: ", error);
+          setSnackSeverity('error');
+          setMessage('Error!');
+          setOpenSnack(true);
+        })
+      }
+      console.log("xxxxxxxxxxxxxxxxxxx", orderDataSelectedArr)
+      if(orderDataSelectedArr.length > 0){
+        // const perChunk = 4 // items per chunk    
+
+        // const result = orderDataSelectedArr.reduce((resultArray, item, index) => { 
+        //   const chunkIndex = Math.floor(index/perChunk)
+        //   if(!resultArray[chunkIndex]) {
+        //     resultArray[chunkIndex] = [] // start a new chunk
+        //   }
+        //   resultArray[chunkIndex].push(item)
+
+        //   return resultArray
+        // }, [])
+
+        function chunkArray(array, chunkSize) {
+          const chunkedArray = [];
+          for (let i = 0; i < array.length; i += chunkSize) {
+            chunkedArray.push(array.slice(i, i + chunkSize));
+          }
+          return chunkedArray;
+        }
+        
+        const bigArray = orderDataSelectedArr;
+        const maxChunkSize = 4;
+        
+        const subArrays = chunkArray(bigArray, maxChunkSize);
+        console.log(subArrays.length);
+        console.log("ffffffffffffffffffff", subArrays)
+        
+        setInvoiceData(subArrays)
+        setVisibleDiv(true)
+      }else{
+        setInvoiceData(false)
+        setVisibleDiv(false)
+      }
+    }else{
+      setInvoiceData(false)
+      setVisibleDiv(false)
+    }
+
   };
 
   const handleCloseConformDelete = () => {
@@ -462,7 +543,13 @@ function OrdersForInvoice() {
                 <MDTypography variant="h6" color="white">
                   Orders For Invoices
                 </MDTypography>
-                
+                <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpenDownload}>
+                  <MDTypography variant="h6" fontWeight="medium"></MDTypography>
+                  <MDButton variant="gradient" color="dark"  disabled={Object.keys(rowSelection).length === 0}>
+                    <Icon sx={{ fontWeight: "bold", pr: 3, pb: 2 }}>save</Icon>
+                    &nbsp;&nbsp;Download Invoices
+                  </MDButton>
+              </MDBox>
                 <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                 <MDTypography variant="h6" fontWeight="medium"></MDTypography>
                 </MDBox>
@@ -515,6 +602,8 @@ function OrdersForInvoice() {
           {message}
         </Alert>
       </Snackbar>
+      {console.log("ynna klin ", invoiceData)}
+      {visibleDiv && <Invoice orderDataSelectedArr={invoiceData}/>}
       <Footer />
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}

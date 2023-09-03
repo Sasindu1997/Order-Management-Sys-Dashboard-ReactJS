@@ -21,6 +21,12 @@ const getById = async(id) => {
     return data;
 };
 
+const getByBarcode = async(barcode) => {
+    const data = await axios.get(extendedUrl + `/orders/barcode/${barcode}`);
+    console.log(data);
+    return data;
+};
+
 const searchBy = async(value, searchby) => {
     const data = await axios.get(extendedUrl + `/orders/${searchby}/${value}`);
     console.log(data);
@@ -80,6 +86,7 @@ export const OrderType = {
     getAll,
     add,
     getById,
+    getByBarcode,
     update,
     deletebyId,
     searchBy,
