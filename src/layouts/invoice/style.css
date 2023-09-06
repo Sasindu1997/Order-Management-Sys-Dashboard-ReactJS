@@ -4,7 +4,8 @@ body {
 
 .border {
     background-color: white;
-    width: 19cm;
+    width: 16cm;
+    min-height: 21.5cm;
     /* margin-left: 1cm; */
     margin-top: 1cm;
     margin-bottom: 1cm;
@@ -40,6 +41,7 @@ body {
 td {
     height: 1cm;
     text-align: center;
+    width: 6cm;
 }
 
 .table-addresses>th {
@@ -50,7 +52,7 @@ td {
 }
 
 table.invoice-table-address {
-    margin-left: 1cm;
+    margin-left: 0.5cm;
 }
 
 table.invoice-table-address td {
@@ -98,16 +100,16 @@ table.invoice-table-address td {
 .parent-invoice-terms {
     margin-top: 0.5cm;
     margin-bottom: 0.5cm;
-    /* border: teal 1px solid; */
     height: 5cm;
 }
 
 .invoice-type {
-    font-size: 50px;
-    font-weight: 700;
+    font-size: 40px;
+    font-weight: 600;
     color: teal;
     left: 1cm;
     bottom: 0cm;
+    width: 15cm;
 }
 
 .invoice-logo {
@@ -128,6 +130,7 @@ table.invoice-table-address td {
     bottom: 0cm;
     font-size: 30px;
     font-weight: 700;
+    width: 7cm;
 }
 
 .invoice-terms {

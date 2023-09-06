@@ -19,17 +19,63 @@ import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
 import Divider from '@mui/material/Divider';
+import InputLabel from '@mui/material/InputLabel';
+import Switch from '@mui/material/Switch';
 
 import {SDK} from "../../api/index";
 
-export default function FormDialogView({open, setOpen, userId}) {
+export default function FormDialog({open, setOpen, userId}) {
   const [successSB, setSuccessSB] = useState(false);
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
-  const [data, setData] = useState({});
+  const [data, setData] = useState(false);
+  const [searchTxt, setSearchTxt] = useState('');
+  const [checked, setChecked] = useState(true);
 
   useEffect(() => {
-    userId && SDK.OrderType.getById(userId)
+    
+  }, [])
+
+  const handleChangeSwitch = (event) => {
+    setChecked(event.target.checked);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleCancel = () => {
+    SDK.OrderType.updateCancelled(searchTxt, { isChecked : checked})
+    .then((res) => {
+      console.log("RES: ", res);
+      setOpen(false, 'success');
+    })
+    .catch((error) => {
+      setOpen(false, 'error');
+      console.log("Error: ", error)
+    })
+    setOpen(false);
+  };
+
+  const handleReturn = () => {
+    SDK.OrderType.updateReturned(searchTxt, { isChecked : checked})
+    .then((res) => {
+      console.log("RES: ", res);
+      setOpen(false, 'success');
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+      setOpen(false, 'error');
+    })
+  };
+
+  const handleSearchText = (e) => {
+    console.log(e.target.value)
+    setSearchTxt(e.target.value)
+  }
+
+  const handleSearchBtn = (e) => {
+    searchTxt && SDK.OrderType.getById(searchTxt)
     .then((res) => {
       console.log("RES: ", res);
       setData(res?.data)
@@ -37,19 +83,34 @@ export default function FormDialogView({open, setOpen, userId}) {
     .catch((error) => {
       console.log("Error: ", error)
     })
-  }, [])
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  }
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>View Order</DialogTitle>
+        <DialogTitle>Add Returned or Cancelled Order</DialogTitle>
         <DialogContent>
-          <Box component="form" noValidate sx={{ mt: 1 }}>
-         
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="orderid"
+          value={searchTxt}
+          onChange={(e) => handleSearchText(e)}
+          label="Order Id"
+          name="Order Id"
+        />
+        <Button
+            type="button"
+            variant="outlined"
+            onClick={handleSearchBtn}
+            sx={{ mt: 2, mb: 2, color: 'blue', marginLeft : '5px',  marginBottom : '5px'  }}
+            >
+            Search
+            </Button>
+        </div>
+       {data && <Box component="form" noValidate sx={{ mt: 1 }}>
           <Typography  variant="h6" >
            Products
           </Typography>
@@ -151,10 +212,21 @@ export default function FormDialogView({open, setOpen, userId}) {
             {data.trackingNumber || "-"}
           </Typography>
 
+          <InputLabel id="demo-simple-select-label" 
+            sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Add Products back to stock</InputLabel>
+            <Switch
+            checked={checked}
+            name="paid"
+            onChange={handleChangeSwitch}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
+        <Button onClick={handleCancel} varient='outlined'  sx={{ mt: 3, mb: 2 }}>Cancel Order</Button>
+        <Button onClick={handleReturn} varient='outlined' sx={{ mt: 3, mb: 2 }}>Return Order</Button>
         </div>
-        </Box>
+        </Box>}
         </DialogContent>
       </Dialog>
     </div>

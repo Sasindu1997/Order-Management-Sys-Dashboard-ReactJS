@@ -46,7 +46,7 @@ export default function FormDialogView({open, setOpen, userId}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>View Order</DialogTitle>
+        <DialogTitle>View Returned or Cancelled Order</DialogTitle>
         <DialogContent>
           <Box component="form" noValidate sx={{ mt: 1 }}>
          

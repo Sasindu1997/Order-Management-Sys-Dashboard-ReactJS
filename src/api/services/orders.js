@@ -15,6 +15,18 @@ const getAll = async() => {
     return data;
 };
 
+const getAllReturned = async() => {
+    const data = await axios.get(extendedUrl + "/orders/returned");
+    console.log(data);
+    return data;
+};
+
+const getAllCancelled = async() => {
+    const data = await axios.get(extendedUrl + "/orders/cancelled");
+    console.log(data);
+    return data;
+};
+
 const getById = async(id) => {
     const data = await axios.get(extendedUrl + `/orders/${id}`);
     console.log(data);
@@ -35,6 +47,18 @@ const searchBy = async(value, searchby) => {
 
 const update = async(id, req) => {
     const data = await axios.put(extendedUrl + `/orders/${id}`, req);
+    console.log(data);
+    return data;
+};
+
+const updateCancelled = async(id, req) => {
+    const data = await axios.put(extendedUrl + `/orders/cancel/${id}`, req);
+    console.log(data);
+    return data;
+};
+
+const updateReturned = async(id, req) => {
+    const data = await axios.put(extendedUrl + `/orders/return/${id}`, req);
     console.log(data);
     return data;
 };
@@ -96,5 +120,9 @@ export const OrderType = {
     thisMonthOrderCount,
     monthlyOrderCount,
     todayOrderCount,
-    newCustomersCount
+    newCustomersCount,
+    getAllReturned,
+    getAllCancelled,
+    updateReturned,
+    updateCancelled
 }

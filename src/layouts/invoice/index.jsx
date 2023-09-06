@@ -57,6 +57,7 @@ import * as htmlToImage from 'html-to-image';
 import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
+import moment from 'moment';
 
 // Data
 import {SDK} from "../../api/index";
@@ -257,18 +258,23 @@ function Invoice({orderDataSelectedArr}) {
   return (
     <DashboardLayout>
       <div className="mb5">
-        <button onClick={printDocument}>Print</button>
+        <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={printDocument}>
+                  <MDTypography variant="h6" fontWeight="medium"></MDTypography>
+                  <MDButton variant="gradient" color="dark" >
+                    <Icon sx={{ fontWeight: "bold", pr: 3, pb: 2 }}>save</Icon>
+                    &nbsp;&nbsp;Print Invoices
+                  </MDButton>
+              </MDBox>
       </div>
-    <div id="divToPrint" >
-      {console.log("last last", invoiceData)}
+      <div id="divToPrint" >
           {invoiceData.map(data => (
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
               {data[0] !== null && data[0] !== undefined && data[0] !== {} &&<Grid item xs={6}>
-                <Item>
+                <Item class="border">
                   <div>
                     <div class="parent parent-invoice-logo-type">
                         <span class="invoice-type child">
-                            INVOICE {`${data[0].id}`}
+                            {`INVOICE: ${data[0]?.id}`}
                         </span>
                         <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                     </div>
@@ -276,33 +282,35 @@ function Invoice({orderDataSelectedArr}) {
                         <table class="child invoice-table-address" >
                             <tr class="table-addresses">
                                 <th>FROM</th>
-                                <th>BILL TO</th>
                                 <th>SHIP TO</th>
-                                <th>INVOICE</th>
+                                <th>Order</th>
                             </tr>
-                            <tr class="temp">
-                                <td>WORLDTHRILL INFORMATIONS PRIVATE LIMITED</td>
-                                <td>JARSH INNOVATIONS PRIVATE LIMITED</td>
-                                <td>JARSH COMPLEX</td>
-                                <td>INVOICE</td>
-                            </tr>
-                            <tr>
-                                <td>H.No: 18-A-37WP</td>
-                                <td>H.No: 13-26/4</td>
-                                <td>H.No: 13-26/4</td>
-                                <td>Invoice number</td>
+                            <tr class="temp" >
+                                <td>La Rocher Ceylon pvt ltd</td>
+                                <td>{data[0]?.cfullName}</td>
+                                <td>Order Id : {data[0]?.id}</td>
                             </tr>
                             <tr>
-                                <td>Hyderabad </td>
-                                <td>Mumbai</td>
-                                <td>Mumbai</td>
-                                <td>Date:</td>
+                                <td>83/1/1, Pagoda, Nugegoda.</td>
+                                <td>{data[0]?.caddress}</td>
+                                <td>Order Date : {moment(data[0]?.createdAt).format('DD-MM-YYYY')}</td>
                             </tr>
                             <tr>
-                                <td>mmmmmmmm</td>
-                                <td>509321</td>
-                                <td>509876</td>
-                                <td>#####</td>
+                                <td>Hot line - 071-1752090</td>
+                                <td>{data[0]?.cphone}</td>
+                                <td>Tracking No : {data[0]?.trackingNumber}</td>
+                            </tr>
+                            <tr>
+                                <td>www.larocherceylon.com </td>
+                                <td>{data[0]?.cdistrict}</td>
+                            </tr>
+                            <tr>
+                                <td>larocherbeauty@gmail.com</td>
+                                <td>{data[0]?.cemail}</td>
+                            </tr>
+                            <tr>
+                                <td>Reg no - P V 00248808</td>
+                                <td>{data[0]?.cemail}</td>
                             </tr>
                         </table>
                     </div>
@@ -310,21 +318,17 @@ function Invoice({orderDataSelectedArr}) {
                     <div class="parent parent-invoice-table">
                         <table class="invoice-table" >
                             <tr class="table-row-border">
-                                <th>S.NO</th>
-                                <th>NAME</th>
+                                <th>Product</th>
                                 <th>QTY</th>
-                                <th>DISCOUNT</th>
-                                <th>TAX</th>
+                                <th>Weight</th>
                                 <th>PRICE</th>
                             </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Milk</td>
-                                <td>2 litres</td>
-                                <td>10%</td>
-                                <td>10%</td>
-                                <td>80</td>
-                            </tr>
+                            {data[0]?.productData?.map(pr => (<tr>
+                                <td>{pr.pName}</td>
+                                <td>{pr.ocount}</td>
+                                <td>{pr.oweight}</td>
+                                <td>{parseFloat(pr.pprice)}</td>
+                            </tr>))}
                         </table>
                     </div>
 
@@ -334,296 +338,355 @@ function Invoice({orderDataSelectedArr}) {
                         </span>
 
                         <span class="invoice-total child">
-                            RS: 12000/-
+                            LKR : {data[0]?.total.toFixed(2)}
                         </span>
                     </div>
 
-                    <div class="parent  parent-invoice-terms">
-                        <div class="child  invoice-terms">
-                            <h4>TERMS AND CONDITIONS</h4>
-                            <p>Payment is due within 15 days</p>
-                            <p>State bank of india</p>
-                            <p>Account number: XXXXXX123565</p>
-                            <p>IFSC: 000345432</p>
-                        </div>
+                    <div class="parent  parent-invoice-terms" >
+                    <table class="child invoice-table-address" >
+                            <tr>
+                              <th>Payment Methods</th>
+                              <th>Bank Details</th>
+                            </tr>
+                            <tr class="temp">
+                                <td>Cash on delivery</td>
+                                <td>LA ROCHER CEYLON</td>
+                                <td>CAPITAL ONE SKIN CARE</td>
+                            </tr>
+                            <tr>
+                                <td>One pay(Master/Visa/Amex) </td>
+                                <td>001110013686</td>
+                                <td>1000615072</td>
+                            </tr>
+                            <tr>
+                                <td>Bank transfer</td>
+                                <td>Sampath bank</td>
+                                <td>Commercial bank</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>Bambalapitiya Branch</td>
+                                <td>Nugegoda Branch</td>
+                            </tr>
+                        </table>
                     </div>
                   </div>
                 </Item>
               </Grid>}
               {data[1] !== null && data[1] !== undefined && data[1] !== {} && <Grid item xs={6}>
-                <Item>
-                  <div>
-                    <div class="parent parent-invoice-logo-type">
-                        <span class="invoice-type child">
-                        INVOICE {`${data[1].id}`}
-                        </span>
-                        <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
-                    </div>
-                    <div class="parent parent-invoice-table-address">
-                        <table class="child invoice-table-address" >
-                            <tr class="table-addresses">
-                                <th>FROM</th>
-                                <th>BILL TO</th>
-                                <th>SHIP TO</th>
-                                <th>INVOICE</th>
-                            </tr>
-                            <tr class="temp">
-                                <td>WORLDTHRILL INFORMATIONS PRIVATE LIMITED</td>
-                                <td>JARSH INNOVATIONS PRIVATE LIMITED</td>
-                                <td>JARSH COMPLEX</td>
-                                <td>INVOICE</td>
-                            </tr>
-                            <tr>
-                                <td>H.No: 18-A-37WP</td>
-                                <td>H.No: 13-26/4</td>
-                                <td>H.No: 13-26/4</td>
-                                <td>Invoice number</td>
-                            </tr>
-                            <tr>
-                                <td>Hyderabad </td>
-                                <td>Mumbai</td>
-                                <td>Mumbai</td>
-                                <td>Date:</td>
-                            </tr>
-                            <tr>
-                                <td>mmmmmmmmmm</td>
-                                <td>509321</td>
-                                <td>509876</td>
-                                <td>#####</td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <div class="parent parent-invoice-table">
-                        <table class="invoice-table" >
-                            <tr class="table-row-border">
-                                <th>S.NO</th>
-                                <th>NAME</th>
-                                <th>QTY</th>
-                                <th>DISCOUNT</th>
-                                <th>TAX</th>
-                                <th>PRICE</th>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Milk</td>
-                                <td>2 litres</td>
-                                <td>10%</td>
-                                <td>10%</td>
-                                <td>80</td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <div class="parent  parent-invoice-total">
-                        <span class="invoice-total-text child">
-                            TOTAL
-                        </span>
-
-                        <span class="invoice-total child">
-                            RS: 12000/-
-                        </span>
-                    </div>
-
-                    <div class="parent  parent-invoice-terms">
-                        <div class="child  invoice-terms">
-                            <h4>TERMS AND CONDITIONS</h4>
-                            <p>Payment is due within 15 days</p>
-                            <p>State bank of india</p>
-                            <p>Account number: XXXXXX123565</p>
-                            <p>IFSC: 000345432</p>
-                        </div>
-                    </div>
+              <Item class="border">
+                <div>
+                  <div class="parent parent-invoice-logo-type">
+                      <span class="invoice-type child">
+                          INVOICE {`${data[1]?.id}`}
+                      </span>
+                      <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                   </div>
-                </Item>
+                  <div class="parent parent-invoice-table-address">
+                      <table class="child invoice-table-address" >
+                          <tr class="table-addresses">
+                              <th>FROM</th>
+                              <th>SHIP TO</th>
+                              <th>Order</th>
+                          </tr>
+                          <tr class="temp" >
+                              <td>La Rocher Ceylon pvt ltd</td>
+                              <td>{data[1]?.cfullName}</td>
+                              <td>Order Id : {data[1]?.id}</td>
+                          </tr>
+                          <tr>
+                              <td>83/1/1, Pagoda, Nugegoda.</td>
+                              <td>{data[1]?.caddress}</td>
+                              <td>Order Date : {moment(data[1]?.createdAt).format('DD-MM-YYYY')}</td>
+                          </tr>
+                          <tr>
+                              <td>Hot line - 071-1752090</td>
+                              <td>{data[1]?.cphone}</td>
+                              <td>Tracking No : {data[1]?.trackingNumber}</td>
+                          </tr>
+                          <tr>
+                              <td>www.larocherceylon.com </td>
+                              <td>{data[1]?.cdistrict}</td>
+                          </tr>
+                          <tr>
+                              <td>larocherbeauty@gmail.com</td>
+                              <td>{data[1]?.cemail}</td>
+                          </tr>
+                          <tr>
+                              <td>Reg no - P V 00248808</td>
+                              <td>{data[1]?.cemail}</td>
+                          </tr>
+                      </table>
+                  </div>
+
+                  <div class="parent parent-invoice-table">
+                      <table class="invoice-table" >
+                          <tr class="table-row-border">
+                              <th>Product</th>
+                              <th>QTY</th>
+                              <th>Weight</th>
+                              <th>PRICE</th>
+                          </tr>
+                          {data[1]?.productData?.map(pr => console.log(pr))}
+                          {data[1]?.productData?.map(pr => (<tr>
+                              <td>{pr.pName}</td>
+                              <td>{pr.ocount}</td>
+                              <td>{pr.oweight}</td>
+                              <td>{parseFloat(pr.pprice)}</td>
+                          </tr>))}
+                      </table>
+                  </div>
+
+                  <div class="parent  parent-invoice-total">
+                      <span class="invoice-total-text child">
+                          TOTAL
+                      </span>
+
+                      <span class="invoice-total child">
+                         {`LKR : ${data[1]?.total.toFixed(2)}`}
+                      </span>
+                  </div>
+
+                  <div class="parent  parent-invoice-terms" >
+                  <table class="child invoice-table-address" >
+                          <tr>
+                            <th>Payment Methods</th>
+                            <th>Bank Details</th>
+                          </tr>
+                          <tr class="temp">
+                              <td>Cash on delivery</td>
+                              <td>LA ROCHER CEYLON</td>
+                              <td>CAPITAL ONE SKIN CARE</td>
+                          </tr>
+                          <tr>
+                              <td>One pay(Master/Visa/Amex) </td>
+                              <td>001110013686</td>
+                              <td>1000615072</td>
+                          </tr>
+                          <tr>
+                              <td>Bank transfer</td>
+                              <td>Sampath bank</td>
+                              <td>Commercial bank</td>
+                          </tr>
+                          <tr>
+                              <td></td>
+                              <td>Bambalapitiya Branch</td>
+                              <td>Nugegoda Branch</td>
+                          </tr>
+                      </table>
+                  </div>
+                </div>
+              </Item>
               </Grid>}
               {data[2] !== null && data[2] !== undefined && data[2] !== {} && <Grid item xs={6}>
-                <Item>
-                  <div>
-                    <div class="parent parent-invoice-logo-type">
-                        <span class="invoice-type child">
-                        INVOICE {`${data[2].id}`}
-                        </span>
-                        <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
-                    </div>
-
-
-
-                    <div class="parent parent-invoice-table-address">
-                        <table class="child invoice-table-address" >
-                            <tr class="table-addresses">
-                                <th>FROM</th>
-                                <th>BILL TO</th>
-                                <th>SHIP TO</th>
-                                <th>INVOICE</th>
-                            </tr>
-                            <tr class="temp">
-                                <td>WORLDTHRILL INFORMATIONS PRIVATE LIMITED</td>
-                                <td>JARSH INNOVATIONS PRIVATE LIMITED</td>
-                                <td>JARSH COMPLEX</td>
-                                <td>INVOICE</td>
-                            </tr>
-                            <tr>
-                                <td>H.No: 18-A-37WP</td>
-                                <td>H.No: 13-26/4</td>
-                                <td>H.No: 13-26/4</td>
-                                <td>Invoice number</td>
-                            </tr>
-                            <tr>
-                                <td>Hyderabad </td>
-                                <td>Mumbai</td>
-                                <td>Mumbai</td>
-                                <td>Date:</td>
-                            </tr>
-                            <tr>
-                                <td>mmmmmmmmmm</td>
-                                <td>509321</td>
-                                <td>509876</td>
-                                <td>#####</td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <div class="parent parent-invoice-table">
-                        <table class="invoice-table" >
-                            <tr class="table-row-border">
-                                <th>S.NO</th>
-                                <th>NAME</th>
-                                <th>QTY</th>
-                                <th>DISCOUNT</th>
-                                <th>TAX</th>
-                                <th>PRICE</th>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Milk</td>
-                                <td>2 litres</td>
-                                <td>10%</td>
-                                <td>10%</td>
-                                <td>80</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Milk</td>
-                                <td>2 litres</td>
-                                <td>10%</td>
-                                <td>10%</td>
-                                <td>80</td>
-                            </tr>
-                        </table>
-
-                    </div>
-
-                    <div class="parent  parent-invoice-total">
-                        <span class="invoice-total-text child">
-                            TOTAL
-                        </span>
-
-                        <span class="invoice-total child">
-                            RS: 12000/-
-                        </span>
-                    </div>
-
-                    <div class="parent  parent-invoice-terms">
-                        <div class="child  invoice-terms">
-                            <h4>TERMS AND CONDITIONS</h4>
-                            <p>Payment is due within 15 days</p>
-                            <p>State bank of india</p>
-                            <p>Account number: XXXXXX123565</p>
-                            <p>IFSC: 000345432</p>
-                        </div>
-                    </div>
+              <Item class="border">
+                <div>
+                  <div class="parent parent-invoice-logo-type">
+                      <span class="invoice-type child">
+                          INVOICE {`${data[2]?.id}`}
+                      </span>
+                      <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                   </div>
-                </Item>
+                  <div class="parent parent-invoice-table-address">
+                      <table class="child invoice-table-address" >
+                          <tr class="table-addresses">
+                              <th>FROM</th>
+                              <th>SHIP TO</th>
+                              <th>Order</th>
+                          </tr>
+                          <tr class="temp" >
+                              <td>La Rocher Ceylon pvt ltd</td>
+                              <td>{data[2]?.cfullName}</td>
+                              <td>Order Id : {data[2]?.id}</td>
+                          </tr>
+                          <tr>
+                              <td>83/1/1, Pagoda, Nugegoda.</td>
+                              <td>{data[2]?.caddress}</td>
+                              <td>Order Date : {moment(data[2]?.createdAt).format('DD-MM-YYYY')}</td>
+                          </tr>
+                          <tr>
+                              <td>Hot line - 071-1752090</td>
+                              <td>{data[2]?.cphone}</td>
+                              <td>Tracking No : {data[2]?.trackingNumber}</td>
+                          </tr>
+                          <tr>
+                              <td>www.larocherceylon.com </td>
+                              <td>{data[2]?.cdistrict}</td>
+                          </tr>
+                          <tr>
+                              <td>larocherbeauty@gmail.com</td>
+                              <td>{data[2]?.cemail}</td>
+                          </tr>
+                          <tr>
+                              <td>Reg no - P V 00248808</td>
+                              <td>{data[2]?.cemail}</td>
+                          </tr>
+                      </table>
+                  </div>
+
+                  <div class="parent parent-invoice-table">
+                      <table class="invoice-table" >
+                          <tr class="table-row-border">
+                              <th>Product</th>
+                              <th>QTY</th>
+                              <th>Weight</th>
+                              <th>PRICE</th>
+                          </tr>
+                          {data[2]?.productData?.map(pr => (<tr>
+                              <td>{pr.pName}</td>
+                              <td>{pr.ocount}</td>
+                              <td>{pr.oweight}</td>
+                              <td>{parseFloat(pr.pprice)}</td>
+                          </tr>))}
+                      </table>
+                  </div>
+
+                  <div class="parent  parent-invoice-total">
+                      <span class="invoice-total-text child">
+                          TOTAL
+                      </span>
+
+                      <span class="invoice-total child">
+                          LKR : {data[2]?.total.toFixed(2)}
+                      </span>
+                  </div>
+
+                  <div class="parent  parent-invoice-terms" >
+                  <table class="child invoice-table-address" >
+                          <tr>
+                            <th>Payment Methods</th>
+                            <th>Bank Details</th>
+                          </tr>
+                          <tr class="temp">
+                              <td>Cash on delivery</td>
+                              <td>LA ROCHER CEYLON</td>
+                              <td>CAPITAL ONE SKIN CARE</td>
+                          </tr>
+                          <tr>
+                              <td>One pay(Master/Visa/Amex) </td>
+                              <td>001110013686</td>
+                              <td>1000615072</td>
+                          </tr>
+                          <tr>
+                              <td>Bank transfer</td>
+                              <td>Sampath bank</td>
+                              <td>Commercial bank</td>
+                          </tr>
+                          <tr>
+                              <td></td>
+                              <td>Bambalapitiya Branch</td>
+                              <td>Nugegoda Branch</td>
+                          </tr>
+                      </table>
+                  </div>
+                </div>
+              </Item>
               </Grid>}
               {data[3] !== null && data[3] !== undefined && data[3] !== {} && <Grid item xs={6}>
-                <Item>
-                  <div>
-                    <div class="parent parent-invoice-logo-type">
-                        <span class="invoice-type child">
-                        INVOICE {`${data[3].id}`}
-                        </span>
-                        <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
-                    </div>
-                    <div class="parent parent-invoice-table-address">
-                        <table class="child invoice-table-address" >
-                            <tr class="table-addresses">
-                                <th>FROM</th>
-                                <th>BILL TO</th>
-                                <th>SHIP TO</th>
-                                <th>INVOICE</th>
-                            </tr>
-                            <tr class="temp">
-                                <td>WORLDTHRILL INFORMATIONS PRIVATE LIMITED</td>
-                                <td>JARSH INNOVATIONS PRIVATE LIMITED</td>
-                                <td>JARSH COMPLEX</td>
-                                <td>INVOICE</td>
-                            </tr>
-                            <tr>
-                                <td>H.No: 18-A-37WP</td>
-                                <td>H.No: 13-26/4</td>
-                                <td>H.No: 13-26/4</td>
-                                <td>Invoice number</td>
-                            </tr>
-                            <tr>
-                                <td>Hyderabad </td>
-                                <td>Mumbai</td>
-                                <td>Mumbai</td>
-                                <td>Date:</td>
-                            </tr>
-                            <tr>
-                                <td>mmmmmmmm</td>
-                                <td>509321</td>
-                                <td>509876</td>
-                                <td>#####</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="parent parent-invoice-table">
-                        <table class="invoice-table" >
-                            <tr class="table-row-border">
-                                <th>S.NO</th>
-                                <th>NAME</th>
-                                <th>QTY</th>
-                                <th>DISCOUNT</th>
-                                <th>TAX</th>
-                                <th>PRICE</th>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Milk</td>
-                                <td>2 litres</td>
-                                <td>10%</td>
-                                <td>10%</td>
-                                <td>80</td>
-                            </tr>
-                        </table>
-
-                    </div>
-
-                    <div class="parent  parent-invoice-total">
-                        <span class="invoice-total-text child">
-                            TOTAL
-                        </span>
-
-                        <span class="invoice-total child">
-                            RS: 12000/-
-                        </span>
-                    </div>
-
-                    <div class="parent  parent-invoice-terms">
-                        <div class="child  invoice-terms">
-                            <h4>TERMS AND CONDITIONS</h4>
-                            <p>Payment is due within 15 days</p>
-                            <p>State bank of india</p>
-                            <p>Account number: XXXXXX123565</p>
-                            <p>IFSC: 000345432</p>
-                        </div>
-                    </div>
+              <Item class="border">
+                <div>
+                  <div class="parent parent-invoice-logo-type">
+                      <span class="invoice-type child">
+                          INVOICE {`${data[3]?.id}`}
+                      </span>
+                      <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                   </div>
-                </Item>
+                  <div class="parent parent-invoice-table-address">
+                      <table class="child invoice-table-address" >
+                          <tr class="table-addresses">
+                              <th>FROM</th>
+                              <th>SHIP TO</th>
+                              <th>Order</th>
+                          </tr>
+                          <tr class="temp" >
+                              <td>La Rocher Ceylon pvt ltd</td>
+                              <td>{data[3]?.cfullName}</td>
+                              <td>Order Id : {data[3]?.id}</td>
+                          </tr>
+                          <tr>
+                              <td>83/1/1, Pagoda, Nugegoda.</td>
+                              <td>{data[3]?.caddress}</td>
+                              <td>Order Date : {moment(data[3]?.createdAt).format('DD-MM-YYYY')}</td>
+                          </tr>
+                          <tr>
+                              <td>Hot line - 071-1752090</td>
+                              <td>{data[3]?.cphone}</td>
+                              <td>Tracking No : {data[3]?.trackingNumber}</td>
+                          </tr>
+                          <tr>
+                              <td>www.larocherceylon.com </td>
+                              <td>{data[3]?.cdistrict}</td>
+                          </tr>
+                          <tr>
+                              <td>larocherbeauty@gmail.com</td>
+                              <td>{data[3]?.cemail}</td>
+                          </tr>
+                          <tr>
+                              <td>Reg no - P V 00248808</td>
+                              <td>{data[3]?.cemail}</td>
+                          </tr>
+                      </table>
+                  </div>
+
+                  <div class="parent parent-invoice-table">
+                      <table class="invoice-table" >
+                          <tr class="table-row-border">
+                              <th>Product</th>
+                              <th>QTY</th>
+                              <th>Weight</th>
+                              <th>PRICE</th>
+                          </tr>
+                          {data[3]?.productData?.map(pr => console.log(pr))}
+                          {data[3]?.productData?.map(pr => (<tr>
+                              <td>{pr.pName}</td>
+                              <td>{pr.ocount}</td>
+                              <td>{pr.oweight}</td>
+                              <td>{parseFloat(pr.pprice)}</td>
+                          </tr>))}
+                      </table>
+                  </div>
+
+                  <div class="parent  parent-invoice-total">
+                      <span class="invoice-total-text child">
+                          TOTAL
+                      </span>
+
+                      <span class="invoice-total child">
+                          LKR : {data[3]?.total.toFixed(2)}
+                      </span>
+                  </div>
+
+                  <div class="parent  parent-invoice-terms" >
+                  <table class="child invoice-table-address" >
+                          <tr>
+                            <th>Payment Methods</th>
+                            <th>Bank Details</th>
+                          </tr>
+                          <tr class="temp">
+                              <td>Cash on delivery</td>
+                              <td>LA ROCHER CEYLON</td>
+                              <td>CAPITAL ONE SKIN CARE</td>
+                          </tr>
+                          <tr>
+                              <td>One pay(Master/Visa/Amex) </td>
+                              <td>001110013686</td>
+                              <td>1000615072</td>
+                          </tr>
+                          <tr>
+                              <td>Bank transfer</td>
+                              <td>Sampath bank</td>
+                              <td>Commercial bank</td>
+                          </tr>
+                          <tr>
+                              <td></td>
+                              <td>Bambalapitiya Branch</td>
+                              <td>Nugegoda Branch</td>
+                          </tr>
+                      </table>
+                  </div>
+                </div>
+              </Item>
               </Grid>}
-              {console.log("data[0]", data[0])}
             </Grid>
           ))
         }

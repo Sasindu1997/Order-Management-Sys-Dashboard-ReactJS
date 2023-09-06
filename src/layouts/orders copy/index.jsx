@@ -59,18 +59,17 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-// import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import Checkbox from '@mui/material/Checkbox';
-import Invoice from './index';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 // Data
 import {SDK} from "../../api/index";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import FormDialog from "./formAdd";
+import FormDialog2 from "./formAdd2";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
-import { MaterialReactTable } from 'material-react-table';
-import { invalid } from 'moment';
 // import { Br, Cut, Line, Printer, Text, Row, render } from 'react-thermal-printer';
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -109,34 +108,47 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const data = [
-  {
-    id: '3f', //we'll use this as a unique row id
-    customerName: 'Dylan',
-    customerPhone: 'Murray',
-    itemCount: 22,
-    trackingNumber: '261 Erdman Ford',
-    total: 'East Daphne',
-    status: 'Kentucky',
-  },
-  {
-    id: '4f', //we'll use this as a unique row id
-    customerName: 'xx',
-    customerPhone: 'j',
-    itemCount: 33,
-    trackingNumber: 't ttt',
-    total: 'yyy yyy',
-    status: 'hh',
-  }
-];
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
 
-function OrdersForInvoice() {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+function ReturnedOrders() {
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = React.useState(false);
+  const [openBulk, setOpenBulk] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
-  const [searchSelect, setSearchSelect] = React.useState('name');
+  const [searchSelect, setSearchSelect] = React.useState('');
   const [openSnack, setOpenSnack] = React.useState(false);
   const [snackSeverity, setSnackSeverity] = React.useState(false);
   const [message, setMessage] = React.useState(false);
@@ -152,16 +164,26 @@ function OrdersForInvoice() {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const  ZebraBrowserPrintWrapper = require('zebra-browser-print-wrapper');
   const [openBackDrop, setOpenBackDrop] = React.useState(false);
-  const [rowCount, setRowCount] = React.useState(0);
-  const [selected, setSelected] = React.useState({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [visibleDiv, setVisibleDiv] = useState(false);
-  const [invoiceData, setInvoiceData] = useState(false);
-  const [testact, setTestact] = useState(false);
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    console.log(newValue)
+    setValue(newValue);
+  };
 
   useEffect(() => {
     setOpenBackDrop(true)
-    SDK.OrderType.getAll()
+    value === 0 ? SDK.OrderType.getAllReturned()
+    .then((res) => {
+      console.log("RES: ", res);
+      setOrderData(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    }) : SDK.OrderType.getAllCancelled()
     .then((res) => {
       console.log("RES: ", res);
       setOrderData(res?.data);
@@ -175,11 +197,7 @@ function OrdersForInvoice() {
     setTimeout(function(){
       setOpenBackDrop(false);
     }, 1000);
-  }, [open, openConformDelete, openUpdate])
-
-  useEffect(() => {
-    setTestact(!testact)
-  }, [invoiceData])
+  }, [open, openConformDelete, openUpdate, value])
 
   const handleChangeSearch = (event) => {
     console.log(event.target.value);
@@ -207,83 +225,8 @@ function OrdersForInvoice() {
     setOpen(true);
   };
 
-  const handleClickOpenDownload = async () => {
-    setVisibleDiv(false)
-    setInvoiceData([])
-    var arr = [];
-    var arrSelectedID = [];
-    var orderDataSelectedArr = [];
-
-    for (var prop in rowSelection) {
-      if (rowSelection.hasOwnProperty(prop)) {
-          var innerObj = {};
-          innerObj[prop] = rowSelection[prop];
-          arr.push(innerObj)
-      }
-    }
-    console.log(arr);
-
-    await arr.map(object => {
-      let value = Object.keys(object).find((key, value) => object[key] === true)
-      return value && arrSelectedID.push(value)
-    })    
-    console.log(arrSelectedID)
-
-    if(arrSelectedID.length > 0)
-    {
-      for(let i = 0; i < arrSelectedID.length; i++){
-       await SDK.OrderType.getById(arrSelectedID[i])
-        .then((res) => {
-          console.log("RES: ", res);
-          orderDataSelectedArr.push(res.data)
-        })
-        .catch((error) => {
-          console.log("Error: ", error);
-          setSnackSeverity('error');
-          setMessage('Error!');
-          setOpenSnack(true);
-        })
-      }
-      console.log("xxxxxxxxxxxxxxxxxxx", orderDataSelectedArr)
-      if(orderDataSelectedArr.length > 0){
-        // const perChunk = 4 // items per chunk    
-
-        // const result = orderDataSelectedArr.reduce((resultArray, item, index) => { 
-        //   const chunkIndex = Math.floor(index/perChunk)
-        //   if(!resultArray[chunkIndex]) {
-        //     resultArray[chunkIndex] = [] // start a new chunk
-        //   }
-        //   resultArray[chunkIndex].push(item)
-
-        //   return resultArray
-        // }, [])
-
-        function chunkArray(array, chunkSize) {
-          const chunkedArray = [];
-          for (let i = 0; i < array.length; i += chunkSize) {
-            chunkedArray.push(array.slice(i, i + chunkSize));
-          }
-          return chunkedArray;
-        }
-        
-        const bigArray = orderDataSelectedArr;
-        const maxChunkSize = 4;
-        
-        const subArrays = chunkArray(bigArray, maxChunkSize);
-        console.log(subArrays.length);
-        console.log("ffffffffffffffffffff", subArrays)
-        
-        setInvoiceData(subArrays)
-        setVisibleDiv(true)
-      }else{
-        setInvoiceData(false)
-        setVisibleDiv(false)
-      }
-    }else{
-      setInvoiceData(false)
-      setVisibleDiv(false)
-    }
-
+  const handleClickOpenBulk = () => {
+    setOpenBulk(true);
   };
 
   const handleCloseConformDelete = () => {
@@ -301,6 +244,15 @@ function OrdersForInvoice() {
   const handleCloseOpen = (state, msg) => {
     console.log("here")
     setOpen(state);
+    setSnackSeverity(msg == 'success' ? 'success' : 'error');
+    setMessage(msg == 'success' ? 'Record Updated Sucessfully!' : 'Error In Record Update!');
+    setOpenSnack(true);
+    // window.location.reload();
+  };
+
+  const handleCloseOpenBulk = (state, msg) => {
+    console.log("here")
+    setOpenBulk(state);
     setSnackSeverity(msg == 'success' ? 'success' : 'error');
     setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
     setOpenSnack(true);
@@ -366,110 +318,87 @@ function OrdersForInvoice() {
 
   const handleClickBarcode = async (order) => {
     const serial = "0123456789";
-    console.log(order.barcode);
-    // const receipt = (
-    //     <Printer type="" width={2} characterSet="korea">
-    //       <Text size={{ width: 1, height: 0.2 }}>9,500원</Text>
-    //       <Text bold={true}>결제 완료</Text>
-    //       <Cut />
-    //     </Printer>
-    //   );
-    // const data = await render(receipt);
-    // console.log("data", data)
-    try {
+        // const receipt = (
+        //     <Printer type="" width={2} characterSet="korea">
+        //       <Text size={{ width: 1, height: 0.2 }}>9,500원</Text>
+        //       <Text bold={true}>결제 완료</Text>
+        //       <Cut />
+        //     </Printer>
+        //   );
+        // const data = await render(receipt);
+        // console.log("data", data)
+        try {
 
-        // Create a new instance of the object
-        const browserPrint =  new ZebraBrowserPrintWrapper.default();
-        console.log("browserPrint", browserPrint);
+          // Create a new instance of the object
+          const browserPrint = new ZebraBrowserPrintWrapper.default(); 
 
-        // Select default printer
-        const defaultPrinter =  await browserPrint.getDefaultPrinter();
-        console.log("defaultPrinter", defaultPrinter);
+          // Select default printer
+          const defaultPrinter =  await browserPrint.getDefaultPrinter();
+      
+          // Set the printer
+          browserPrint.setPrinter(defaultPrinter);
 
-        // Set the printer
-        browserPrint.setPrinter(defaultPrinter);
+          // Check printer status
+          const printerStatus = await browserPrint.checkPrinterStatus();
 
-        // Check printer status
-        const printerStatus = await browserPrint.checkPrinterStatus();
-        console.log("printerStatus.isReadyToPrint", printerStatus.isReadyToPrint);
+          // Check if the printer is ready
+          if(printerStatus.isReadyToPrint) {
 
-        // Check if the printer is ready
-        if(printerStatus.isReadyToPrint) {
+              // ZPL script to print a simple barcode
+              const zpl = `^XA
+                          ^BY2,2,100
+                          ^FO20,20^BC^FD${serial}^FS
+                          ^XZ`;
 
-            // ZPL script to print a simple barcode
-            const zpl = `^XA
-                        ^BY2,2,100
-                        ^FO20,20^BC^FD${order.barcode}^FS
-                        ^XZ`;
+              browserPrint.print(zpl);
 
-            browserPrint.print(zpl);
-        } else {
-        console.log("Error/s", printerStatus.errors);
-        }
+          } else {
 
+              console.log("Error/s", printerStatus.errors);
+          }
         } catch (error) {
         throw new Error(error);
         }
   }
 
-  const onSelectAllClick = () => {
-
-  }
-
-  const handleSelect = (event, id) => {
-    console.log("clicked", event.target.checked, id)
-    setSelected(...selected, { id: id, check: event.target.checked });
-  };
-
   const columns = [
-      { Header: "id", accessor: "id", width: "5%", align: "left" },
-      { Header: "customer Name", width: "15%", accessor: "customerName",  align: "left" },
+      { Header: "id", accessor: "id", width: "10%", align: "left" },
+      { Header: "customer Name", accessor: "customerName",  align: "left" },
       { Header: "customer Phone", accessor: "customerPhone",  align: "left" },
-      { Header: "itemCount", accessor: "itemCount", width: "3%", align: "left" },
       { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
       { Header: "total", accessor: "total", align: "center" },
       { Header: "paid", accessor: "paid", align: "center" },
+      { Header: "status", accessor: "isActive", align: "center" },
       { Header: "Order status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
     ]
-    
-    const columns1 = useMemo(
-      () => [
-        { header: "id", accessorKey: "id", width: "5%", align: "left"},
-        { header: "customer Name", accessorKey: "cfullName"},
-        { header: "customer Phone", accessorKey: "cphone"},
-        { header: "trackingNumber ", accessorKey: "trackingNumber",},
-        { header: "total", accessorKey: "total",},
-        { header: "paid", accessorKey: "paid",},
-        { header: "Order status", accessorKey: "status"},
-        { header: "action", accessorKey: "action"},
-      ],
-      [], //end
-    );
-    const rows = orderData?.map((user, i) =>  ({
-        id: user.id,
-        cfullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+
+    const rows = orderData  ?.map((user) =>  ({
+        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.id || "-"}
+        </MDTypography>),
+        customerName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
           {user.cfullName  || "-"}
         </MDTypography>),
-        cphone: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        customerPhone: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {user.cphone  || "-"}
       </MDTypography>),
         trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             {user.trackingNumber  || "-"}
         </MDTypography>),
         total: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {(user.total).toFixed(2)  || "-"}
+          {user.total  || "-"}
         </MDTypography>),
         paid: (
           <MDBox ml={-1}>
             <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
         ),
-        isActive: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={user.isActive ? "ACTIVE" : "INACTIVE"} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
+        // isActive: (
+        //   <MDBox ml={-1}>
+        //     <MDBadge badgeContent={user.isActive ? "ACTIVE" : "INACTIVE"} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+        //   </MDBox>
+        // ),
         status: (
           <MDBox ml={-1}>
             <MDBadge badgeContent={`${user.status}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
@@ -479,7 +408,6 @@ function OrdersForInvoice() {
           <Box >
           <Stack direction="row" spacing={1}>
             <Button onClick={() => handleClickView(user.id)}> View </Button>           
-            <Button onClick={() => handleClickBarcode(user)}> Print Barcode</Button>
           </Stack>
         </Box>
         )
@@ -490,10 +418,6 @@ function OrdersForInvoice() {
     <DashboardLayout>
       <DashboardNavbar />
       <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
-      <FormControl sx={{ m: 1 }} variant="standard">
-        <BootstrapInput id="demo-customized-textbox" placeholder='Search Here' onChange={handleChangeSearch}
-        handleChangeSearch/>
-      </FormControl>
       <FormControl sx={{ m: 1 }} variant="standard">
       <NativeSelect
           id="demo-customized-select-native"
@@ -506,6 +430,9 @@ function OrdersForInvoice() {
           <option value={'phone'}>Phone</option>
         </NativeSelect>
     </FormControl>
+    <FormControl sx={{ m: 1 }} variant="standard">
+        <BootstrapInput disabled={!searchSelect} id="demo-customized-textbox" placeholder='Search Here' onChange={handleChangeSearch} />
+      </FormControl>
           </div>
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
@@ -522,58 +449,78 @@ function OrdersForInvoice() {
                 coloredShadow="info"
               >
                 <MDTypography variant="h6" color="white">
-                  Orders For Invoices
+                  Returned Or Cancelled Orders
                 </MDTypography>
-                <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpenDownload}>
-                  <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-                  <MDButton variant="gradient" color="dark"  disabled={Object.keys(rowSelection).length === 0}>
-                    <Icon sx={{ fontWeight: "bold", pr: 3, pb: 2 }}>save</Icon>
-                    &nbsp;&nbsp;Download Invoices
-                  </MDButton>
-              </MDBox>
-                <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
+                
+                <MDBox px={2} display="flex" justifyContent="end" alignItems="center">
                 <MDTypography variant="h6" fontWeight="medium"></MDTypography>
+                <MDButton sx={{ marginRight: '5px' }} variant="gradient" color="dark" onClick={handleClickOpen}>
+                  <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+                  &nbsp;Add Returned Order
+                </MDButton>
                 </MDBox>
+                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
+                {openBulk &&  <FormDialog2 setOpen={handleCloseOpenBulk} open={openBulk}/>}
+                {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} orderId={userId}/>}
                 {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
+                {<Dialog
+                fullScreen={fullScreen}
+                open={openConformDelete}
+                onClose={handleCloseConformDelete}
+                aria-labelledby="responsive-dialog-title"
+              >
+                <DialogTitle id="responsive-dialog-title">
+                  {"Confirm Delete"}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    This action will delete this record permanantly from the list.
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button autoFocus onClick={handleCloseConformDelete}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleConformDelete} autoFocus>
+                    Confirm
+                  </Button>
+                </DialogActions>
+              </Dialog>}  
                 </MDBox>
-              <MDBox pt={3}>
-                {/*<DataGrid
-                  rows={rows}
-                  columns={columns}
-                  initialState={{
-                    pagination: {
-                      paginationModel: { page: 0, pageSize: 5 },
-                    },
-                  }}
-                  pageSizeOptions={[5, 10]}
-                  checkboxSelection
-                />*/}
-                {/*<DataTable
-                  table={{ columns, rows }}
-                  isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
-                  noEndBorder
-                />*/}
-                <MaterialReactTable
-                  columns={columns1}
-                  data={rows}
-                  getRowId={(row) => row.id}
-                  muiTableBodyRowProps={({ row }) => ({
-                    //implement row selection click events manually
-                    onClick: () =>
-                      setRowSelection((prev) => ({
-                        ...prev,
-                        [row.id]: !prev[row.id],
-                      })),
-                    selected: rowSelection[row.id],
-                    sx: {
-                      cursor: 'pointer',
-                    },
-                  })}
-                  state={{ rowSelection }}
-                />
-              </MDBox>
+              
+              <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value} onChange={handleChange} 
+        textColor="secondary"
+        indicatorColor="primary"
+        aria-label="basic tabs example">
+          <Tab label="Returned" {...a11yProps(0)} />
+          <Tab label="Cancelled" {...a11yProps(1)} />
+        </Tabs>
+      </Box>
+      <CustomTabPanel value={value} index={0}>
+      <MDBox pt={3}>
+      <DataTable
+        table={{ columns, rows }}
+        isSorted={false}
+        entriesPerPage={false}
+        showTotalEntries={false}
+        noEndBorder
+      />
+    </MDBox>
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={1}>
+      <MDBox pt={3}>
+      <DataTable
+        table={{ columns, rows }}
+        isSorted={false}
+        entriesPerPage={false}
+        showTotalEntries={false}
+        noEndBorder
+      />
+    </MDBox>
+      </CustomTabPanel>
+    </Box>
             </Card>
           </Grid>
         </Grid>
@@ -583,8 +530,6 @@ function OrdersForInvoice() {
           {message}
         </Alert>
       </Snackbar>
-      {console.log("ynna klin ", invoiceData)}
-      {visibleDiv && <Invoice orderDataSelectedArr={invoiceData}/>}
       <Footer />
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -597,4 +542,4 @@ function OrdersForInvoice() {
   );
 }
 
-export default OrdersForInvoice;
+export default ReturnedOrders;

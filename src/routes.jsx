@@ -47,6 +47,7 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
 import Orders from "layouts/orders";
+import ReturnedOrders from "layouts/orders copy";
 import Products from "layouts/products";
 import Materials from "layouts/users copy";
 import Store from "layouts/store";
@@ -310,11 +311,11 @@ const routes = [{
     },
     {
         type: "collapse",
-        name: "Reports",
-        key: "reports",
-        route: `/reports`,
+        name: "Returned/Cancelled",
+        key: "returned",
+        route: `/returned`,
         icon: <Icon fontSize = "small" > assessment</Icon>,
-        component: <OrdersForInvoice />,
+        component: <ReturnedOrders />,
         isVisible: true
     },
 ];

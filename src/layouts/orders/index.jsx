@@ -65,6 +65,7 @@ import {SDK} from "../../api/index";
 
 import { useState, useEffect } from "react";
 import FormDialog from "./formAdd";
+import FormDialog2 from "./formAdd2";
 import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
 // import { Br, Cut, Line, Printer, Text, Row, render } from 'react-thermal-printer';
@@ -108,10 +109,11 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
 function Orders() {
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = React.useState(false);
+  const [openBulk, setOpenBulk] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
   const [openUpdate, setOpenUpdate] = React.useState(false);
-  const [searchSelect, setSearchSelect] = React.useState('name');
+  const [searchSelect, setSearchSelect] = React.useState('');
   const [openSnack, setOpenSnack] = React.useState(false);
   const [snackSeverity, setSnackSeverity] = React.useState(false);
   const [message, setMessage] = React.useState(false);
@@ -172,6 +174,10 @@ function Orders() {
     setOpen(true);
   };
 
+  const handleClickOpenBulk = () => {
+    setOpenBulk(true);
+  };
+
   const handleCloseConformDelete = () => {
     setOpenConformDelete(false);
   };
@@ -187,6 +193,15 @@ function Orders() {
   const handleCloseOpen = (state, msg) => {
     console.log("here")
     setOpen(state);
+    setSnackSeverity(msg == 'success' ? 'success' : 'error');
+    setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
+    setOpenSnack(true);
+    // window.location.reload();
+  };
+
+  const handleCloseOpenBulk = (state, msg) => {
+    console.log("here")
+    setOpenBulk(state);
     setSnackSeverity(msg == 'success' ? 'success' : 'error');
     setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
     setOpenSnack(true);
@@ -252,47 +267,44 @@ function Orders() {
 
   const handleClickBarcode = async (order) => {
     const serial = "0123456789";
-    console.log(order.barcode);
-    // const receipt = (
-    //     <Printer type="" width={2} characterSet="korea">
-    //       <Text size={{ width: 1, height: 0.2 }}>9,500원</Text>
-    //       <Text bold={true}>결제 완료</Text>
-    //       <Cut />
-    //     </Printer>
-    //   );
-    // const data = await render(receipt);
-    // console.log("data", data)
-    try {
+        // const receipt = (
+        //     <Printer type="" width={2} characterSet="korea">
+        //       <Text size={{ width: 1, height: 0.2 }}>9,500원</Text>
+        //       <Text bold={true}>결제 완료</Text>
+        //       <Cut />
+        //     </Printer>
+        //   );
+        // const data = await render(receipt);
+        // console.log("data", data)
+        try {
 
-        // Create a new instance of the object
-        const browserPrint =  new ZebraBrowserPrintWrapper.default();
-        console.log("browserPrint", browserPrint);
+          // Create a new instance of the object
+          const browserPrint = new ZebraBrowserPrintWrapper.default(); 
 
-        // Select default printer
-        const defaultPrinter =  await browserPrint.getDefaultPrinter();
-        console.log("defaultPrinter", defaultPrinter);
+          // Select default printer
+          const defaultPrinter =  await browserPrint.getDefaultPrinter();
+      
+          // Set the printer
+          browserPrint.setPrinter(defaultPrinter);
 
-        // Set the printer
-        browserPrint.setPrinter(defaultPrinter);
+          // Check printer status
+          const printerStatus = await browserPrint.checkPrinterStatus();
 
-        // Check printer status
-        const printerStatus = await browserPrint.checkPrinterStatus();
-        console.log("printerStatus.isReadyToPrint", printerStatus.isReadyToPrint);
+          // Check if the printer is ready
+          if(printerStatus.isReadyToPrint) {
 
-        // Check if the printer is ready
-        if(printerStatus.isReadyToPrint) {
+              // ZPL script to print a simple barcode
+              const zpl = `^XA
+                          ^BY2,2,100
+                          ^FO20,20^BC^FD${serial}^FS
+                          ^XZ`;
 
-            // ZPL script to print a simple barcode
-            const zpl = `^XA
-                        ^BY2,2,100
-                        ^FO20,20^BC^FD${order.barcode}^FS
-                        ^XZ`;
+              browserPrint.print(zpl);
 
-            browserPrint.print(zpl);
-        } else {
-        console.log("Error/s", printerStatus.errors);
-        }
+          } else {
 
+              console.log("Error/s", printerStatus.errors);
+          }
         } catch (error) {
         throw new Error(error);
         }
@@ -302,7 +314,6 @@ function Orders() {
       { Header: "id", accessor: "id", width: "10%", align: "left" },
       { Header: "customer Name", accessor: "customerName",  align: "left" },
       { Header: "customer Phone", accessor: "customerPhone",  align: "left" },
-      { Header: "itemCount", accessor: "itemCount", align: "left" },
       { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
       { Header: "total", accessor: "total", align: "center" },
       { Header: "paid", accessor: "paid", align: "center" },
@@ -321,9 +332,6 @@ function Orders() {
         customerPhone: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
         {user.cphone  || "-"}
       </MDTypography>),
-        itemCount: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.itemCount  || "-"}
-        </MDTypography>),
         trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
             {user.trackingNumber  || "-"}
         </MDTypography>),
@@ -349,7 +357,6 @@ function Orders() {
           <Box >
           <Stack direction="row" spacing={1}>
             <Button onClick={() => handleClickView(user.id)}> View </Button>           
-            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
             <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
             <Button onClick={() => handleClickBarcode(user)}> Print Barcode</Button>
           </Stack>
@@ -363,10 +370,6 @@ function Orders() {
       <DashboardNavbar />
       <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
       <FormControl sx={{ m: 1 }} variant="standard">
-        <BootstrapInput id="demo-customized-textbox" placeholder='Search Here' onChange={handleChangeSearch}
-        handleChangeSearch/>
-      </FormControl>
-      <FormControl sx={{ m: 1 }} variant="standard">
       <NativeSelect
           id="demo-customized-select-native"
           value={searchSelect}
@@ -378,6 +381,9 @@ function Orders() {
           <option value={'phone'}>Phone</option>
         </NativeSelect>
     </FormControl>
+    <FormControl sx={{ m: 1 }} variant="standard">
+        <BootstrapInput disabled={!searchSelect} id="demo-customized-textbox" placeholder='Search Here' onChange={handleChangeSearch} />
+      </FormControl>
           </div>
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
@@ -397,14 +403,19 @@ function Orders() {
                   Orders
                 </MDTypography>
                 
-                <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
+                <MDBox px={2} display="flex" justifyContent="end" alignItems="center">
                 <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-                <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
+                <MDButton sx={{ marginRight: '5px' }} variant="gradient" color="dark" onClick={handleClickOpen}>
                   <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                  &nbsp;Add New Order
+                  &nbsp;Add Single Order
                 </MDButton>
+                <MDButton variant="gradient" color="dark" onClick={handleClickOpenBulk}>
+                <Icon sx={{ fontWeight: "bold" }}>add</Icon>
+                &nbsp;Add Bulk Order
+              </MDButton>
                 </MDBox>
                 {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
+                {openBulk &&  <FormDialog2 setOpen={handleCloseOpenBulk} open={openBulk}/>}
                 {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} orderId={userId}/>}
                 {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
                 {<Dialog

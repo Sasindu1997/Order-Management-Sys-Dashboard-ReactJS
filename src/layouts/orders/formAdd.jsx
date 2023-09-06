@@ -29,62 +29,6 @@ import axios from 'axios';
 import { UPLOADINIT_URL, UPLOAD_URL } from '../../config.env'
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-const columns = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
-  {
-    id: 'population',
-    label: 'Population',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'density',
-    label: 'Density',
-    minWidth: 170,
-    align: 'right',
-    format: (value) => value.toFixed(2),
-  },
-];
-
-function createData(name, code, population, size) {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
-const rows = [
-  createData('India', 'IN', 1324171354, 3287263),
-  createData('China', 'CN', 1403500365, 9596961),
-  createData('Italy', 'IT', 60483973, 301340),
-  createData('United States', 'US', 327167434, 9833520),
-  createData('Canada', 'CA', 37602103, 9984670),
-  createData('Australia', 'AU', 25475400, 7692024),
-  createData('Germany', 'DE', 83019200, 357578),
-  createData('Ireland', 'IE', 4857000, 70273),
-  createData('Mexico', 'MX', 126577691, 1972550),
-  createData('Japan', 'JP', 126317000, 377973),
-  createData('France', 'FR', 67022000, 640679),
-  createData('United Kingdom', 'GB', 67545757, 242495),
-  createData('Russia', 'RU', 146793744, 17098246),
-  createData('Nigeria', 'NG', 200962417, 923768),
-  createData('Brazil', 'BR', 210147125, 8515767),
-];
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -95,12 +39,6 @@ const MenuProps = {
     },
   },
 };
-
-const names = [
- { id : 1, name: 'Oliver Hansen'},
- { id : 2, name: 'test'},
- { id : 3, name: 'xxxx'},
-];
 
 function getStyles(name, personName, theme) {
   return {
@@ -132,6 +70,7 @@ export default function FormDialog({open, setOpen, id}) {
   const [checked, setChecked] = useState(true);
   const [value, setValue] = useState(0);
   const [csvfile, setCsvfile] = useState(0);
+  const [totalAmount, setTotalAmount] = useState();
   const [csvfileName, setCsvfileName] = useState('');
   const [inputList, setInputList] = useState([{ prid: "", prn: "", prw: "", prc: "" }]);
  
@@ -140,25 +79,9 @@ export default function FormDialog({open, setOpen, id}) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  const handleClickOpenD = () => {
-    setOpenD(true);
-  };
-
-  const handleCloseD = () => {
-    setOpenD(false);
-  };
-
   // handle input change
   const handleInputChange = (e, index) => {
+    let total = 0
     const { name, value } = e.target;
     console.log( e.target)
     console.log( value)
@@ -167,13 +90,32 @@ export default function FormDialog({open, setOpen, id}) {
     const list = [...inputList];
     if(value) list[index][name] = value;
     name && value && setInputList(list);
+
+    console.log("list", list)
+    list.map(item => {
+      let prd = productData.filter(pr => pr.id === item.prid);
+      total += prd[0].price * item.prc;
+      console.log("prd", prd[0].price)
+    })
+
+    console.log("total", total)
+    setTotalAmount(total.toFixed(2))
   };
  
   // handle click event of the Remove button
   const handleRemoveClick = index => {
+    let total = 0
     const list = [...inputList];
     list.splice(index, 1);
     setInputList(list);
+    console.log("list", list)
+    list.map(item => {
+      let prd = productData.filter(pr => pr.id === item.prid);
+      total += prd[0].price * item.prc;
+      console.log("prd", prd[0].price)
+    })
+    console.log("total", total)
+    setTotalAmount(total.toFixed(2))
   };
  
   // handle click event of the Add button
@@ -257,11 +199,6 @@ export default function FormDialog({open, setOpen, id}) {
     );
   };
 
-  const handleChangeSwitchDelivery = (event) => {
-    setCheckedToDelivery(event.target.checked);
-  };
-
-
   const handleSubmit = (event) => {
     console.log("inputList", inputList)
     event.preventDefault();
@@ -276,9 +213,9 @@ export default function FormDialog({open, setOpen, id}) {
         // itemCount :data.get('itemCount'),
         paid : data.get('paid') === "on" ? true : false,
         total : data.get('total'),
-        status : data.get('status'),
+        status : status,
         shippingAddress : data.get('shippingAddress'),
-        paymentMethod : data.get('paymentMethod'),
+        paymentMethod : payemntMethod,
         shippingMethod : data.get('shippingMethod'),
         trackingNumber : data.get('trackingNumber'),
         orderId : data.get('orderId'),
@@ -306,6 +243,10 @@ export default function FormDialog({open, setOpen, id}) {
     console.log(event.target.value)
     setDeliveryId(event.target.value);
   };
+  
+  const handleTotalAmount = (event) => {
+    setTotalAmount(event.target.value);
+  };
 
   const handleChangeCustomerId = (event) => {
     console.log(event.target.value)
@@ -328,115 +269,15 @@ export default function FormDialog({open, setOpen, id}) {
     setCheckedToDelivery(true)
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleContinue = () => {
-    setOpenD(false);
-
-  };
-
-  const handleUpload = (e) => {
-    console.log(e.target.value)
-  };
-  
-  const handleChangeFile = event => {
-    console.log(event.target.files[0])
-    setCsvfile(event.target.files[0]);
-    setCsvfileName(event.target.files[0].name)
-  };
-
-  const importCSVInit = (e) => {
-    e.preventDefault();
-    let user = localStorage.getItem('loggedInUser')
-    console.log(csvfile, user);
-
-    var fileName = csvfile.name;
-    const formData = new FormData();
-    formData.append(
-        "file",
-        csvfile,
-    );
-    formData.append("isDeliveryAdded", checkedToDelivery);
-    formData.append("deliveryId", deliveryId);
-    formData.append("userId", user.id);
-
-    console.log(formData);
-
-    axios.post( UPLOADINIT_URL, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-  }).then(res => { // then print response status
-        console.log(res)
-        setInitData(res)
-        if (res === 'success') {
-            alert("File data uploaded Successfully");
-        } else {
-            if (res === 'Error') {
-                alert("Please ensure that your CSV file is formatted using the correct template, if you have any doubt contact the support team.");
-
-            } else {
-                console.log(res)
-            }
-        }
-    })
- };
-
- const importCSV = (e) => {
-  e.preventDefault();
-  let user = localStorage.getItem('loggedInUser')
-  console.log(csvfile, user);
-
-  var fileName = csvfile.name;
-  const formData = new FormData();
-  formData.append(
-      "file",
-      csvfile,
-  );
-  formData.append("isDeliveryAdded", checkedToDelivery);
-  formData.append("deliveryId", deliveryId);
-  formData.append("userId", user.id);
-
-  console.log(formData);
-
-  axios.post( UPLOAD_URL, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-}).then(res => { // then print response status
-      console.log(res)
-      setInitData(res)
-      if (res === 'success') {
-          alert("File data uploaded Successfully");
-      } else {
-          if (res === 'Error') {
-              alert("Please ensure that your CSV file is formatted using the correct template, if you have any doubt contact the support team.");
-
-          } else {
-              console.log(res)
-          }
-      }
-  })
-};
-
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-      <Tabs value={value} onChange={handleChangeTabs} aria-label="basic tabs example">
-        <Tab label="Add Order" {...a11yProps(0)} />
-        <Tab label="Add Bulk Order" {...a11yProps(1)} />
-      </Tabs>
-    </Box>
-    <TabPanel value={value} index={0}>
-    <DialogTitle>Add Order</DialogTitle>
-    <DialogContent>
+      <DialogTitle>Add Order</DialogTitle>
+      <DialogContent  sx={{ width : '15cm' }}>
       <Box component="form" 
       onSubmit={handleSubmit} 
       noValidate sx={{ mt: 1 }}>
@@ -471,16 +312,17 @@ export default function FormDialog({open, setOpen, id}) {
               </MenuItem>
             ))}
           </Select>
-          <TextField
+          {/*<TextField
             margin="normal"
             required
             fullWidth
             name="prw"
             label="Weight"
+            hidden={true}
             id="prw"
             value={x.prw}
             onChange={e => handleInputChange(e, i)}
-          />
+          />*/}
           <TextField
             margin="normal"
             required
@@ -604,13 +446,16 @@ export default function FormDialog({open, setOpen, id}) {
           <MenuItem value={"gift"}>Gift</MenuItem>
         </Select></>}
 
+        <InputLabel id="demo-simple-select-label" 
+          sx={{ paddingTop: 2, paddingLeft: 2 }}>Total</InputLabel>
         <TextField
+          value={totalAmount}
+          onChange={handleTotalAmount}
           margin="normal"
           required
           fullWidth
           name="total"
-          label="total"
-          type="number"
+          type='number'
           id="total"
         />
 
@@ -627,7 +472,9 @@ export default function FormDialog({open, setOpen, id}) {
           onChange={handleChangeStatus}
         >
           <MenuItem value={"Packing"}>Packing</MenuItem>
+          <MenuItem value={"Shipping"}>Shipping</MenuItem>
           <MenuItem value={"Delivered"}>Delivered</MenuItem>
+          <MenuItem value={"Cancelled"}>Cancelled</MenuItem>
           <MenuItem value={"Returned"}>Returned</MenuItem>
         </Select>
 
@@ -693,148 +540,8 @@ export default function FormDialog({open, setOpen, id}) {
             </Button>
         </div>
         </Box>
-    </DialogContent>
-    </TabPanel>
-    <TabPanel  sx={{width: '100px'}} value={value} index={1} >
-      <DialogTitle >Add Bulk Order</DialogTitle>
-      <DialogContent sx={{width: '350px'}} >
-        <Box component="form"  fullWidth noValidate sx={{ minWidth: 120,  minHeight: 40, mt: 1 }}>
-
-          <div className="App">
-          <h4>Upload CSV File Here.</h4>
-          <input type="file" name='file' id='file' value={''} title=" "  onChange={handleChangeFile} />
-          </div>
-
-          <div style={{marginTop:'20px', display: "flex", flexDirection: 'row'}}>
-          <h4 style={{paddingTop:'6px'}}>Add all records to delivery: </h4>
-          <Switch
-            checked={checkedToDelivery}
-            name="addMat"
-            onChange={handleChangeSwitchDelivery}
-            inputProps={{ 'aria-label': 'controlled' }}
-          />
-          </div>
-
-         {checkedToDelivery && <h4 style={{paddingTop:'6px'}}>Select Delivery Account</h4>}
-         {checkedToDelivery && 
-        <Select
-          labelId="deliveryId"
-          id="deliveryId"
-          value={deliveryId}
-          label="deliveryId"
-          fullWidth
-          name="deliveryId"
-          sx={{ minWidth: 120,  minHeight: 40 }}
-          onChange={handleChangeDeliveryId}
-        >
-        {deliveryAccData?.map((obj) => (
-            <MenuItem
-              key={obj.id}
-              value={obj.id}
-              style={getStyles(obj.name, personName, theme)}
-            >
-              {obj.userName}
-            </MenuItem>
-          ))}
-        </Select>}
-
-          <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
-          <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
-          <Button
-              onClick={importCSVInit}
-              variant="contained"
-              sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
-              >
-              Upload
-              </Button>
-          </div>
-          </Box>
-        </DialogContent>
-        <Dialog
-        fullScreen={fullScreen}
-        open={initData}
-        onClose={handleCloseD}
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle>
-        <DialogContent>
-         
-          <Paper sx={{ width: '100%' }}>
-            {initData?.data?.data?.map(init => (
-              <><TableContainer sx={{ maxHeight: 440 }}>
-              <DialogTitle id="responsive-dialog-title">
-                {init.phone}
-              </DialogTitle>
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center" colSpan={2}>
-                      Country
-                    </TableCell>
-                    <TableCell align="center" colSpan={3}>
-                      Details
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    {columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                        style={{ top: 57, minWidth: column.minWidth }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                          {columns.map((column) => {
-                            const value = row[column.id];
-                            return (
-                              <TableCell key={column.id} align={column.align}>
-                                {column.format && typeof value === 'number'
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            /></>
-            ))}
-          </Paper>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseD}>
-            Disagree
-          </Button>
-          <Button onClick={importCSV} autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
+      </DialogContent>
       </Dialog>
-      </TabPanel>
-      </Dialog>
-
     </div>
   );
 }
