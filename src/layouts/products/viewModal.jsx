@@ -58,63 +58,63 @@ export default function FormDialogView({open, setOpen, userId}) {
            Product Name
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.productName}
+            {data.productName || '-'}
           </Typography>
 
           <Typography  variant="h6" >
            Product Code
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.productCode}
+            {data.productCode || '-'}
           </Typography>
 
           <Typography  variant="h6" >
            Description
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.description}
+            {data.description || '-'}
           </Typography>
 
           <Typography  variant="h6" >
            Price
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.price}
+            {data.price || '-'}
           </Typography>
 
           <Typography  variant="h6" >
            Type
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.type}
+            {data.type || '-'}
           </Typography>
 
           <Typography  variant="h6" >
            Category
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.categoryTitle}
+            {data.categoryTitle || '-'}
           </Typography>
 
           <Typography  variant="h6" >
            Sub Category
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.subCategoryTitle}
+            {data.subCategoryTitle || '-'}
           </Typography>
 
           <Typography  variant="h6" >
            Brand
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.brand}
+            {data.brand || '-'}
           </Typography>
 
           <Typography  variant="h6" >
            ImageURL
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.imageURL}
+            {data.imageURL || '-'}
           </Typography>
           
 

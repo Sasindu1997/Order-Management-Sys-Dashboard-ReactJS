@@ -49,7 +49,7 @@ function ProfilesList({ title, profiles, shadow }) {
           </MDButton>
         ) : (
           <MDButton
-            component="a"
+            component="span"
             href={action.route}
             target="_blank"
             rel="noreferrer"

@@ -60,7 +60,7 @@ export default function FormDialog({open, setOpen, id}) {
         price: data.get('price'),
         sku: data.get('sku'),
         categoryId: data.get('category'),
-        subCategoryId: data.get('subCategory'),
+        subCategoryId: data.get('subCategory') || 0,
         brand: data.get('brand'),
         type: data.get('type'),
         imageURL: data.get('imageURL'),
@@ -213,7 +213,7 @@ export default function FormDialog({open, setOpen, id}) {
             <Button
                 type="submit"
                 variant="contained"
-                sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+                sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
                 >
                 Add
                 </Button>

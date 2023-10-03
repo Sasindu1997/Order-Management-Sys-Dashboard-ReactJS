@@ -247,17 +247,12 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           autoComplete="imageURL"
         />
 
-        <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button
             type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+            sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
             >
             Update
             </Button>

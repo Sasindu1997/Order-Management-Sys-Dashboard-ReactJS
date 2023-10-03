@@ -57,6 +57,19 @@ export default function FormDialog({open, setOpen, userId}) {
     setOpen(false);
   };
 
+  const handleExchange = () => {
+    SDK.OrderType.updateExchanged(searchTxt, { isChecked : checked})
+    .then((res) => {
+      console.log("RES: ", res);
+      setOpen(false, 'success');
+    })
+    .catch((error) => {
+      setOpen(false, 'error');
+      console.log("Error: ", error)
+    })
+    setOpen(false);
+  };
+
   const handleReturn = () => {
     SDK.OrderType.updateReturned(searchTxt, { isChecked : checked})
     .then((res) => {
@@ -223,8 +236,9 @@ export default function FormDialog({open, setOpen, userId}) {
 
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
-        <Button onClick={handleCancel} varient='outlined'  sx={{ mt: 3, mb: 2 }}>Cancel Order</Button>
-        <Button onClick={handleReturn} varient='outlined' sx={{ mt: 3, mb: 2 }}>Return Order</Button>
+        <Button onClick={handleExchange}  variant="outlined" sx={{ mt: 3, mb: 2, mr:1, color: '#1976D2'}}>Exchange</Button>
+        <Button onClick={handleCancel}  variant="outlined"  sx={{ mt: 3, mb: 2, mr:1, color: '#1976D2'}}>Cancel</Button>
+        <Button onClick={handleReturn}  variant="outlined" sx={{ mt: 3, mb: 2, mr:1, color: '#1976D2'}}>Return</Button>
         </div>
         </Box>}
         </DialogContent>

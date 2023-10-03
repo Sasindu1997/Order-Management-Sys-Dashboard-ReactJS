@@ -364,6 +364,11 @@ function OrdersForInvoice() {
     })
   };
 
+  const handleClickBarcodeInit = async (order) => {
+    const res = handleClickBarcode(order)
+    console.log("kkkkkkkkkkkk", res)
+  }
+
   const handleClickBarcode = async (order) => {
     const serial = "0123456789";
     console.log(order.barcode);
@@ -402,9 +407,12 @@ function OrdersForInvoice() {
                         ^FO20,20^BC^FD${order.barcode}^FS
                         ^XZ`;
 
-            browserPrint.print(zpl);
+                        order.barcode && browserPrint.print(zpl);
+
+           return order.barcode ? 'success': 'error'; 
         } else {
-        console.log("Error/s", printerStatus.errors);
+            console.log("Error/s", printerStatus.errors);
+            return 'error'; 
         }
 
         } catch (error) {
@@ -448,16 +456,16 @@ function OrdersForInvoice() {
     );
     const rows = orderData?.map((user, i) =>  ({
         id: user.id,
-        cfullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.cfullName  || "-"}
+        cfullName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.ccfullName  || "-"}
         </MDTypography>),
-        cphone: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        cphone: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.cphone  || "-"}
       </MDTypography>),
-        trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        trackingNumber: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.trackingNumber  || "-"}
         </MDTypography>),
-        total: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        total: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {(user.total).toFixed(2)  || "-"}
         </MDTypography>),
         paid: (
@@ -465,9 +473,9 @@ function OrdersForInvoice() {
             <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
         ),
-        isActive: (
+        status: (
           <MDBox ml={-1}>
-            <MDBadge badgeContent={user.isActive ? "ACTIVE" : "INACTIVE"} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+            <MDBadge badgeContent={`${user.status}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
         ),
         status: (
@@ -479,7 +487,7 @@ function OrdersForInvoice() {
           <Box >
           <Stack direction="row" spacing={1}>
             <Button onClick={() => handleClickView(user.id)}> View </Button>           
-            <Button onClick={() => handleClickBarcode(user)}> Print Barcode</Button>
+            <Button onClick={() => handleClickBarcodeInit(user)}> Print Barcode</Button>
           </Stack>
         </Box>
         )

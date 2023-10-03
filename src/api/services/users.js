@@ -15,6 +15,12 @@ const getAll = async() => {
     return data;
 };
 
+const findAllManagers = async() => {
+    const data = await axios.get(extendedUrl + "/users/findAllManagers/Marketing Manager");
+    console.log(data);
+    return data;
+};
+
 const getById = async(id) => {
     const data = await axios.get(extendedUrl + `/users/${id}`);
     console.log(data);
@@ -38,5 +44,6 @@ export const UserType = {
     add,
     getById,
     update,
-    deletebyId
+    deletebyId,
+    findAllManagers
 }

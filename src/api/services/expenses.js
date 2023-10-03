@@ -15,6 +15,14 @@ const getAll = async() => {
     return data;
 };
 
+const multipleSearch = async(req) => {
+    const data = await axios.get(extendedUrl + `/expenses/multipleSearch`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
 const getAllThisMonth = async() => {
     const data = await axios.get(extendedUrl + "/expenses/thisMonth");
     console.log(data);
@@ -45,5 +53,6 @@ export const ExpenseType = {
     getById,
     update,
     deletebyId,
-    getAllThisMonth
+    getAllThisMonth,
+    multipleSearch
 }

@@ -102,35 +102,35 @@ export default function FormDialogView({open, setOpen, userId}) {
           User Name
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.userName}
+          {userData?.userName}
         </Typography>
         
         <Typography  variant="h6" >
           Password
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.password}
+          {userData?.password}
         </Typography>
         
         <Typography  variant="h6" >
          Role
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.role}
+          {userData?.role}
         </Typography>
        
         <Typography  variant="h6" >
           Phone Number
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.phoneNumber}
+          {userData?.phoneNumber}
         </Typography>
         
         <Typography  variant="h6" >
           Address
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.address}
+          {userData?.address}
         </Typography>
 
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>

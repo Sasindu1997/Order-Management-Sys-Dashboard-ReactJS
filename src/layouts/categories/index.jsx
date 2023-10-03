@@ -192,13 +192,13 @@ function Categories() {
     ]
 
     const rows = userData?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        title: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        title: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.title  || "-"}
         </MDTypography>),
-        description: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        description: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.description  || "-"}
         </MDTypography>),
         action: (

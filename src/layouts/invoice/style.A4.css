@@ -148,6 +148,14 @@ header .logoAndName {
     justify-content: space-between;
 }
 
+.invoice-tracking {
+    left: 1cm;
+    bottom: 0cm;
+    font-size: 20px;
+    font-weight: 400;
+    width: 10cm;
+}
+
 
 /*
 The SVG gets set to a fixed size and get 5mm margin right to keep some distance

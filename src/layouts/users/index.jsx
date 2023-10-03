@@ -201,19 +201,19 @@ function Users() {
     ]
 
     const rows = userData?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        fullName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.fullName  || "-"}
         </MDTypography>),
-        role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.role  || "-"}
+        role: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+        {user?.role  || "-"}
         </MDTypography>),
-        email: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        email: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.email  || "-"}
         </MDTypography>),
-        phoneNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        phoneNumber: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.phoneNumber  || "-"}
         </MDTypography>),
         status: (
@@ -222,7 +222,7 @@ function Users() {
           </MDBox>
         ),
         address: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.address  || "-"}
           </MDTypography>
         ),
@@ -297,8 +297,8 @@ function Users() {
                 <DataTable
                   table={{ columns, rows }}
                   isSorted={false}
-                  entriesPerPage={false}
-                  showTotalEntries={false}
+                  entriesPerPage={10}
+                  showTotalEntries={true}
                   noEndBorder
                 />
               </MDBox>

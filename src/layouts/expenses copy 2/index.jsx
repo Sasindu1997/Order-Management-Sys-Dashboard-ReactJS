@@ -59,14 +59,26 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { CSVLink, CSVDownload } from "react-csv";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
 
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./customdatepickerwidth.css";
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-
-let csvData = [
-  ["id", "name", "description", "amount", "date"],
-];
 
 function UtilityExpenses() {
   const [open, setOpen] = React.useState(false);
@@ -88,18 +100,17 @@ function UtilityExpenses() {
   const [recordId, setRecordId] = React.useState(false);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [openBackDrop, setOpenBackDrop] = React.useState(false);
-  
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [downloadingCSV, setDownloadingCSV] = React.useState([
+    ["id", "name", "description", "amount", "date"],
+  ]);
+
   useEffect(() => {
     setOpenBackDrop(true)
     SDK.UtilityExpensesType.getAll()
     .then(async (res) => {
       setUserData(res?.data);
-      if(res.data.length >  csvData.length - 1){
-        await res?.data.map((ex) => {
-          return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('DD-MM-YYYY')  || "-"}`])
-        })
-      }
-      console.log("csvData: ", csvData);
     })
     .catch((error) => {
       console.log("Error: ", error)
@@ -205,35 +216,110 @@ function UtilityExpenses() {
     ]
 
     const rows = userData?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        name: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        name: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.name  || "-"}
         </MDTypography>),
-        description: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        description: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.description  || "-"}
         </MDTypography>),
-        amount: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.amount  || "-"}
+        amount: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.amount.toFixed(2)  || "-"}
         </MDTypography>),
-        date: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        date: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {moment(user.createdAt).format('DD-MM-YYYY')  || "-"}
         </MDTypography>),
         action: (
           <Box >
           <Stack direction="row" spacing={1}>
-                    
             <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
             <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
           </Stack>
         </Box>
         )
     }))
+
+    const handleClickClear = () => {
+      setStartDate('')
+      setEndDate('')
+      SDK.UtilityExpensesType.getAll()
+    .then(async (res) => {
+      setUserData(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    })
+    }
+
+    const handleClickSearchBtn = () => {
+      SDK.UtilityExpensesType.multipleSearch({
+        "startDate" : startDate ? moment(startDate).format('YYYY-MM-DD'): startDate,
+        "endDate" :  endDate ? moment(endDate).format('YYYY-MM-DD') : endDate
+      })
+      .then(async (res) => {
+        setOpenBackDrop(false)
+        console.log("RES: ", res);
+        setUserData(res?.data);
+        let csvData = [
+          ["id", "name", "description", "amount", "date"],
+        ]
+        if(res.data.length >=  csvData.length){
+          await res?.data.map((ex) => {
+            console.log(ex)
+            return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`])
+           })
+          setDownloadingCSV(csvData)
+          }
+      })
+      .catch((error) => {
+        setOpenBackDrop(false)
+        console.log("Error: ", error);
+        setSnackSeverity('error');
+        setMessage('Error in Search Orders!');
+        setOpenSnack(true);
+      })
+    }
   
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <Box>
+        <Item>
+        <Grid container spacing={2}>
+          <Grid item xs={4} classname="customdatepickerwidth" >
+            <InputLabel id="demo-simple-select-label" 
+            style={{justifyContent: "start"}}
+            sx={{ paddingTop: 2, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>Start Date</InputLabel>
+            <div  sx={{ width : '100'}}>
+            <DatePicker  className='react-datepicker' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+            </div>
+          </Grid>
+          <Grid item xs={4}>
+            <InputLabel id="demo-simple-select-label" 
+            style={{alignItems: "right", justifyContent: "start"}}
+            sx={{ paddingTop: 2, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>End Date</InputLabel>
+            <DatePicker className='react-datepicker' selected={endDate} onChange={(date) => setEndDate(date)} />
+          </Grid>
+        </Grid>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
+            <FormControl sx={{ m: 1,  mt: 5  }} variant="standard">
+           <div style={{  marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+           <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="" color="" onClick={handleClickClear}>
+           Clear
+         </MDButton>
+           <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtn}>
+             &nbsp;Search
+           </MDButton>
+           </div>
+          </FormControl>
+        </div>
+        </Item>
+      </Box>
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
@@ -260,7 +346,7 @@ function UtilityExpenses() {
                   </MDButton>
                   <MDButton sx={{ marginLeft: "5px" }} px={2} variant="gradient" color="dark">
                     <Icon sx={{ fontWeight: "bold" }}>download</Icon>
-                    <CSVLink data={csvData}>&nbsp;Download Report</CSVLink>
+                    <CSVLink data={downloadingCSV}>&nbsp;Download Report</CSVLink>
                   </MDButton>
               </MDBox>
                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}

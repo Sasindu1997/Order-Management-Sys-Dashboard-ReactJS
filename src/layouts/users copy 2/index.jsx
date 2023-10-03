@@ -201,19 +201,19 @@ function Chemicals() {
 
   
     const rows = userData?.map((user) =>  ({
-      id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.id || "-"}
       </MDTypography>),
-      name: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      name: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.name  || "-"}
       </MDTypography>),
-      code: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      code: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
       {user.code  || "-"}
       </MDTypography>),
-      unitPrice: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      unitPrice: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.unitPrice  || "-"}
       </MDTypography>),
-      supplier: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      supplier: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.supplier  || "-"}
       </MDTypography>),
       status: (

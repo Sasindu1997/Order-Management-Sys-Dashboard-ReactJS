@@ -145,7 +145,7 @@ function DefaultNavbar({ transparent, light, action }) {
           ) : (
             <MDBox display={{ xs: "none", lg: "inline-block" }}>
               <MDButton
-                component="a"
+                component="span"
                 href={action.route}
                 target="_blank"
                 rel="noreferrer"

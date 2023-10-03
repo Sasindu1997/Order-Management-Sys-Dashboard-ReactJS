@@ -10,7 +10,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
@@ -27,6 +29,7 @@ export default function FormDialog({open, setOpen, id}) {
   const [successSB, setSuccessSB] = useState(false);
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
+  const [role, setRole] = useState('');
   const [userData, setUserData] = useState([]);
 
   const handleSubmit = (event) => {
@@ -37,7 +40,7 @@ export default function FormDialog({open, setOpen, id}) {
         password: data.get('password'),
         fullName: data.get('fullName'),
         userName: data.get('userName'),
-        role: data.get('role'),
+        role: role,
         phoneNumber: data.get('phone'),
         address: data.get('address'),
         isActive: true
@@ -56,6 +59,10 @@ export default function FormDialog({open, setOpen, id}) {
       setErrorSB(true);
       setOpen(false, 'error');
     })
+  };
+
+  const handleChangeRole = (event) => {
+    setRole(event.target.value);
   };
 
   const handleClickOpen = () => {
@@ -112,16 +119,25 @@ export default function FormDialog({open, setOpen, id}) {
               id="password"
               autoComplete="current-password"
             />
-            <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="role"
-            label="Role"
-            type="role"
-            id="role"
-            autoComplete="role"
-          />
+
+          <InputLabel id="demo-simple-select-label" 
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Role</InputLabel>
+        <Select
+          labelId="role"
+          id="role" 
+          value={role}
+          label="Role"
+          fullWidth
+          name="role"
+          sx={{ minWidth: 120,  minHeight: 40 }}
+          onChange={handleChangeRole}
+        >
+          <MenuItem value={"Admin"}>Admin</MenuItem>
+          <MenuItem value={"Doctor"}>Doctor</MenuItem>
+          <MenuItem value={"Accountant"}>Accountant</MenuItem>
+          <MenuItem value={"System Handler"}>System Handler</MenuItem>
+          <MenuItem value={"Marketing Manager"}>Marketing Manager</MenuItem>
+        </Select>
             <TextField
               margin="normal"
               required

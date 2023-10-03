@@ -64,6 +64,7 @@ function Basic() {
     horizontal: 'right',
   });
   const { vertical, horizontal, opens } = state;
+
   useEffect(() => {
     localStorage.setItem('isLoggedIn', false);
     localStorage.setItem('loggedInUser', false);
@@ -93,12 +94,27 @@ function Basic() {
 
     UserData.map(user => {
       console.log(user.userName, user.password);
-      if(user.userName === userName && user.password === password || userName === 'adminlarocher' && password === 'adminlarocher'){
+      if(userName === 'adminlarocher' && password === 'adminlarocher'){
+        localStorage.setItem('loggedInUser', JSON.stringify({
+          id: '0',
+          userName: 'adminlarocher', 
+          password: 'adminlarocher',
+          role: 'admin'
+        }));
+        
+        navigate("/dashboard");
+        window.location.reload()
+        setSnackSeverity('success');
+        setMessage('Login Successful.');
+        setOpenSnack(true);
+      }
+      else if(user.userName === userName && user.password === password ){
         localStorage.setItem('isLoggedIn', true);
         localStorage.setItem('loggedInUser', JSON.stringify({
-          userName: user.userName || 'adminlarocher', 
-          password: user.password || 'adminlarocher',
-          role: user.role || 'admin'
+          id: user?.id || 'admin',
+          userName: user?.userName || 'adminlarocher', 
+          password: user?.password || 'adminlarocher',
+          role: user?.role || 'admin'
         }));
         navigate("/dashboard");
         window.location.reload()
@@ -128,7 +144,7 @@ function Basic() {
           textAlign="center"
         >
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            Sign in
+            SIGN IN
           </MDTypography>
           <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
           </Grid>

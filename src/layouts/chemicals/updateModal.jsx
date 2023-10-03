@@ -126,7 +126,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           autoComplete="current-password"
         />
         <TextField
-        defaultValue={userData.role}
+        defaultValue={userData?.role}
         margin="normal"
         required
         fullWidth

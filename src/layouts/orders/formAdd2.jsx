@@ -28,7 +28,7 @@ import CSVReader from 'react-csv-reader';
 import axios from 'axios';
 import { UPLOADINIT_URL, UPLOAD_URL } from '../../config.env'
 import useMediaQuery from '@mui/material/useMediaQuery';
-
+import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -37,7 +37,50 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+
+const columns2 = [{ field: 'id', headerName: 'OId', width: 10 },
+  { field: 'fullName', headerName: 'Customer Name', width: 150 },
+  { field: 'phone', headerName: 'Customer Phone', width: 200 },
+  { field: 'total', headerName: 'Total', width: 150,  type: 'number', 
+  format: (value) => console.log("cccccccccc", value)},
+  { field: 'trackingNumber', headerName: 'TrackingNumber', width: 150 }
+]
+
 const columns = [
+  { field: 'id', headerName: 'ID', width: 70 },
+  { field: 'firstName', headerName: 'First name', width: 130 },
+  { field: 'lastName', headerName: 'Last name', width: 130 },
+  {
+    field: 'age',
+    headerName: 'Age',
+    type: 'number',
+    width: 90,
+  },
+  {
+    field: 'fullName',
+    headerName: 'Full name',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    width: 160,
+    valueGetter: (params) =>
+      `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+  },
+];
+
+const rows = [
+  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
+  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
+  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
+  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
+  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
+  { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
+  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+];
+
+  
+const columnss = [
   { id: 'name', label: 'Name', minWidth: 170 },
   { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
   {
@@ -68,7 +111,7 @@ function createData(name, code, population, size) {
   return { name, code, population, size, density };
 }
 
-const rows = [
+const rowss = [
   createData('India', 'IN', 1324171354, 3287263),
   createData('China', 'CN', 1403500365, 9596961),
   createData('Italy', 'IT', 60483973, 301340),
@@ -365,7 +408,6 @@ export default function FormDialog2({open, setOpen, id}) {
     );
     formData.append("isDeliveryAdded", checkedToDelivery);
     formData.append("deliveryId", deliveryId);
-    formData.append("userId", user.id);
 
     console.log(formData);
 
@@ -437,8 +479,18 @@ export default function FormDialog2({open, setOpen, id}) {
         <Box component="form"  fullWidth noValidate sx={{ minWidth: 120,  minHeight: 40, mt: 1 }}>
 
           <div className="App">
-          <h4>Upload CSV File Here.</h4>
-          <input type="file" name='file' id='file' value={''} title=" "  onChange={handleChangeFile} />
+          <h4 sx={{marginTop: '12px'}} >Upload CSV File Here.</h4>
+          <input 
+          style={{ 
+          background: '#1560bd',
+          borderRadius: '6px',
+          border: 'none',
+          color: 'white',
+          padding: '12px 22px',
+          marginTop: '3px', mb: 2,
+          margin: '4px 2px',
+          cursor: 'pointer' }}
+          type="file" name='file' class="hidden" id='files' onChange={handleChangeFile} />
           </div>
 
           <div style={{marginTop:'20px', display: "flex", flexDirection: 'row'}}>
@@ -479,7 +531,7 @@ export default function FormDialog2({open, setOpen, id}) {
           <Button
               onClick={importCSVInit}
               variant="contained"
-              sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+              sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
               >
               Upload
               </Button>
@@ -499,63 +551,25 @@ export default function FormDialog2({open, setOpen, id}) {
          
           <Paper sx={{ width: '100%' }}>
             {initData?.data?.data?.length > 0 ? initData?.data?.data?.map(init => (
-              <><TableContainer sx={{ maxHeight: 440 }}>
+              <>
               <DialogTitle id="responsive-dialog-title">
-                {init.phone}
+               Customer Phone :  {init.phone}
               </DialogTitle>
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center" colSpan={2}>
-                      Country
-                    </TableCell>
-                    <TableCell align="center" colSpan={3}>
-                      Details
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    {columns.map((column) => (
-                      <TableCell
-                        key={column.id}
-                        align={column.align}
-                        style={{ top: 57, minWidth: column.minWidth }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                          {columns.map((column) => {
-                            const value = row[column.id];
-                            return (
-                              <TableCell key={column.id} align={column.align}>
-                                {column.format && typeof value === 'number'
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
+              <TableContainer sx={{ maxHeight: 440 }}>
+              <div style={{ height: 400, width: '100%' }}>
+                <DataGrid
+                  rows={init.orders || []}
+                  columns={columns2}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { page: 0, pageSize: 5 },
+                    },
+                  }}
+                  pageSizeOptions={[5, 10]}
+                />
+              </div>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            /></>
+            </>
             )) : <><h4>No Previous Orders Found.</h4></>
           }
           </Paper>

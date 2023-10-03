@@ -15,6 +15,14 @@ const getAll = async() => {
     return data;
 };
 
+const multipleSearch = async(req) => {
+    const data = await axios.get(extendedUrl + `/income/multipleSearch`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
 const getById = async(id) => {
     const data = await axios.get(extendedUrl + `/income/${id}`);
     console.log(data);
@@ -38,5 +46,6 @@ export const IncomesType = {
     add,
     getById,
     update,
-    deletebyId
+    deletebyId,
+    multipleSearch
 }

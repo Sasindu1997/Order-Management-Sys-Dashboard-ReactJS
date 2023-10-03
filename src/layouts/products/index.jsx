@@ -197,19 +197,19 @@ function Products() {
     ]
 
     const rows = productData?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        productName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        productName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.productName  || "-"}
         </MDTypography>),
-        productCode: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        productCode: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.productCode  || "-"}
         </MDTypography>),
-        price: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        price: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.price  || "-"}
         </MDTypography>),
-        description: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        description: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.description  || "-"}
         </MDTypography>),
         status: (
@@ -218,7 +218,7 @@ function Products() {
           </MDBox>
         ),
         // categoryId: (
-        //   <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        //   <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         //     {user.categoryId  || "-"}
         //   </MDTypography>
         // ),

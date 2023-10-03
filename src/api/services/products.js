@@ -15,6 +15,12 @@ const getAll = async() => {
     return data;
 };
 
+const getAllByCategoryId = async(id) => {
+    const data = await axios.get(extendedUrl +  `/products/category/${id}`);
+    console.log(data);
+    return data;
+};
+
 const getById = async(id) => {
     const data = await axios.get(extendedUrl + `/products/${id}`);
     console.log(data);
@@ -38,5 +44,6 @@ export const ProductType = {
     add,
     getById,
     update,
-    deletebyId
+    deletebyId,
+    getAllByCategoryId
 }

@@ -27,6 +27,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
+  const [errorVM, setErrorVM] = useState(false);
   const [initData, setInitData] = useState({
     title: '',
     description: '',
@@ -52,6 +53,12 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   }, [])
 
   const onSubmit = (values) => {
+    if(values.title == '' || values.title == 'undefined' || values.title == null){
+      setErrorVM("Enter a Valid Category Title.");
+      return;
+    } else {
+      setErrorVM(false)
+    }
     const obj = {
         title: values.title,
         description: values.description,
@@ -110,12 +117,17 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           id="description"
           autoComplete="description"
         />
+        <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+        <MDTypography variant="p" color="red">
+         {errorVM ? errorVM : ''}
+       </MDTypography>
+     </div>
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button
             type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+            sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
             >
             Update
             </Button>

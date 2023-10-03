@@ -477,7 +477,7 @@ export default function FormDialog2({open, setOpen, id}) {
           <Button
               onClick={importCSVInit}
               variant="contained"
-              sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+              sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
               >
               Upload
               </Button>

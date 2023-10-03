@@ -205,19 +205,19 @@ function Invoice({orderDataSelectedArr}) {
 
   
     const rows = userData?.map((user) =>  ({
-      id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.id || "-"}
       </MDTypography>),
-      name: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      name: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.name  || "-"}
       </MDTypography>),
-      code: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      code: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
       {user.code  || "-"}
       </MDTypography>),
-      unitPrice: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      unitPrice: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.unitPrice  || "-"}
       </MDTypography>),
-      supplier: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      supplier: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.supplier  || "-"}
       </MDTypography>),
       status: (
@@ -269,47 +269,50 @@ function Invoice({orderDataSelectedArr}) {
       <div id="divToPrint" >
           {invoiceData.map(data => (
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+              {console.log(data)}
               {data[0] !== null && data[0] !== undefined && data[0] !== {} &&<Grid item xs={6}>
                 <Item class="border">
                   <div>
                     <div class="parent parent-invoice-logo-type">
                         <span class="invoice-type child">
-                            {`INVOICE: ${data[0]?.id}`}
+                            {`INVOICE: ${data[0]?.invoiceNumber}`}
                         </span>
+                        
                         <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                     </div>
+                        <div class="invoice-tracking">
+                        <span>
+                            {` Tracking No: ${data[0]?.trackingNumber}`}
+                        </span>
+                        </div>
                     <div class="parent parent-invoice-table-address">
                         <table class="child invoice-table-address" >
                             <tr class="table-addresses">
                                 <th>FROM</th>
                                 <th>SHIP TO</th>
-                                <th>Order</th>
                             </tr>
                             <tr class="temp" >
                                 <td>La Rocher Ceylon pvt ltd</td>
                                 <td>{data[0]?.cfullName}</td>
-                                <td>Order Id : {data[0]?.id}</td>
                             </tr>
                             <tr>
-                                <td>83/1/1, Pagoda, Nugegoda.</td>
-                                <td>{data[0]?.caddress}</td>
-                                <td>Order Date : {moment(data[0]?.createdAt).format('DD-MM-YYYY')}</td>
+                                <td>Hot line : 071-1752090</td>
+                                <td class="table-phone">{data[0]?.cphone.split(/,/g)[0]}</td>
                             </tr>
                             <tr>
-                                <td>Hot line - 071-1752090</td>
-                                <td>{data[0]?.cphone}</td>
-                                <td>Tracking No : {data[0]?.trackingNumber}</td>
-                            </tr>
-                            <tr>
-                                <td>www.larocherceylon.com </td>
-                                <td>{data[0]?.cdistrict}</td>
+                            <td>www.larocherceylon.com</td>
+                            <td>{data[0]?.caddress.replace(/,/g , ', ')}</td>
                             </tr>
                             <tr>
                                 <td>larocherbeauty@gmail.com</td>
+                                <td>{data[0]?.cdistrict}</td>
+                            </tr>
+                            <tr>
+                                <td></td>
                                 <td>{data[0]?.cemail}</td>
                             </tr>
                             <tr>
-                                <td>Reg no - P V 00248808</td>
+                                <td></td>
                                 <td>{data[0]?.cemail}</td>
                             </tr>
                         </table>
@@ -318,15 +321,13 @@ function Invoice({orderDataSelectedArr}) {
                     <div class="parent parent-invoice-table">
                         <table class="invoice-table" >
                             <tr class="table-row-border">
-                                <th>Product</th>
+                                <th class="table-row-border-product">Product</th>
                                 <th>QTY</th>
-                                <th>Weight</th>
                                 <th>PRICE</th>
                             </tr>
                             {data[0]?.productData?.map(pr => (<tr>
-                                <td>{pr.pName}</td>
+                                <td class="table-row-border-product">{pr.pName}</td>
                                 <td>{pr.ocount}</td>
-                                <td>{pr.oweight}</td>
                                 <td>{parseFloat(pr.pprice)}</td>
                             </tr>))}
                         </table>
@@ -340,35 +341,7 @@ function Invoice({orderDataSelectedArr}) {
                         <span class="invoice-total child">
                             LKR : {data[0]?.total.toFixed(2)}
                         </span>
-                    </div>
-
-                    <div class="parent  parent-invoice-terms" >
-                    <table class="child invoice-table-address" >
-                            <tr>
-                              <th>Payment Methods</th>
-                              <th>Bank Details</th>
-                            </tr>
-                            <tr class="temp">
-                                <td>Cash on delivery</td>
-                                <td>LA ROCHER CEYLON</td>
-                                <td>CAPITAL ONE SKIN CARE</td>
-                            </tr>
-                            <tr>
-                                <td>One pay(Master/Visa/Amex) </td>
-                                <td>001110013686</td>
-                                <td>1000615072</td>
-                            </tr>
-                            <tr>
-                                <td>Bank transfer</td>
-                                <td>Sampath bank</td>
-                                <td>Commercial bank</td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>Bambalapitiya Branch</td>
-                                <td>Nugegoda Branch</td>
-                            </tr>
-                        </table>
+                       
                     </div>
                   </div>
                 </Item>
@@ -378,42 +351,44 @@ function Invoice({orderDataSelectedArr}) {
                 <div>
                   <div class="parent parent-invoice-logo-type">
                       <span class="invoice-type child">
-                          INVOICE {`${data[1]?.id}`}
+                          {`INVOICE: ${data[1]?.invoiceNumber}`}
                       </span>
+                      
                       <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                   </div>
+                      <div class="invoice-tracking">
+                      <span>
+                          {` Tracking No: ${data[1]?.trackingNumber}`}
+                      </span>
+                      </div>
                   <div class="parent parent-invoice-table-address">
                       <table class="child invoice-table-address" >
                           <tr class="table-addresses">
                               <th>FROM</th>
                               <th>SHIP TO</th>
-                              <th>Order</th>
                           </tr>
                           <tr class="temp" >
                               <td>La Rocher Ceylon pvt ltd</td>
                               <td>{data[1]?.cfullName}</td>
-                              <td>Order Id : {data[1]?.id}</td>
                           </tr>
                           <tr>
-                              <td>83/1/1, Pagoda, Nugegoda.</td>
-                              <td>{data[1]?.caddress}</td>
-                              <td>Order Date : {moment(data[1]?.createdAt).format('DD-MM-YYYY')}</td>
+                              <td>Hot line : 071-1752090</td>
+                              <td class="table-phone">{data[1]?.cphone.split(/,/g)[0]}</td>
                           </tr>
                           <tr>
-                              <td>Hot line - 071-1752090</td>
-                              <td>{data[1]?.cphone}</td>
-                              <td>Tracking No : {data[1]?.trackingNumber}</td>
-                          </tr>
-                          <tr>
-                              <td>www.larocherceylon.com </td>
-                              <td>{data[1]?.cdistrict}</td>
+                          <td>www.larocherceylon.com</td>
+                          <td>{data[1]?.caddress.replace(/,/g , ', ')}</td>
                           </tr>
                           <tr>
                               <td>larocherbeauty@gmail.com</td>
+                              <td>{data[1]?.cdistrict}</td>
+                          </tr>
+                          <tr>
+                              <td></td>
                               <td>{data[1]?.cemail}</td>
                           </tr>
                           <tr>
-                              <td>Reg no - P V 00248808</td>
+                              <td></td>
                               <td>{data[1]?.cemail}</td>
                           </tr>
                       </table>
@@ -422,16 +397,13 @@ function Invoice({orderDataSelectedArr}) {
                   <div class="parent parent-invoice-table">
                       <table class="invoice-table" >
                           <tr class="table-row-border">
-                              <th>Product</th>
+                              <th class="table-row-border-product">Product</th>
                               <th>QTY</th>
-                              <th>Weight</th>
                               <th>PRICE</th>
                           </tr>
-                          {data[1]?.productData?.map(pr => console.log(pr))}
                           {data[1]?.productData?.map(pr => (<tr>
-                              <td>{pr.pName}</td>
+                              <td class="table-row-border-product">{pr.pName}</td>
                               <td>{pr.ocount}</td>
-                              <td>{pr.oweight}</td>
                               <td>{parseFloat(pr.pprice)}</td>
                           </tr>))}
                       </table>
@@ -443,82 +415,56 @@ function Invoice({orderDataSelectedArr}) {
                       </span>
 
                       <span class="invoice-total child">
-                         {`LKR : ${data[1]?.total.toFixed(2)}`}
+                          LKR : {data[1]?.total.toFixed(2)}
                       </span>
-                  </div>
-
-                  <div class="parent  parent-invoice-terms" >
-                  <table class="child invoice-table-address" >
-                          <tr>
-                            <th>Payment Methods</th>
-                            <th>Bank Details</th>
-                          </tr>
-                          <tr class="temp">
-                              <td>Cash on delivery</td>
-                              <td>LA ROCHER CEYLON</td>
-                              <td>CAPITAL ONE SKIN CARE</td>
-                          </tr>
-                          <tr>
-                              <td>One pay(Master/Visa/Amex) </td>
-                              <td>001110013686</td>
-                              <td>1000615072</td>
-                          </tr>
-                          <tr>
-                              <td>Bank transfer</td>
-                              <td>Sampath bank</td>
-                              <td>Commercial bank</td>
-                          </tr>
-                          <tr>
-                              <td></td>
-                              <td>Bambalapitiya Branch</td>
-                              <td>Nugegoda Branch</td>
-                          </tr>
-                      </table>
+                     
                   </div>
                 </div>
               </Item>
-              </Grid>}
+            </Grid>}
               {data[2] !== null && data[2] !== undefined && data[2] !== {} && <Grid item xs={6}>
               <Item class="border">
                 <div>
                   <div class="parent parent-invoice-logo-type">
                       <span class="invoice-type child">
-                          INVOICE {`${data[2]?.id}`}
+                          {`INVOICE: ${data[2]?.invoiceNumber}`}
                       </span>
+                      
                       <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                   </div>
+                      <div class="invoice-tracking">
+                      <span>
+                          {` Tracking No: ${data[2]?.trackingNumber}`}
+                      </span>
+                      </div>
                   <div class="parent parent-invoice-table-address">
                       <table class="child invoice-table-address" >
                           <tr class="table-addresses">
                               <th>FROM</th>
                               <th>SHIP TO</th>
-                              <th>Order</th>
                           </tr>
                           <tr class="temp" >
                               <td>La Rocher Ceylon pvt ltd</td>
                               <td>{data[2]?.cfullName}</td>
-                              <td>Order Id : {data[2]?.id}</td>
                           </tr>
                           <tr>
-                              <td>83/1/1, Pagoda, Nugegoda.</td>
-                              <td>{data[2]?.caddress}</td>
-                              <td>Order Date : {moment(data[2]?.createdAt).format('DD-MM-YYYY')}</td>
+                              <td>Hot line : 071-1752090</td>
+                              <td class="table-phone">{data[2]?.cphone.split(/,/g)[0]}</td>
                           </tr>
                           <tr>
-                              <td>Hot line - 071-1752090</td>
-                              <td>{data[2]?.cphone}</td>
-                              <td>Tracking No : {data[2]?.trackingNumber}</td>
-                          </tr>
-                          <tr>
-                              <td>www.larocherceylon.com </td>
-                              <td>{data[2]?.cdistrict}</td>
+                          <td>www.larocherceylon.com</td>
+                          <td>{data[2]?.caddress.replace(/,/g , ', ')}</td>
                           </tr>
                           <tr>
                               <td>larocherbeauty@gmail.com</td>
+                              <td>{data[2]?.cdistrict}</td>
+                          </tr>
+                          <tr>
+                              <td></td>
                               <td>{data[2]?.cemail}</td>
                           </tr>
                           <tr>
-                              <td>Reg no - P V 00248808</td>
+                              <td></td>
                               <td>{data[2]?.cemail}</td>
                           </tr>
                       </table>
@@ -527,15 +473,13 @@ function Invoice({orderDataSelectedArr}) {
                   <div class="parent parent-invoice-table">
                       <table class="invoice-table" >
                           <tr class="table-row-border">
-                              <th>Product</th>
+                              <th class="table-row-border-product">Product</th>
                               <th>QTY</th>
-                              <th>Weight</th>
                               <th>PRICE</th>
                           </tr>
                           {data[2]?.productData?.map(pr => (<tr>
-                              <td>{pr.pName}</td>
+                              <td class="table-row-border-product">{pr.pName}</td>
                               <td>{pr.ocount}</td>
-                              <td>{pr.oweight}</td>
                               <td>{parseFloat(pr.pprice)}</td>
                           </tr>))}
                       </table>
@@ -549,80 +493,54 @@ function Invoice({orderDataSelectedArr}) {
                       <span class="invoice-total child">
                           LKR : {data[2]?.total.toFixed(2)}
                       </span>
-                  </div>
-
-                  <div class="parent  parent-invoice-terms" >
-                  <table class="child invoice-table-address" >
-                          <tr>
-                            <th>Payment Methods</th>
-                            <th>Bank Details</th>
-                          </tr>
-                          <tr class="temp">
-                              <td>Cash on delivery</td>
-                              <td>LA ROCHER CEYLON</td>
-                              <td>CAPITAL ONE SKIN CARE</td>
-                          </tr>
-                          <tr>
-                              <td>One pay(Master/Visa/Amex) </td>
-                              <td>001110013686</td>
-                              <td>1000615072</td>
-                          </tr>
-                          <tr>
-                              <td>Bank transfer</td>
-                              <td>Sampath bank</td>
-                              <td>Commercial bank</td>
-                          </tr>
-                          <tr>
-                              <td></td>
-                              <td>Bambalapitiya Branch</td>
-                              <td>Nugegoda Branch</td>
-                          </tr>
-                      </table>
+                     
                   </div>
                 </div>
               </Item>
-              </Grid>}
+            </Grid>}
               {data[3] !== null && data[3] !== undefined && data[3] !== {} && <Grid item xs={6}>
               <Item class="border">
                 <div>
                   <div class="parent parent-invoice-logo-type">
                       <span class="invoice-type child">
-                          INVOICE {`${data[3]?.id}`}
+                          {`INVOICE: ${data[3]?.invoiceNumber || '000000'}`}
                       </span>
+                      
                       <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                   </div>
+                      <div class="invoice-tracking">
+                      <span>
+                          {` Tracking No: ${data[3]?.trackingNumber}`}
+                      </span>
+                      </div>
                   <div class="parent parent-invoice-table-address">
                       <table class="child invoice-table-address" >
                           <tr class="table-addresses">
                               <th>FROM</th>
                               <th>SHIP TO</th>
-                              <th>Order</th>
                           </tr>
                           <tr class="temp" >
                               <td>La Rocher Ceylon pvt ltd</td>
                               <td>{data[3]?.cfullName}</td>
-                              <td>Order Id : {data[3]?.id}</td>
                           </tr>
                           <tr>
-                              <td>83/1/1, Pagoda, Nugegoda.</td>
-                              <td>{data[3]?.caddress}</td>
-                              <td>Order Date : {moment(data[3]?.createdAt).format('DD-MM-YYYY')}</td>
+                              <td>Hot line : 071-1752090</td>
+                              <td class="table-phone">{data[3]?.cphone.split(/,/g)[0]}</td>
                           </tr>
                           <tr>
-                              <td>Hot line - 071-1752090</td>
-                              <td>{data[3]?.cphone}</td>
-                              <td>Tracking No : {data[3]?.trackingNumber}</td>
-                          </tr>
-                          <tr>
-                              <td>www.larocherceylon.com </td>
-                              <td>{data[3]?.cdistrict}</td>
+                          <td>www.larocherceylon.com</td>
+                          <td>{data[3]?.caddress.replace(/,/g , ', ')}</td>
                           </tr>
                           <tr>
                               <td>larocherbeauty@gmail.com</td>
+                              <td>{data[3]?.cdistrict}</td>
+                          </tr>
+                          <tr>
+                              <td></td>
                               <td>{data[3]?.cemail}</td>
                           </tr>
                           <tr>
-                              <td>Reg no - P V 00248808</td>
+                              <td></td>
                               <td>{data[3]?.cemail}</td>
                           </tr>
                       </table>
@@ -631,16 +549,13 @@ function Invoice({orderDataSelectedArr}) {
                   <div class="parent parent-invoice-table">
                       <table class="invoice-table" >
                           <tr class="table-row-border">
-                              <th>Product</th>
+                              <th class="table-row-border-product">Product</th>
                               <th>QTY</th>
-                              <th>Weight</th>
                               <th>PRICE</th>
                           </tr>
-                          {data[3]?.productData?.map(pr => console.log(pr))}
                           {data[3]?.productData?.map(pr => (<tr>
-                              <td>{pr.pName}</td>
+                              <td class="table-row-border-product">{pr.pName}</td>
                               <td>{pr.ocount}</td>
-                              <td>{pr.oweight}</td>
                               <td>{parseFloat(pr.pprice)}</td>
                           </tr>))}
                       </table>
@@ -654,44 +569,14 @@ function Invoice({orderDataSelectedArr}) {
                       <span class="invoice-total child">
                           LKR : {data[3]?.total.toFixed(2)}
                       </span>
-                  </div>
-
-                  <div class="parent  parent-invoice-terms" >
-                  <table class="child invoice-table-address" >
-                          <tr>
-                            <th>Payment Methods</th>
-                            <th>Bank Details</th>
-                          </tr>
-                          <tr class="temp">
-                              <td>Cash on delivery</td>
-                              <td>LA ROCHER CEYLON</td>
-                              <td>CAPITAL ONE SKIN CARE</td>
-                          </tr>
-                          <tr>
-                              <td>One pay(Master/Visa/Amex) </td>
-                              <td>001110013686</td>
-                              <td>1000615072</td>
-                          </tr>
-                          <tr>
-                              <td>Bank transfer</td>
-                              <td>Sampath bank</td>
-                              <td>Commercial bank</td>
-                          </tr>
-                          <tr>
-                              <td></td>
-                              <td>Bambalapitiya Branch</td>
-                              <td>Nugegoda Branch</td>
-                          </tr>
-                      </table>
+                     
                   </div>
                 </div>
               </Item>
-              </Grid>}
+            </Grid>}
             </Grid>
           ))
         }
-    
-
     {/*<div>
       <header className="headerStart">
         <div class="headerSection1">

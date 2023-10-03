@@ -109,19 +109,19 @@ export default function Data() {
     ],
 
     rows : getAllProductOrders  ?.map((user) =>  ({
-      id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.id || "-"}
       </MDTypography>),
-      productName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      productName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.productName  || "-"}
       </MDTypography>),
-      productCode: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+      productCode: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
       {user.productCode  || "-"}
     </MDTypography>),
-    maxStockLevel: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+    maxStockLevel: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
       {user.maxStockLevel  || "-"}
       </MDTypography>),
-      sold_count: ( <MDTypography color="info" component="a" href="#" variant="caption" fontWeight="medium">
+      sold_count: ( <MDTypography color="info" component="span" href="#" variant="caption" fontWeight="medium">
           {user.sold_count  || "-"}
       </MDTypography>),
       

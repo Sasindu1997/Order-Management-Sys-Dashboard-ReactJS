@@ -49,6 +49,19 @@ function Settings() {
       navigate("/settings/subcategories");
   }
 
+  const handleClickSmsTexts = () => {
+    navigate("/settings/smstext");
+  }
+
+  const handleClickIncomeStream = () => {
+    navigate("/settings/incomeStream");
+  }
+
+  const handleClickExpenseStream = () => {
+    navigate("/settings/expenseStream");
+  }
+
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -70,6 +83,36 @@ function Settings() {
                 icon="apps"
                 title="Sub Categories"
                 onClickCard={handleClickSubCategories}
+              />
+            </MDBox>
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                icon="sms"
+                color="warning"
+                title="SMS Texts"
+                onClickCard={handleClickSmsTexts}
+              />
+            </MDBox>
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                icon="price_check"
+                color="success"
+                title="Income Streams"
+                onClickCard={handleClickIncomeStream}
+              />
+            </MDBox>
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                icon="money"
+                color="primary"
+                title="Expense Streams"
+                onClickCard={handleClickExpenseStream}
               />
             </MDBox>
           </Grid>

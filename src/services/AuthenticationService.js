@@ -62,7 +62,7 @@ function IsAuthenticated(setUserState)
     const authToken = state.user; // get redux branchActions user
 
     if (authToken.authenticated === false || authToken.userID == null
-		|| authToken.userName == null || authToken.roleID == null
+		|| authToken.userName == null || authToken?.roleID == null
 		|| authToken.email == null || authToken.token == null)
     {
         return false;

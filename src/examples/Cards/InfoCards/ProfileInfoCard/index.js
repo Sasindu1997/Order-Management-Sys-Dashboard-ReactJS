@@ -70,7 +70,7 @@ function ProfileInfoCard({ title, description, info, social, action, shadow }) {
   const renderSocial = social.map(({ link, icon, color }) => (
     <MDBox
       key={color}
-      component="a"
+      component="span"
       href={link}
       target="_blank"
       rel="noreferrer"

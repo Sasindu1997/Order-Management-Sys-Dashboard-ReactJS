@@ -38,6 +38,9 @@ import { useState, useEffect } from "react";
 import {SDK} from "../../api/index";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+// import { BarChart } from '@mui/x-charts';
+import { Bar } from 'react-chartjs-2';
+import {faker} from '@faker-js/faker';
 
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
@@ -51,10 +54,41 @@ function Dashboard() {
   const [weeklyOrderCount, setweeklyOrderCount] = useState([]);
   const [yearlyOrderCount, setyearlyOrderCount] = useState([]);
   const [newCustomersCount, setnewCustomersCount] = useState([]);
+  const [managers, setManagers] = useState([]);
+  const [managersData, setManagersData] = useState([]);
   const [openBackDrop, setOpenBackDrop] = React.useState(true);
+  const [openBackDrop2, setOpenBackDrop2] = React.useState(true);
 
   useEffect(() => {
     setOpenBackDrop(true);
+
+    SDK.UserType.findAllManagers()
+    .then((res) => {
+      let arr = []
+      let arr2 = []
+      console.log("RES: ", res);
+      setManagers(res?.data)
+
+      res?.data?.map(managers => {
+        SDK.OrderType.getBySupplierId(managers.id)
+          .then((res) => {
+            res?.data?.map(dat => { 
+              arr.push(dat?.order_count)
+            })
+            arr2.push(arr)
+            console.log("getBySupplierId: ", arr);
+            arr=[]
+          })
+          .catch((error) => {
+            console.log("Error: ", error)
+          })
+      })
+      setManagersData(arr2)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+
     SDK.ProductType.getAll()
     .then((res) => {
       console.log("RES: ", res);
@@ -82,7 +116,6 @@ function Dashboard() {
       console.log("Error: ", error)
     })
 
-    //////////////////////////////
     SDK.OrderType.getAllProductOrders()
       .then((res) => {
         console.log("RES 1: ", res.data);
@@ -153,9 +186,64 @@ function Dashboard() {
       })
       setTimeout(function(){
         setOpenBackDrop(false);
-      }, 1000); 
+      }, 1500); 
 }, [])
 
+useEffect(() => {
+  setOpenBackDrop(true);
+    setTimeout(function(){
+      setOpenBackDrop(false);
+      setOpenBackDrop2(false)
+    }, 3000); 
+}, [managersData])
+
+
+
+ const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Chart.js Bar Chart',
+    },
+  },
+};
+
+const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+ const data = {
+  labels,
+  datasets: [
+    {
+      label: 'Dataset 1',
+      data: [100, 200, 300],
+      backgroundColor: 'rgba(255, 99, 132, 0.9)',
+    },
+    // {
+    //   label: 'Dataset 2',
+    //   data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
+    //   backgroundColor: 'rgba(53, 162, 235, 0.9)',
+    // },
+  ],
+};
+
+
+
+
+// const getChartData = (id) => {
+//  let data =  SDK.OrderType.getBySupplierId(id)
+//           .then((res) => {
+//             console.log("getBySupplierId: ", res.data);
+//             return res.data;
+//           })
+//           .catch((error) => {
+//             console.log("Error: ", error)
+//           })
+//           return data
+// }
 
   return (
     <DashboardLayout>
@@ -272,6 +360,43 @@ function Dashboard() {
             </Grid>
           </Grid>
         </MDBox>
+      <MDBox mt={4.5}>
+      <Grid container spacing={3}>
+      {managers.length > 0 && managers.map((manager, i) => (
+        <Grid item xs={12} md={6} lg={4}>
+          <MDBox mb={3}>
+          {console.log("ccxxxxxxxxxxxxxxxxxxxx", managersData)}
+              <Bar options={ {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: `Orders of ${manager?.fullName}`,
+                  },
+                },
+              }} data={{
+                labels,
+                datasets: [
+                  // {
+                  //   label: 'Dataset[i]',
+                  //   data: managersData[i],
+                  //   backgroundColor: 'rgba(255, 99, 132, 0.9)',
+                  // },
+                  {
+                    label: `Dataset ${i+1}`,
+                    data: managersData[i],
+                    backgroundColor: 'rgba(53, 162, 235, 0.9)',
+                  },
+                ],
+              }} />
+          </MDBox>
+        </Grid>
+      ))}
+      </Grid>
+    </MDBox>
         <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>

@@ -123,37 +123,37 @@ function Users() {
     ]
 
     const rows = userData?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.id || "-"}
+        id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+          {user?.id || "-"}
         </MDTypography>),
-        fullName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.fullName  || "-"}
+        fullName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+          {user?.fullName  || "-"}
         </MDTypography>),
-        role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.role  || "-"}
+        role: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+        {user?.role  || "-"}
         </MDTypography>),
-        email: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.email  || "-"}
+        email: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+            {user?.email  || "-"}
         </MDTypography>),
-        phoneNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.phoneNumber  || "-"}
+        phoneNumber: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+          {user?.phoneNumber  || "-"}
         </MDTypography>),
         status: (
           <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.isActive}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+            <MDBadge badgeContent={`${user?.isActive}` || false} color={user?.isActive ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
         ),
         address: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.address  || "-"}
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+            {user?.address  || "-"}
           </MDTypography>
         ),
         action: (
           <Box >
           <Stack direction="row" spacing={1}>
-            <Button onClick={() => handleClickView(user.id)}> View </Button>           
-            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
-            <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
+            <Button onClick={() => handleClickView(user?.id)}> View </Button>           
+            <Button onClick={() => handleClickUpdate(user?.id)}> Update </Button>
+            <Button onClick={() => handleClickDelete(user?.id)}> Delete</Button>
           </Stack>
         </Box>
         )

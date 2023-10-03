@@ -26,10 +26,19 @@ export default function FormDialog({open, setOpen, id}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState([]);
+  const [errorVM, setErrorVM] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
+    if(data.get('title') == '' || data.get('title') == 'undefined' || data.get('title') == null){
+      setErrorVM("Enter a Valid Category Title.");
+      return;
+    } else {
+      setErrorVM(false)
+    }
+
     const obj = {
         title: data.get('title'),
         description: data.get('description'),
@@ -85,12 +94,17 @@ export default function FormDialog({open, setOpen, id}) {
               id="description"
               autoComplete="description"
             />
+            <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+               <MDTypography variant="p" color="red">
+                {errorVM ? errorVM : ''}
+              </MDTypography>
+            </div>
             <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
             <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
             <Button
                 type="submit"
                 variant="contained"
-                sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+                sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
                 >
                 Add
                 </Button>

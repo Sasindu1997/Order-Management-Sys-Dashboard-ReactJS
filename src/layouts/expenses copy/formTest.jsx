@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -18,6 +18,9 @@ import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import {SDK} from "../../api/index";
 
@@ -26,12 +29,35 @@ export default function FormDialog({open, setOpen, id}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState([]);
+  const [errorVM, setErrorVM] = useState(false);
+  const [incomeName, setIncomeName] = useState(false);
+
+  useEffect(() => {
+    SDK.IncomeStreamType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setUserData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+  }, [])
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    if(incomeName == '' || incomeName == 'undefined' || incomeName == null){
+      setErrorVM("Enter a Valid Name.");
+      return;
+    }
+    else if(data.get('amount') == '' || data.get('amount') == 'undefined' || data.get('amount') == null){
+      setErrorVM("Enter a Valid Amount.");
+      return;
+    } else {
+      setErrorVM(false)
+    }
     const obj = {
-        name: data.get('name'),
+        name: incomeName,
         description: data.get('description'),
         amount: data.get('amount'),
         isActive: true
@@ -58,13 +84,18 @@ export default function FormDialog({open, setOpen, id}) {
     setOpen(false);
   };
 
+  const handleChangeName = (event) => {
+    console.log(event.target.value)
+    setIncomeName(event.target.value);
+  };
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add Expense</DialogTitle>
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-              <TextField
+              {/*<TextField
               margin="normal"
               required
               fullWidth
@@ -74,7 +105,23 @@ export default function FormDialog({open, setOpen, id}) {
               id="name"
               autoComplete="name"
               autoFocus
-            />
+              />*/}
+              <InputLabel id="demo-simple-select-label" 
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Income Name</InputLabel>
+            <Select
+              labelId="incomeName"
+              id="incomeName"
+              value={incomeName}
+              label="incomeName"
+              fullWidth
+              name="incomeName"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleChangeName}
+            >
+            {userData.map((income) => (
+              <MenuItem value={income.id}>{income.name}</MenuItem>
+            ))}
+            </Select>
             <TextField
               margin="normal"
               required
@@ -94,17 +141,17 @@ export default function FormDialog({open, setOpen, id}) {
               id="amount"
               autoComplete="amount"
             />
-            <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}>
+            <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+               <MDTypography variant="p" color="red">
+                {errorVM ? errorVM : ''}
+              </MDTypography>
+            </div>
+            <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
             <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
             <Button
                 type="submit"
                 variant="contained"
-                sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+                sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
                 >
                 Add
                 </Button>

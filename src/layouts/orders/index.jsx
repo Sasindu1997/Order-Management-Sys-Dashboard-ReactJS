@@ -59,6 +59,8 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 
 // Data
 import {SDK} from "../../api/index";
@@ -106,6 +108,14 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
 function Orders() {
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = React.useState(false);
@@ -117,6 +127,14 @@ function Orders() {
   const [openSnack, setOpenSnack] = React.useState(false);
   const [snackSeverity, setSnackSeverity] = React.useState(false);
   const [message, setMessage] = React.useState(false);
+  const [soderId, setSoderId] = React.useState('');
+  const [scusName, setScusName] = React.useState('');
+  const [scusPhn, setScusPhn] = React.useState('');
+  const [ssupplier, setSsupplier] = React.useState('');
+  const [strackingNo, setStrackingNo] = React.useState('');
+  const [sorderStatus, setSorderStatus] = React.useState('');
+  const [managers, setManagers] = useState([]);
+
   const [state, setState] = React.useState({
     opens: false,
     vertical: 'bottom',
@@ -146,6 +164,15 @@ function Orders() {
     setTimeout(function(){
       setOpenBackDrop(false);
     }, 1000);
+
+    SDK.UserType.findAllManagers()
+    .then((res) => {
+      console.log("RES: ", res);
+      setManagers(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
   }, [open, openConformDelete, openUpdate])
 
   const handleChangeSearch = (event) => {
@@ -166,10 +193,53 @@ function Orders() {
    }, 2000); 
   };
 
-  const handleChangeSearchSelect = (event) => {
-    setSearchSelect(event.target.value);
+  const handleScusName = (event) => {
+    console.log(event.target.value)
+    setScusName(event.target.value);
+  };
+  const handleScusPhn = (event) => {
+    console.log(event.target.value)
+    setScusPhn(event.target.value);
+  };
+  const handleSupplier = (event) => {
+    console.log(event.target.value)
+    setSsupplier(event.target.value);
+  };
+  const handleSorderStatus = (event) => {
+    console.log(event.target.value)
+    setSorderStatus(event.target.value);
+  };
+  const handleStrackingNo = (event) => {
+    console.log(event.target.value)
+    setStrackingNo(event.target.value);
+  };
+  const handleSoderId = (event) => {
+    console.log(event.target.value) 
+    setSoderId(event.target.value);
   };
   
+  const handleClickSearchBtn = () => {
+
+    SDK.OrderType.multipleSearch({
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo
+    })
+    .then((res) => {
+      console.log("RES: ", res);
+      setOrderData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+  }
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -186,7 +256,6 @@ function Orders() {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpenSnack(false);
   };
 
@@ -265,7 +334,23 @@ function Orders() {
     })
   };
 
+    const handleClickBarcodeInit = async (order) => {
+    const res = handleClickBarcode(order).then(ress => {
+      if(ress == 'success'){
+        setSnackSeverity('success');
+        setMessage('Barcode Printed Sucessfully!');
+        setOpenSnack(true);
+      } else {
+        setSnackSeverity('error');
+        setMessage('Error In Barcode Printing!');
+        setOpenSnack(true);
+      }
+    })
+  }
+
   const handleClickBarcode = async (order) => {
+    console.log(order)
+
     const serial = "0123456789";
         // const receipt = (
         //     <Printer type="" width={2} characterSet="korea">
@@ -289,24 +374,37 @@ function Orders() {
 
           // Check printer status
           const printerStatus = await browserPrint.checkPrinterStatus();
-
+          console.log(order)
           // Check if the printer is ready
           if(printerStatus.isReadyToPrint) {
 
               // ZPL script to print a simple barcode
-              const zpl = `^XA
-                          ^BY2,2,100
-                          ^FO20,20^BC^FD${serial}^FS
-                          ^XZ`;
+              // const zpl = order.barcode && `^XA
+              //             ^BY2,2,100
+              //             ^FO20,20^BC^FD${order.barcode}^FS
+              //             ^XZ`;
 
-              browserPrint.print(zpl);
+              const zpl = `^XA
+              ^MMC
+              ^PW650
+              ^LL0223
+              ^LS0
+              ^BY2,2,100
+              ^FO20,20^BC^FD${order.barcode}^FS
+
+              ^BY2,2,100
+              ^FO20,20^BC^FD${order.barcode}^FS
+              ^PQ1,1,1,Y^XZ`
+
+              order.barcode && browserPrint.print(zpl);
+              return order.barcode ? 'success': 'error'; 
 
           } else {
-
               console.log("Error/s", printerStatus.errors);
+              return 'error'; 
           }
         } catch (error) {
-        throw new Error(error);
+            throw new Error(error);
         }
   }
 
@@ -316,49 +414,50 @@ function Orders() {
       { Header: "customer Phone", accessor: "customerPhone",  align: "left" },
       { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
       { Header: "total", accessor: "total", align: "center" },
-      { Header: "paid", accessor: "paid", align: "center" },
-      { Header: "status", accessor: "isActive", align: "center" },
+      // { Header: "paid", accessor: "paid", align: "center" },
       { Header: "Order status", accessor: "status", align: "center" },
+      { Header: "Final Status", accessor: "finalStatus", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
     ]
 
     const rows = orderData  ?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        id: ( <MDTypography  component="span" variant="caption" color="text" fontWeight="medium" cursor='null'>
           {user.id || "-"}
         </MDTypography>),
-        customerName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.cfullName  || "-"}
+        customerName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.ccfullName  || "-"}
         </MDTypography>),
-        customerPhone: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        customerPhone: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.cphone  || "-"}
       </MDTypography>),
-        trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        trackingNumber: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.trackingNumber  || "-"}
         </MDTypography>),
-        total: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.total  || "-"}
+        total: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+          {user.total.toFixed(2)  || "-"}
         </MDTypography>),
-        paid: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
-        isActive: (
-          <MDBox ml={-1}>
-            <MDBadge badgeContent={user.isActive ? "ACTIVE" : "INACTIVE"} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
-          </MDBox>
-        ),
+        // paid: (
+        //   <MDBox ml={-1}>
+        //     <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+        //   </MDBox>
+        // ),
         status: (
           <MDBox ml={-1}>
-            <MDBadge badgeContent={`${user.status}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
+            <MDBadge badgeContent={`${user.status}` || false} color={user.status == 'Pending' ? "warning" : user.status == 'Delivered' ? "success" : 'danger'} variant="gradient" size="sm" />
+          </MDBox>
+        ),
+        finalStatus: (
+          <MDBox ml={-1}>
+            <MDBadge badgeContent={`${user.finalStatus != null ? user.finalStatus : 'None'}` || false} color={user.finalStatus !== null ? "success" : "warning"} variant="gradient" size="sm" />
           </MDBox>
         ),
         action: (
           <Box >
           <Stack direction="row" spacing={1}>
-            <Button onClick={() => handleClickView(user.id)}> View </Button>           
+            <Button onClick={() => handleClickView(user.id)}> View </Button>   
+            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>           
             <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
-            <Button onClick={() => handleClickBarcode(user)}> Print Barcode</Button>
+            <Button disabled={!user?.barcode} onClick={() => handleClickBarcodeInit(user)}> Print Barcode</Button>
           </Stack>
         </Box>
         )
@@ -368,23 +467,152 @@ function Orders() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
-      <FormControl sx={{ m: 1 }} variant="standard">
-      <NativeSelect
-          id="demo-customized-select-native"
-          value={searchSelect}
-          onChange={handleChangeSearchSelect}
-          input={<BootstrapInput />}
+      <Box>
+      <Item>
+      <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Customer Name</InputLabel>
+          <TextField
+            value={scusName}
+            onChange={handleScusName}
+            margin="normal"
+            required
+            sx={{ paddingLeft: 2, paddingRight: 2}}
+            fullWidth
+            name="total"
+            id="total"
+          />
+        </Grid>
+        <Grid item xs={4}>
+           <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Customer Phone</InputLabel>
+          <TextField
+            value={scusPhn}
+            onChange={handleScusPhn}
+            margin="normal"
+            required
+            sx={{ paddingLeft: 2, paddingRight: 2}}
+            fullWidth
+            name="total"
+            type='number'
+            id="total"
+          />
+        </Grid>
+        <Grid item xs={4}>
+           
+        <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Supplier</InputLabel>
+          {/*<TextField
+            value={ssupplier}
+            onChange={handleSupplier}
+            margin="normal"
+            required
+            sx={{ paddingLeft: 2, paddingRight: 2}}
+            fullWidth
+            name="total"
+            id="total"
+  />*/}
+        <Select
+          labelId="status"
+          id="status" 
+          value={ssupplier}
+          label="status"
+          fullWidth
+          name="status"
+          sx={{ minWidth: 120,  minHeight: 40 }}
+          onChange={handleSupplier}
         >
-          <option aria-label="None" value="" />
-          <option value={'fullName'}>Name</option>
-          <option value={'phone'}>Phone</option>
-        </NativeSelect>
-    </FormControl>
-    <FormControl sx={{ m: 1 }} variant="standard">
-        <BootstrapInput disabled={!searchSelect} id="demo-customized-textbox" placeholder='Search Here' onChange={handleChangeSearch} />
-      </FormControl>
-          </div>
+        {managers?.map((obj) => (
+          <MenuItem
+            key={obj.id}
+            value={obj.userName}
+            extra={obj.userName}
+          >
+            
+            {obj.userName}
+          </MenuItem>
+        ))}
+        </Select>
+
+        </Grid>
+        <Grid item xs={4}>
+           <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Status</InputLabel>
+          {/*<TextField
+            value={sorderStatus}
+            onChange={handleSorderStatus}
+            margin="normal"
+            required
+            sx={{ paddingLeft: 2, paddingRight: 2}}
+            fullWidth
+            name="total"
+            id="total"
+/>*/}
+          <Select
+          labelId="status"
+          id="status" 
+          value={sorderStatus}
+          label="status"
+          fullWidth
+          name="status"
+          sx={{ minWidth: 120,  minHeight: 40 }}
+          onChange={handleSorderStatus}
+        >
+          <MenuItem value={""}></MenuItem>
+          <MenuItem value={""}></MenuItem>
+          <MenuItem value={"Pending"}>Pending</MenuItem>
+          <MenuItem value={"Delivered"}>Delivered</MenuItem>
+          <MenuItem value={"ExChanged"}>ExChanged</MenuItem>
+          <MenuItem value={"Cancelled"}>Cancelled</MenuItem>
+          <MenuItem value={"Returned"}>Returned</MenuItem>
+        </Select>
+        </Grid>
+        <Grid item xs={4}>
+           <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Tracking Number</InputLabel>
+          <TextField
+            value={strackingNo}
+            onChange={handleStrackingNo}
+            margin="normal"
+            required
+            sx={{ paddingLeft: 2, paddingRight: 2}}
+            fullWidth
+            name="total"
+            id="total"
+          />
+        </Grid>
+        <Grid item xs={4}>
+           <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Id</InputLabel>
+          <TextField
+            value={soderId}
+            onChange={handleSoderId}
+            margin="normal"
+            required
+            sx={{ paddingLeft: 2, paddingRight: 2}}
+            fullWidth
+            name="id"
+            id="id"
+          />
+        </Grid>
+      </Grid>
+      <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
+          <FormControl sx={{ m: 1 }} variant="standard">
+          <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtn}>
+            &nbsp;Search
+          </MDButton>
+        </FormControl>
+      </div>
+      </Item>
+    </Box>
+      
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
@@ -409,7 +637,7 @@ function Orders() {
                   <Icon sx={{ fontWeight: "bold" }}>add</Icon>
                   &nbsp;Add Single Order
                 </MDButton>
-                <MDButton variant="gradient" color="dark" onClick={handleClickOpenBulk}>
+                <MDButton disabled variant="gradient" color="dark" onClick={handleClickOpenBulk}>
                 <Icon sx={{ fontWeight: "bold" }}>add</Icon>
                 &nbsp;Add Bulk Order
               </MDButton>

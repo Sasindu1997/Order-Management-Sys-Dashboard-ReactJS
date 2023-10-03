@@ -56,6 +56,7 @@ import Expenses from "layouts/expenses";
 import Settings from "layouts/settings";
 import Categories from "layouts/categories";
 import SubCategories from "layouts/subCategories";
+import SMSText from "layouts/subCategories copy";
 import ProductStock from "layouts/store/users";
 import Chemicals from "layouts/users copy 2";
 import ScanPage from "layouts/Scanning";
@@ -64,13 +65,16 @@ import Invoice from "layouts/invoice";
 import OrdersForInvoice from "layouts/invoice/index2"; 
 import Incomes from "layouts/expenses copy"; 
 import UtilityExpenses from "layouts/expenses copy 2"; 
+import IncomeStream from "layouts/subCategories copy 3"; 
+import ExpenseStream from "layouts/subCategories copy 4";
+
 
 // @mui icons
 import Icon from "@mui/material/Icon";
 import StoreIcon from '@mui/icons-material/Store';
 let user = localStorage.getItem('loggedInUser')
 let newuser = JSON.parse(user)
-console.log("loggedInUser", newuser.role);
+console.log("loggedInUser", newuser?.role);
 
 const routes = [{
         type: "collapse",
@@ -97,6 +101,15 @@ const routes = [{
         icon: <Icon fontSize = "small" > add_shopping_cart </Icon>,
         route: "/orders",
         component: <Orders /> ,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Invoices",
+        key: "invoices",
+        route: `/invoices`,
+        icon: <Icon fontSize = "small" > receipt </Icon>,
+        component: <OrdersForInvoice />,
         isVisible: true
     },
     {
@@ -142,7 +155,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > manage_accounts </Icon>,
         route: "/users",
         component: <Users /> ,
-        isVisible: newuser.role === 'admin' ? true : false
+        isVisible: newuser?.role === 'admin' ? true : false
     },
     {
         type: "collapse",
@@ -151,7 +164,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > money </Icon>,
         route: "/expenses",
         component: <Expenses /> ,
-        isVisible: newuser.role === 'admin' ? true : false
+        isVisible: newuser?.role === 'admin' ? true : false
     },
     {
         type: "collapse",
@@ -160,7 +173,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > price_check </Icon>,
         route: "/incomes",
         component: <Incomes /> ,
-        isVisible: newuser.role === 'admin' ? true : false
+        isVisible: newuser?.role === 'admin' ? true : false
     },
     {
         type: "collapse",
@@ -169,7 +182,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > receipt_long </Icon>,
         route: "/utilityExpenses",
         component: <UtilityExpenses /> ,
-        isVisible: newuser.role === 'admin' ? true : false
+        isVisible: newuser?.role === 'admin' ? true : false
     },
     // {
     //     type: "collapse",
@@ -267,6 +280,33 @@ const routes = [{
     },
     {
         type: "collapse",
+        name: "smstext",
+        key: "smstext",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings/smstext",
+        component: <SMSText />,
+        isVisible: false
+    },
+    {
+        type: "collapse",
+        name: "incomeStream",
+        key: "incomeStream",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings/incomeStream",
+        component: <IncomeStream />,
+        isVisible: false
+    },
+    {
+        type: "collapse",
+        name: "expenseStream",
+        key: "expenseStream",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings/expenseStream",
+        component: <ExpenseStream />,
+        isVisible: false
+    },
+    {
+        type: "collapse",
         name: "product-stock",
         key: "stocks",
         route: `/stocks/product-stock/:type/:id`,
@@ -300,15 +340,7 @@ const routes = [{
     //     component: <Invoice />,
     //     isVisible: false
     // },
-    {
-        type: "collapse",
-        name: "Invoices",
-        key: "invoices",
-        route: `/invoices`,
-        icon: <Icon fontSize = "small" > receipt </Icon>,
-        component: <OrdersForInvoice />,
-        isVisible: true
-    },
+   
     {
         type: "collapse",
         name: "Returned/Cancelled",

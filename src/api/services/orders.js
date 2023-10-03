@@ -27,8 +27,20 @@ const getAllCancelled = async() => {
     return data;
 };
 
+const getAllExchanged = async() => {
+    const data = await axios.get(extendedUrl + "/orders/exchanged");
+    console.log(data);
+    return data;
+};
+
 const getById = async(id) => {
     const data = await axios.get(extendedUrl + `/orders/${id}`);
+    console.log(data);
+    return data;
+};
+
+const getBySupplierId = async(id) => {
+    const data = await axios.get(extendedUrl + `/orders/supplier/${id}`);
     console.log(data);
     return data;
 };
@@ -45,6 +57,14 @@ const searchBy = async(value, searchby) => {
     return data;
 };
 
+const multipleSearch = async(req) => {
+    const data = await axios.get(extendedUrl + `/orders/multipleSearch`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
 const update = async(id, req) => {
     const data = await axios.put(extendedUrl + `/orders/${id}`, req);
     console.log(data);
@@ -53,6 +73,12 @@ const update = async(id, req) => {
 
 const updateCancelled = async(id, req) => {
     const data = await axios.put(extendedUrl + `/orders/cancel/${id}`, req);
+    console.log(data);
+    return data;
+};
+
+const updateExchanged = async(id, req) => {
+    const data = await axios.put(extendedUrl + `/orders/exchange/${id}`, req);
     console.log(data);
     return data;
 };
@@ -124,5 +150,9 @@ export const OrderType = {
     getAllReturned,
     getAllCancelled,
     updateReturned,
-    updateCancelled
+    updateCancelled,
+    multipleSearch,
+    getBySupplierId,
+    getAllExchanged,
+    updateExchanged
 }

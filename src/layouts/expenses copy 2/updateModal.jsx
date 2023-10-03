@@ -27,6 +27,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
+  const [errorVM, setErrorVM] = useState(false);
   const [initData, setInitData] = useState({
     title: '',
     description: '',
@@ -52,10 +53,20 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const onSubmit = (values) => {
     // event.preventDefault();
     // const data = new FormData(event.currentTarget);
+    if(values?.name == '' || values?.name == 'undefined' || values?.name == null){
+      setErrorVM("Enter a Valid Name.");
+      return;
+    }
+    else if(values?.amount == '' || values?.amount == 'undefined' || values?.amount == null){
+      setErrorVM("Enter a Valid Amount.");
+      return;
+    } else {
+      setErrorVM(false)
+    }
     const obj = {
-        name: values.name,
-        description: values.description,
-        amount: values.amount,
+        name: values?.name,
+        description: values?.description,
+        amount: values?.amount,
         isActive: true
       }
       console.log(obj);
@@ -121,17 +132,17 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               id="amount"
               autoComplete="amount"
             />
-        <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}>
+            <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+               <MDTypography variant="p" color="red">
+                {errorVM ? errorVM : ''}
+              </MDTypography>
+            </div>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button
             type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+            sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
             >
             Update
             </Button>

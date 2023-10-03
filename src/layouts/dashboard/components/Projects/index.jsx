@@ -61,11 +61,10 @@ function Projects() {
 
   return (
     <Card>
-    {console.log("hhhhhhhhhhhhhhhh", count)}
       <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
         <MDBox>
           <MDTypography variant="h6" gutterBottom>
-            Projects
+            Products
           </MDTypography>
           <MDBox display="flex" alignItems="center" lineHeight={0}>
             <Icon
@@ -75,7 +74,7 @@ function Projects() {
                 mt: -0.5,
               }}
             >
-              done
+              Sold
             </Icon>
             <MDTypography variant="button" fontWeight="regular" color="text">
               &nbsp;<strong>{count} done</strong> this month

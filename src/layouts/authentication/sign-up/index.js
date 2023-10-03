@@ -76,7 +76,7 @@ function Cover() {
                 &nbsp;&nbsp;I agree the&nbsp;
               </MDTypography>
               <MDTypography
-                component="a"
+                component="span"
                 href="#"
                 variant="button"
                 fontWeight="bold"

@@ -11,7 +11,9 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
@@ -27,10 +29,12 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
+  const [errorVM, setErrorVM] = useState(false);
+  const [incomeStreams, setIncomeStreams] = useState([]);
+  const [incomeName, setIncomeName] = useState(false);
   const [initData, setInitData] = useState({
-    title: '',
+    name: '',
     description: '',
-    categoryId: '',
   });
   const { register, handleSubmit, errors, reset } = useForm({
     defaultValues: initData,
@@ -42,7 +46,16 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data);
+      setIncomeName(res?.data?.name)
       reset(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    SDK.ExpenseStreamType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setIncomeStreams(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
@@ -52,8 +65,19 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const onSubmit = (values) => {
     // event.preventDefault();
     // const data = new FormData(event.currentTarget);
+    if(values?.name == '' || values?.name == 'undefined' || values?.name == null){
+      setErrorVM("Enter a Valid Name.");
+      return;
+    }
+    else if(values?.amount == '' || values?.amount == 'undefined' || values?.amount == null){
+      setErrorVM("Enter a Valid Amount.");
+      return;
+    } else {
+      setErrorVM(false)
+    }
+
     const obj = {
-        name: values.name,
+        name: incomeName,
         description: values.description,
         amount: values.amount,
         isActive: true
@@ -73,6 +97,11 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     })
   };
 
+  const handleChangeName = (event) => {
+    console.log(event.target.value)
+    setIncomeName(event.target.value);
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -88,18 +117,22 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
-          <TextField
-          {...register("name")}
-              margin="normal"
-              required
+          <InputLabel id="demo-simple-select-label" 
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Income Name</InputLabel>
+            <Select
+              labelId="incomeName"
+              id="incomeName"
+              value={incomeName}
+              label="incomeName"
               fullWidth
-              name="name"
-              label="Name"
-              type="name"
-              id="name"
-              autoComplete="name"
-              autoFocus
-            />
+              name="incomeName"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleChangeName}
+            >
+            {incomeStreams.map((income) => (
+              <MenuItem value={income.id}>{income.name}</MenuItem>
+            ))}
+            </Select>
             <TextField
             {...register("description")}
               margin="normal"
@@ -121,17 +154,17 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               id="amount"
               autoComplete="amount"
             />
-        <div style={{justifySelf: 'center', alignItems: 'flex-end'}} sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}>
+            <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+               <MDTypography variant="p" color="red">
+                {errorVM ? errorVM : ''}
+              </MDTypography>
+            </div>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button
             type="submit"
             variant="contained"
-            sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+            sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
             >
             Update
             </Button>

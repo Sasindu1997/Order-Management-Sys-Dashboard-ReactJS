@@ -93,12 +93,12 @@ function Users() {
         //   </MDBox>
         // ),
         // address: (
-        //   <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        //   <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         //     // `${user.address}`
         //   </MDTypography>
         // );
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             View
           </MDTypography>
         )

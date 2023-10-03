@@ -414,7 +414,7 @@ export default function FormDialog({open, setOpen, type , id}) {
               <Button
                   type="submit"
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+                  sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
                   >
                   Add
                   </Button>
@@ -494,7 +494,7 @@ export default function FormDialog({open, setOpen, type , id}) {
               <Button
                   type="submit"
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+                  sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
                   >
                   Add
                   </Button>
@@ -574,7 +574,7 @@ export default function FormDialog({open, setOpen, type , id}) {
               <Button
                   type="submit"
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, color: (theme) => theme.palette.white[500], }}
+                  sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
                   >
                   Add
                   </Button>

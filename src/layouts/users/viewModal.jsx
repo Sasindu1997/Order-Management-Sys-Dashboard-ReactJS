@@ -116,7 +116,7 @@ export default function FormDialogView({open, setOpen, userId}) {
          Role
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.role}
+          {userData?.role}
         </Typography>
        
         <Typography  variant="h6" >

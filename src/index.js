@@ -17,15 +17,16 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import App from "App";
+import { Routes, Route, Navigate, useLocation, HashRouter } from "react-router-dom";
 
 // Dashboard React Context Provider
 import { MaterialUIControllerProvider } from "context";
 
 ReactDOM.render(
-  <BrowserRouter>
-    <MaterialUIControllerProvider>
+  <HashRouter> 
+    <MaterialUIControllerProvider >
       <App />
     </MaterialUIControllerProvider>
-  </BrowserRouter>,
+  </HashRouter>,
   document.getElementById("root")
 );

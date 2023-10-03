@@ -183,7 +183,7 @@ function ReturnedOrders() {
       setSnackSeverity('error');
       setMessage('Error!');
       setOpenSnack(true);
-    }) : SDK.OrderType.getAllCancelled()
+    }) : value === 1 ? SDK.OrderType.getAllCancelled()
     .then((res) => {
       console.log("RES: ", res);
       setOrderData(res?.data);
@@ -194,6 +194,17 @@ function ReturnedOrders() {
       setMessage('Error!');
       setOpenSnack(true);
     })
+    : value === 2 ? SDK.OrderType.getAllExchanged()
+    .then((res) => {
+      console.log("RES: ", res);
+      setOrderData(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    }) : setOrderData([]);
     setTimeout(function(){
       setOpenBackDrop(false);
     }, 1000);
@@ -368,25 +379,24 @@ function ReturnedOrders() {
       { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
       { Header: "total", accessor: "total", align: "center" },
       { Header: "paid", accessor: "paid", align: "center" },
-      { Header: "status", accessor: "isActive", align: "center" },
       { Header: "Order status", accessor: "status", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
     ]
 
     const rows = orderData  ?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        customerName: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        customerName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.cfullName  || "-"}
         </MDTypography>),
-        customerPhone: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        customerPhone: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.cphone  || "-"}
       </MDTypography>),
-        trackingNumber: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        trackingNumber: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.trackingNumber  || "-"}
         </MDTypography>),
-        total: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        total: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.total  || "-"}
         </MDTypography>),
         paid: (
@@ -418,7 +428,7 @@ function ReturnedOrders() {
     <DashboardLayout>
       <DashboardNavbar />
       <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
-      <FormControl sx={{ m: 1 }} variant="standard">
+      {/*<FormControl sx={{ m: 1 }} variant="standard">
       <NativeSelect
           id="demo-customized-select-native"
           value={searchSelect}
@@ -429,10 +439,10 @@ function ReturnedOrders() {
           <option value={'fullName'}>Name</option>
           <option value={'phone'}>Phone</option>
         </NativeSelect>
-    </FormControl>
+  </FormControl>
     <FormControl sx={{ m: 1 }} variant="standard">
         <BootstrapInput disabled={!searchSelect} id="demo-customized-textbox" placeholder='Search Here' onChange={handleChangeSearch} />
-      </FormControl>
+      </FormControl>*/}
           </div>
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
@@ -456,7 +466,7 @@ function ReturnedOrders() {
                 <MDTypography variant="h6" fontWeight="medium"></MDTypography>
                 <MDButton sx={{ marginRight: '5px' }} variant="gradient" color="dark" onClick={handleClickOpen}>
                   <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                  &nbsp;Add Returned Order
+                  &nbsp;Update Order
                 </MDButton>
                 </MDBox>
                 {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
@@ -496,31 +506,43 @@ function ReturnedOrders() {
         aria-label="basic tabs example">
           <Tab label="Returned" {...a11yProps(0)} />
           <Tab label="Cancelled" {...a11yProps(1)} />
-        </Tabs>
-      </Box>
-      <CustomTabPanel value={value} index={0}>
-      <MDBox pt={3}>
-      <DataTable
-        table={{ columns, rows }}
-        isSorted={false}
-        entriesPerPage={false}
-        showTotalEntries={false}
-        noEndBorder
-      />
-    </MDBox>
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-      <MDBox pt={3}>
-      <DataTable
-        table={{ columns, rows }}
-        isSorted={false}
-        entriesPerPage={false}
-        showTotalEntries={false}
-        noEndBorder
-      />
-    </MDBox>
-      </CustomTabPanel>
-    </Box>
+          <Tab label="Exchanged" {...a11yProps(2)} />
+              </Tabs>
+              </Box>
+                <CustomTabPanel value={value} index={0}>
+                  <MDBox pt={3}>
+                      <DataTable
+                        table={{ columns, rows }}
+                        isSorted={false}
+                        entriesPerPage={false}
+                        showTotalEntries={false}
+                        noEndBorder
+                      />
+                    </MDBox>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={1}>
+                      <MDBox pt={3}>
+                      <DataTable
+                        table={{ columns, rows }}
+                        isSorted={false}
+                        entriesPerPage={false}
+                        showTotalEntries={false}
+                        noEndBorder
+                      />
+                    </MDBox>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={2}>
+                      <MDBox pt={3}>
+                      <DataTable
+                        table={{ columns, rows }}
+                        isSorted={false}
+                        entriesPerPage={false}
+                        showTotalEntries={false}
+                        noEndBorder
+                      />
+                    </MDBox>
+                </CustomTabPanel>
+              </Box>
             </Card>
           </Grid>
         </Grid>

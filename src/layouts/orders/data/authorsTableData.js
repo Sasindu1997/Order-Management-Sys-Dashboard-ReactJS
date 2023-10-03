@@ -68,12 +68,12 @@ export default function data() {
           </MDBox>
         ),
         employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             23/04/18
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             Edit
           </MDTypography>
         ),
@@ -87,12 +87,12 @@ export default function data() {
           </MDBox>
         ),
         employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             11/01/19
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             Edit
           </MDTypography>
         ),
@@ -106,12 +106,12 @@ export default function data() {
           </MDBox>
         ),
         employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             19/09/17
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             Edit
           </MDTypography>
         ),
@@ -125,12 +125,12 @@ export default function data() {
           </MDBox>
         ),
         employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             24/12/08
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             Edit
           </MDTypography>
         ),
@@ -144,12 +144,12 @@ export default function data() {
           </MDBox>
         ),
         employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             04/10/21
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             Edit
           </MDTypography>
         ),
@@ -163,12 +163,12 @@ export default function data() {
           </MDBox>
         ),
         employed: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             14/09/20
           </MDTypography>
         ),
         action: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             Edit
           </MDTypography>
         ),

@@ -10,6 +10,14 @@ Import the desired font from Google fonts.
 Define all colors used in this template 
 */
 
+.invoice-tracking {
+    left: 1cm;
+    bottom: 0cm;
+    font-size: 20px;
+    font-weight: 400;
+    width: 10cm;
+}
+
 :root {
     --font-color: black;
     --highlight-color: #000971;

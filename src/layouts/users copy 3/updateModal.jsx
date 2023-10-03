@@ -27,6 +27,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [warningSB, setWarningSB] = useState(false);
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState({});
+  const [errorVM, setErrorVM] = useState(false);
   const [initData, setInitData] = useState({
     passWord: '',
     userName: '',
@@ -53,12 +54,28 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const onSubmit = (values) => {
     // event.preventDefault();
     // const data = new FormData(event.currentTarget);
+
+    if(values.userName == '' || values.userName == 'undefined' || values.userName == null){
+      setErrorVM("Enter a Valid User Name.");
+      return;
+    }
+    else if(values.passWord == '' || values.passWord == 'undefined' || values.passWord == null){
+      setErrorVM("Enter a Valid PassWord.");
+      return;
+    }
+    else if(values.description == '' || values.description == 'undefined' || values.description == null){
+      setErrorVM("Enter a Valid Description.");
+      return;
+    }else {
+      setErrorVM(false)
+    }
+
     const obj = {
       userName: values.userName,
       passWord: values.passWord,
       description: values.description,
-      clientId: values.clientId,
-      apiKey: values.apiKey,
+      // clientId: values.clientId,
+      // apiKey: values.apiKey,
       isActive: true
     }
       console.log(values);
@@ -128,7 +145,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               id="description"
               autoComplete="description"
             />
-            <TextField
+            {/*<TextField
             {...register("clientId")}
               margin="normal"
               required
@@ -149,7 +166,12 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               type="apiKey"
               id="apiKey"
               autoComplete="apiKey"
-            />
+            />*/}
+            <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+               <MDTypography variant="h8" color="red">
+                {errorVM ? errorVM : ''}
+              </MDTypography>
+            </div>
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button

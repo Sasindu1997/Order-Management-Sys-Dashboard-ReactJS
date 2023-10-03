@@ -59,6 +59,7 @@ function ScanPage() {
   const [userName, setUserName] = useState(false);
   const [password, setPassword] = useState(false);
   const [openSnack, setOpenSnack] = useState(false);
+  const [barcodeInput, setBarcodeInput] = useState("");
   const [snackSeverity, setSnackSeverity] = useState(false);
   const [message, setMessage] = useState(false);
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
@@ -71,6 +72,7 @@ function ScanPage() {
   const { vertical, horizontal, opens } = state;
   const [openBackDrop, setOpenBackDrop] = React.useState(false);
   const [progress, setProgress] = React.useState(0)
+  const [errorVM, setErrorVM] = useState(false);
 
   const handleCloseSnack = (event, reason) => {
     if (reason === 'clickaway') {
@@ -84,7 +86,19 @@ function ScanPage() {
     setUserName(false)
   }
 
+  const handleScanClear = () => {
+    setBarcodeInput('')
+    setUserName(false)
+    setUserData(false)
+  }
+
   const handleScanNow = () => {
+    if(userName == '' || userName == 'undefined' || userName == null){
+      setErrorVM("Enter a Valid Barcode Number.");
+      return;
+    } else {
+      setErrorVM(false)
+    }
     userName ? setOpenBackDrop(true) : setOpenBackDrop(false)
     console.log("value : ", userName);
     setTimeout(function(){
@@ -102,15 +116,17 @@ function ScanPage() {
       setOpenSnack(true);
       setOpenBackDrop(false);
     })
-    }, 1000);
+    }, 2000);
   }
 
   const onchangeInput = (value) => {
-    value.target.value ? setOpenBackDrop(true) : setOpenBackDrop(false)
-    console.log("value : ", value.target.value);
-    value.target.value ? setUserName(value.target.value) : setUserName(false);
+    setBarcodeInput(value?.target?.value)
+    value?.target?.value && setErrorVM(false)
+    value?.target?.value ? setOpenBackDrop(true) : setOpenBackDrop(false)
+    console.log("value : ", value?.target?.value);
+    value?.target?.value ? setUserName(value?.target?.value) : setUserName(false);
     setTimeout(function(){
-      value.target.value && SDK.OrderType.getByBarcode(value.target.value)
+    value?.target?.value && SDK.OrderType.getByBarcode(value?.target?.value)
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data);
@@ -120,11 +136,11 @@ function ScanPage() {
       console.log("Error: ", error);
       setUserData(false);
       setSnackSeverity('error');
-      setMessage(`Error In getting Order with barcode ${value.target.value}!`);
+      setMessage(`Error In getting Order with barcode ${value?.target?.value}!`);
       setOpenSnack(true);
       setOpenBackDrop(false);
     })
-    }, 1000);
+    }, 2000);
   }
 
   return (
@@ -159,16 +175,24 @@ function ScanPage() {
                         autoFocus
                         required
                         name="Input"
+                        value={barcodeInput}
                         type="Input"
                         id="Input"
                         autoComplete="Input"
                         label="Input" fullWidth onChange={(e) => onchangeInput(e)}
                       />
+                      <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+                        <MDTypography variant="h8" color="red">
+                          {errorVM ? errorVM : ''}
+                        </MDTypography>
+                      </div>
                     </MDBox>
                     <MDBox mt={4} mb={1} >
-                      <MDButton variant="gradient" color="info" fullWidth onClick={handleScanNow}>
+                      {!barcodeInput ? <MDButton variant="gradient" color="info" fullWidth onClick={handleScanNow}>
                         Scan Now
-                      </MDButton>
+                      </MDButton> : <MDButton variant="gradient" color="warning" fullWidth onClick={handleScanClear}>
+                      Clear Barcode Input
+                    </MDButton>}
                     </MDBox>
                     {/*<MDBox mt={3} mb={1} textAlign="center">
                       <MDTypography variant="button" color="text">
@@ -225,14 +249,12 @@ function ScanPage() {
                       <Typography  variant="h6" >
                        Products
                       </Typography>
-                      {Array.isArray(UserData?.productDetails) ? UserData?.productDetails.length > 0 ? UserData?.productDetails?.map((product) => (
-                        <Typography  variant="body2" sx={{ mb: 3 }}>
-                          {product.pName || "-"}
-                        </Typography>)) : <Typography  variant="body2" sx={{ mb: 3 }}>
-                        No Product Data Available!
-                      </Typography> : <Typography  variant="body2" sx={{ mb: 3 }}>
-                        {UserData?.productId  || "-"}
-                      </Typography>}
+                     {Array.isArray(UserData.productData) ? UserData.productData?.map((product) => (
+                       <Typography  variant="body2" sx={{ mb: 3 }}>
+                         {`${product.pName} - ${product.ocount}` || "-"}
+                       </Typography>)) : <Typography  variant="body2" sx={{ mb: 3 }}>
+                       {UserData.productId  || "-"}
+                     </Typography>}
             
                       <Typography  variant="h6" >
                        User
@@ -256,13 +278,6 @@ function ScanPage() {
                      </Typography>
             
                       <Typography  variant="h6" >
-                      Weight
-                      </Typography>
-                      <Typography  variant="body2" sx={{ mb: 3 }}>
-                        {`${UserData?.weight} Kg` || "-"}
-                      </Typography>
-            
-                      <Typography  variant="h6" >
                        Type
                       </Typography>
                       <Typography  variant="body2" sx={{ mb: 3 }}>
@@ -277,17 +292,10 @@ function ScanPage() {
                       </Typography>
             
                       <Typography  variant="h6" >
-                        Item Count
-                      </Typography>
-                      <Typography  variant="body2" sx={{ mb: 3 }}>
-                        {UserData?.itemCount || "-"}
-                      </Typography>
-            
-                      <Typography  variant="h6" >
                         Total
                       </Typography>
                       <Typography  variant="body2" sx={{ mb: 3 }}>
-                        {UserData?.total || "-"}
+                        LKR: {UserData?.total?.toFixed(2) || "-"}
                       </Typography>
             
                       <Typography  variant="h6" >
@@ -316,6 +324,13 @@ function ScanPage() {
                       </Typography>
                       <Typography  variant="body2" sx={{ mb: 3 }}>
                         {UserData?.shippingMethod || "-"}
+                      </Typography>
+
+                      <Typography  variant="h6" >
+                        Barcode Number
+                      </Typography>
+                      <Typography  variant="body2" sx={{ mb: 3 }}>
+                        {UserData?.barcode || "-"}
                       </Typography>
             
                       <Typography  variant="h6" >

@@ -60,7 +60,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
         password: values.password,
         fullName: values.fullName,
         userName: values.userName,
-        role: values.role,
+        role: values?.role,
         phoneNumber: values.phoneNumber,
         address: values.address,
         isActive: true

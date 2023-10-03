@@ -15,6 +15,14 @@ const getAll = async() => {
     return data;
 };
 
+const multipleSearch = async(req) => {
+    const data = await axios.get(extendedUrl + `/utilityExpenses/multipleSearch`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
 const getById = async(id) => {
     const data = await axios.get(extendedUrl + `/utilityExpenses/${id}`);
     console.log(data);
@@ -38,5 +46,6 @@ export const UtilityExpensesType = {
     add,
     getById,
     update,
-    deletebyId
+    deletebyId,
+    multipleSearch
 }

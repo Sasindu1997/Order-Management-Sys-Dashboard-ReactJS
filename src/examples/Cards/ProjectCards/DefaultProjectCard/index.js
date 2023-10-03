@@ -91,7 +91,7 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
             </MDTypography>
           ) : (
             <MDTypography
-              component="a"
+              component="span"
               href={action.route}
               target="_blank"
               rel="noreferrer"
@@ -120,7 +120,7 @@ function DefaultProjectCard({ image, label, title, description, action, authors 
             </MDButton>
           ) : (
             <MDButton
-              component="a"
+              component="span"
               href={action.route}
               target="_blank"
               rel="noreferrer"

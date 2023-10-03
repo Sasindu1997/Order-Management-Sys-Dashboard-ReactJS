@@ -233,16 +233,16 @@ function ProductStock2() {
     ]
 
     const rows = userData?.map((user) =>  ({
-        id: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.id || "-"}
         </MDTypography>),
-        role: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.role  || "-"}
+        role: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+        {user?.role  || "-"}
         </MDTypography>),
-        categoryId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        categoryId: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.categoryId  || "-"}
         </MDTypography>),
-        productId: ( <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+        productId: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.productId  || "-"}
         </MDTypography>),
         status: (
@@ -251,7 +251,7 @@ function ProductStock2() {
           </MDBox>
         ),
         quantity: (
-          <MDTypography component="a" href="#" variant="caption" color="text" fontWeight="medium">
+          <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.quantity  || "-"}
           </MDTypography>
         ),

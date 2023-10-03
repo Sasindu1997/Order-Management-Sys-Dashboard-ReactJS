@@ -47,7 +47,7 @@ export default function FormDialogView({open, setOpen, userId}) {
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle>View Order</DialogTitle>
-        <DialogContent>
+        <DialogContent  sx={{ ml: 2 }}>
           <Box component="form" noValidate sx={{ mt: 1 }}>
          
           <Typography  variant="h6" >
@@ -71,7 +71,7 @@ export default function FormDialogView({open, setOpen, userId}) {
            Customer Name
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.cfullName || "-"}
+            {data.ccfullName || "-"}
           </Typography>
 
           <Typography  variant="h6" >
@@ -82,32 +82,12 @@ export default function FormDialogView({open, setOpen, userId}) {
          </Typography>
 
           <Typography  variant="h6" >
-          Weight
-          </Typography>
-          <Typography  variant="body2" sx={{ mb: 3 }}>
-            {`${data.weight} Kg` || "-"}
-          </Typography>
+          Delivery Charge
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }}>
+          {data.deliveryCharge || "-"}
+        </Typography>
 
-          <Typography  variant="h6" >
-           Type
-          </Typography>
-          <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.type || "-"}
-          </Typography>
-
-          <Typography  variant="h6" >
-            Paid Status
-          </Typography>
-          <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.paid ? "Paid" : "Not Paid" || "-"}
-          </Typography>
-
-          {/*<Typography  variant="h6" >
-            Item Count
-          </Typography>
-          <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.itemCount || "-"}
-          </Typography>*/}
 
           <Typography  variant="h6" >
             Total
@@ -115,6 +95,13 @@ export default function FormDialogView({open, setOpen, userId}) {
           <Typography  variant="body2" sx={{ mb: 3 }}>
             {data.total || "-"}
           </Typography>
+
+          <Typography  variant="h6" >
+          Suppplier
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }}>
+          {data.supplierName || "-"}
+        </Typography>
 
           <Typography  variant="h6" >
            Order status
@@ -127,7 +114,35 @@ export default function FormDialogView({open, setOpen, userId}) {
           Shipping Address
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
-            {data.shippingAddress || "-"}
+            {data.caddress || "-"}
+          </Typography>
+
+          <Typography  variant="h6" >
+          District
+         </Typography>
+         <Typography  variant="body2" sx={{ mb: 3 }}>
+           {data.cdistrict || "-"}
+         </Typography>
+
+         <Typography  variant="h6" >
+          Hub
+         </Typography>
+         <Typography  variant="body2" sx={{ mb: 3 }}>
+           {data.hub || "-"}
+         </Typography>
+
+         <Typography  variant="h6" >
+         Parcel Type
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }}>
+          {data.parcelType || "-"}
+        </Typography>
+
+        <Typography  variant="h6" >
+           Weight
+          </Typography>
+          <Typography  variant="body2" sx={{ mb: 3 }}>
+            {`${data.weight} Kg` || "-"}
           </Typography>
 
           <Typography  variant="h6" >
@@ -138,7 +153,7 @@ export default function FormDialogView({open, setOpen, userId}) {
           </Typography>
 
           <Typography  variant="h6" >
-            Shipping Method
+            Delivery Method
           </Typography>
           <Typography  variant="body2" sx={{ mb: 3 }}>
             {data.shippingMethod || "-"}
@@ -150,6 +165,13 @@ export default function FormDialogView({open, setOpen, userId}) {
           <Typography  variant="body2" sx={{ mb: 3 }}>
             {data.trackingNumber || "-"}
           </Typography>
+
+          <Typography  variant="h6" >
+          Remark
+         </Typography>
+         <Typography  variant="body2" sx={{ mb: 3 }}>
+           {data.remark || "-"}
+         </Typography>
 
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
