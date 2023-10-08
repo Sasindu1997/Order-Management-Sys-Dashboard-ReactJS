@@ -57,6 +57,10 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -67,14 +71,17 @@ function Store() {
     const { columns, rows } = authorsTableData();
     const { columns: pColumns, rows: pRows } = projectsTableData();
     const [productData, setProductsData] = useState([]);
+    const [categoryData, setCategoriesData] = useState([]);
     const [rawMatsData, setRawMatssData] = useState([]);
     const [chemicals, setChemicals] = useState([]);
     const [openBackDrop, setOpenBackDrop] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [userId, setUserId] = React.useState(false);
+    const [categoryId, setCategoryId] = React.useState(false);
     const { sales, tasks } = reportsLineChartData;
     const navigate = useNavigate();  
     const [openSnack, setOpenSnack] = React.useState(false);
+    const [showProductList, setShowProductList] = React.useState(false);
     const [snackSeverity, setSnackSeverity] = React.useState(false);
     const [message, setMessage] = React.useState(false);
     const [state, setState] = React.useState({
@@ -92,6 +99,16 @@ function Store() {
       .then((res) => {
         console.log("RES: ", res);
         setProductsData(res?.data)
+      })
+      .catch((error) => {
+        console.log("Error: ", error)
+      }, [])
+
+      setOpenBackDrop(true)
+      SDK.CategoryType.getAll()
+      .then((res) => {
+        console.log("RES: ", res);
+        setCategoriesData(res?.data)
       })
       .catch((error) => {
         console.log("Error: ", error)
@@ -118,6 +135,22 @@ function Store() {
         setOpenBackDrop(false);
       }, 1000);
   }, [open, openConformDelete])
+
+  useEffect(() => {
+    setOpenBackDrop(true)
+    categoryId && SDK.ProductType.getAllByCategoryId(categoryId)
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductsData(res?.data);
+      setShowProductList(true);
+      setOpenBackDrop(false)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+      setShowProductList(false);
+      setOpenBackDrop(false)
+    }, [])
+}, [categoryId])
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -173,15 +206,33 @@ function Store() {
                 Products
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                End-products
+                End-products stocks
               </MDTypography>
             </MDBox>
           </Grid>
         </Grid>
       </MDBox>
       <MDBox py={3} >
+      <Grid container spacing={3} >
+
+      {categoryData.length > 0 && categoryData.map((category) => 
+            <Box sx={{ minWidth: 275, margin : 2 }}>
+            <Card variant="outlined" sx={{ minWidth: 275, margin : 2, backgroundColor : 'wheat' }}>
+            <React.Fragment>
+              <CardContent>
+                <Typography sx={{ mb: 1.5, fontWeight : 'bold' }} color="text.secondary">
+                {category?.title || '-'}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button size="small" onClick={() => setCategoryId(category.id)}>View Products</Button>
+              </CardActions>
+                </React.Fragment>
+            </Card>
+            </Box>)}
+        </Grid>
         <Grid container spacing={3} >
-          {productData.length > 0 && productData.map((product) => <Grid item xs={12} md={6} lg={3}>
+          {showProductList && productData.length > 0 && productData.map((product) => <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5} on>
               <ComplexStatisticsCard
                 onClickCard={() => handleClickPro(product.id)}
@@ -195,7 +246,7 @@ function Store() {
                 }}
               />
             </MDBox>
-          </Grid>)}
+              </Grid>)}
         </Grid>
       </MDBox>
 
@@ -207,7 +258,7 @@ function Store() {
                 Matterials
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                Raw-Matterials
+                Raw-Matterials stocks
               </MDTypography>
             </MDBox>
           </Grid>
@@ -242,7 +293,7 @@ function Store() {
                 Chemicals
               </MDTypography>
               <MDTypography variant="button" color="text" fontWeight="regular">
-                Chemicals
+                Chemicals stocks
               </MDTypography>
             </MDBox>
           </Grid>

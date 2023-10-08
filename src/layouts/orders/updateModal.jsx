@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { useForm } from "react-hook-form";
 import Typography from '@mui/material/Typography';
-
+import moment from 'moment';
 import { Theme, useTheme } from '@mui/material/styles';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -22,6 +22,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./customdatepickerwidth2.css";
+import "./style.css";
 import {SDK} from "../../api/index";
 
 const ITEM_HEIGHT = 48;
@@ -67,6 +71,8 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
   const [checked, setChecked] = React.useState(false);
   const [customerData, setCustomerData] = useState([]);
   const [productData, setProductData] = useState([]);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState();
   const [initData, setInitData] = useState({
         customerId : '',
         userId : '',
@@ -102,7 +108,10 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
       setStatus(res?.data?.status);
       setFinalStatus(res?.data?.finalStatus);
       setChecked(res?.data?.paid);
+      setStartDate(new Date(res?.data?.createdAt));
+      setEndDate(res?.data?.updatedDate ? new Date(res?.data?.updatedDate): new Date());
     })
+
     .catch((error) => {
       console.log("Error: ", error)
     })
@@ -162,7 +171,9 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
 
       let obj = {...data, 
         status : status, 
-        finalStatus : finalStatus
+        finalStatus : finalStatus,
+        createdAt : startDate,
+        updatedDate: endDate
       }
       console.log(obj);
       
@@ -553,6 +564,41 @@ export default function FormDialogUpdate({open, setOpen, orderId}) {
        <Typography  variant="body2" sx={{ mb: 3 }}>
          {data.remark || "-"}
        </Typography>
+
+       {/*<Typography  variant="h6" >
+         Order Date
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }}>
+          {moment(data.createdAt).format('DD-MM-YYYY') || "-"}
+        </Typography>*/}
+
+        <Grid item xs={4} classname="customdatepickerwidth" >
+        <Typography  variant="h6" sx={{ paddingBottom: 1}}>
+        Order Date
+       </Typography>
+        <div className="datepicker-container">
+        <div className="dates-container">
+          <div className="date-item"></div>
+        </div>
+        <div className="react-datepicker-wrapper">
+          <DatePicker className='react-datepicker1' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+        </div>
+      </div>
+      </Grid>
+
+      <Grid item xs={4} classname="customdatepickerwidth" >
+        <Typography  variant="h6" sx={{ paddingBottom: 1, paddingTop: 1}}>
+        Order Finalized Date
+       </Typography>
+        <div className="datepicker-container">
+        <div className="dates-container">
+          <div className="date-item"></div>
+        </div>
+        <div className="react-datepicker-wrapper">
+          <DatePicker className='react-datepicker1' onChange={(date) => setEndDate(date)} selected={endDate}  dateformat="dd/mm/yyyy" />
+        </div>
+      </div>
+      </Grid>
 
       <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>

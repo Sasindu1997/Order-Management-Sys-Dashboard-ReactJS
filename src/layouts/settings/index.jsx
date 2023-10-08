@@ -61,7 +61,12 @@ function Settings() {
     navigate("/settings/expenseStream");
   }
 
-
+  const handleClickMaterialTypes = () => {
+    navigate("/settings/materialTypes");
+  }
+  const handleClickChemicalTypes = () => {
+    navigate("/settings/chemicalTypes");
+  }
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -101,7 +106,7 @@ function Settings() {
               <ComplexStatisticsCard
                 icon="price_check"
                 color="success"
-                title="Income Streams"
+                title="Income Types"
                 onClickCard={handleClickIncomeStream}
               />
             </MDBox>
@@ -110,12 +115,32 @@ function Settings() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 icon="money"
-                color="primary"
-                title="Expense Streams"
+                color="error"
+                title="Expense Types"
                 onClickCard={handleClickExpenseStream}
               />
             </MDBox>
           </Grid>
+          {/*<Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                icon="science"
+                color="light"
+                title="Chemical Types"
+                onClickCard={handleClickChemicalTypes}
+              />
+            </MDBox>
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                icon="clearall"
+                color="primary"
+                title="Material Types"
+                onClickCard={handleClickMaterialTypes}
+              />
+            </MDBox>
+  </Grid>*/}
         </Grid>
       </MDBox>
       <Footer />

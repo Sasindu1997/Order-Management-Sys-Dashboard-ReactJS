@@ -20,7 +20,7 @@ export default function FormDialog({open, setOpen, id}) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if(data.get('name') == '' || data.get('name') == 'undefined' || data.get('name') == null){
-      setErrorVM("Enter a Valid Expense Name.");
+      setErrorVM("Enter a Valid Material Name.");
       return;
     } 
     
@@ -31,7 +31,7 @@ export default function FormDialog({open, setOpen, id}) {
       }
       console.log(obj);
       
-      SDK.ExpenseStreamType.add(obj)
+      SDK.RawStreamType.add(obj)
     .then((res) => {
       console.log("RES: ", res);
       res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
@@ -61,7 +61,7 @@ export default function FormDialog({open, setOpen, id}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add Expense Stream</DialogTitle>
+        <DialogTitle>Add Material Type</DialogTitle>
         <DialogContent >
           <Box  component="form"  onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '25vw' }}>
             <TextField

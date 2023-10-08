@@ -67,7 +67,8 @@ import Incomes from "layouts/expenses copy";
 import UtilityExpenses from "layouts/expenses copy 2"; 
 import IncomeStream from "layouts/subCategories copy 3"; 
 import ExpenseStream from "layouts/subCategories copy 4";
-
+import ChemicalTypes from "layouts/subCategories copy 5";
+import RawmatTypes from "layouts/subCategories copy 6";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -76,7 +77,27 @@ let user = localStorage.getItem('loggedInUser')
 let newuser = JSON.parse(user)
 console.log("loggedInUser", newuser?.role);
 
-const routes = [{
+const supplierRoutes = [{
+        type: "collapse",
+        name: "Dashboard",
+        key: "dashboard",
+        icon: <Icon fontSize = "small" > dashboard </Icon>,
+        route: "/dashboard",
+        component: <Dashboard /> ,
+        isVisible: true
+    },
+    {
+        type: "collapse",
+        name: "Orders",
+        key: "orders",
+        icon: <Icon fontSize = "small" > add_shopping_cart </Icon>,
+        route: "/orders",
+        component: <Orders /> ,
+        isVisible: true
+    },
+];
+
+const routes = newuser?.role == 'Marketing Manager' ? supplierRoutes : [{
         type: "collapse",
         name: "Dashboard",
         key: "dashboard",
@@ -155,7 +176,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > manage_accounts </Icon>,
         route: "/users",
         component: <Users /> ,
-        isVisible: newuser?.role === 'admin' ? true : false
+        isVisible: newuser?.role === 'admin' || newuser?.role === 'Admin' ? true : false
     },
     {
         type: "collapse",
@@ -164,7 +185,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > money </Icon>,
         route: "/expenses",
         component: <Expenses /> ,
-        isVisible: newuser?.role === 'admin' ? true : false
+        isVisible: newuser?.role === 'admin' || newuser?.role === 'Admin'  ? true : false
     },
     {
         type: "collapse",
@@ -173,7 +194,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > price_check </Icon>,
         route: "/incomes",
         component: <Incomes /> ,
-        isVisible: newuser?.role === 'admin' ? true : false
+        isVisible: newuser?.role === 'admin' || newuser?.role === 'Admin'  ? true : false
     },
     {
         type: "collapse",
@@ -182,7 +203,7 @@ const routes = [{
         icon: <Icon fontSize = "small" > receipt_long </Icon>,
         route: "/utilityExpenses",
         component: <UtilityExpenses /> ,
-        isVisible: newuser?.role === 'admin' ? true : false
+        isVisible: newuser?.role === 'admin' || newuser?.role === 'Admin'  ? true : false
     },
     // {
     //     type: "collapse",
@@ -303,6 +324,24 @@ const routes = [{
         icon: <Icon fontSize = "small" > assignment </Icon>,
         route: "/settings/expenseStream",
         component: <ExpenseStream />,
+        isVisible: false
+    },
+    {
+        type: "collapse",
+        name: "chemicalTypes",
+        key: "chemicalTypes",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings/chemicalTypes",
+        component: <ChemicalTypes />,
+        isVisible: false
+    },
+    {
+        type: "collapse",
+        name: "rawmatTypes",
+        key: "rawmatTypes",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings/materialTypes",
+        component: <RawmatTypes />,
         isVisible: false
     },
     {

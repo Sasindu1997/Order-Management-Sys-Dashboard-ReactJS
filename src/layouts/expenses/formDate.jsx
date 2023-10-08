@@ -103,6 +103,7 @@ export default function FormDialogDatePicker({open, setOpen, id}) {
               name="endDate"
               autoComplete="endDate"
             />
+            
             <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
                <MDTypography variant="p" color="red">
                 {errorVM ? errorVM : ''}

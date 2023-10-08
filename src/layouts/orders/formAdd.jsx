@@ -28,7 +28,10 @@ import axios from 'axios';
 import { UPLOADINIT_URL, UPLOAD_URL } from '../../config.env'
 import useMediaQuery from '@mui/material/useMediaQuery';
 import FormControl from '@mui/material/FormControl';
+import DatePicker from "react-datepicker";
 import SearchableDropdown from "./SearchableDropdown";
+import "react-datepicker/dist/react-datepicker.css";
+import "./customdatepickerwidth2.css";
 import "./style.css";
 
 const ITEM_HEIGHT = 48;
@@ -87,6 +90,7 @@ export default function FormDialog({open, setOpen, id}) {
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [subTotal, setSubTotal] = useState(0);
   const [customDelCharge, setCustomDelCharge] = useState(0);
+  const [startDate, setStartDate] = useState(new Date());
   
   const [openD, setOpenD] = React.useState(true);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -150,14 +154,14 @@ export default function FormDialog({open, setOpen, id}) {
   };
 
   useEffect(() => {
-    // SDK.ProductType.getAll()
-    // .then((res) => {
-    //   console.log("RES: ", res);
-    //   setProductData(res?.data)
-    // })
-    // .catch((error) => {
-    //   console.log("Error: ", error)
-    // })
+    SDK.ProductType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setProductData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
 
     SDK.SmsTextType.getAll()
     .then((res) => {
@@ -203,17 +207,18 @@ export default function FormDialog({open, setOpen, id}) {
     .catch((error) => {
       console.log("Error: ", error)
     })
-
-    SDK.ProductType.getAll()
-    .then((res) => {
-      console.log("RES: ", res);
-      setProductData(res?.data)
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-    })
-
   }, [])
+
+  // useEffect(() => {
+  //   selectedCategoryId && SDK.ProductType.getAllByCategoryId(selectedCategoryId)
+  //   .then((res) => {
+  //     console.log("RES: ", res);
+  //     setProductData(res?.data)
+  //   })
+  //   .catch((error) => {
+  //     console.log("Error: ", error)
+  //   })
+  // }, [selectedCategoryId])
 
   useEffect(() => {
     setTimeout(function(){
@@ -305,6 +310,7 @@ export default function FormDialog({open, setOpen, id}) {
         supplierId : supplierName,
         isDeliveryAdded : shippingMethod === "Delivery Service" ? true : false,
         deliveryId : shippingMethod === "Delivery Service" ? deliveryId : false,
+        createdAt: startDate,
         isActive: true
       }
       console.log(obj);
@@ -489,7 +495,7 @@ export default function FormDialog({open, setOpen, id}) {
           </div>
         );
       })}
-      {/*<div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div>*/}
+    {/*<div style={{ marginTop: 20 }}>{JSON.stringify(inputList)}</div>*/}
 
         {/*<InputLabel id="demo-multiple-name-label" 
         sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Products</InputLabel>
@@ -610,6 +616,7 @@ export default function FormDialog({open, setOpen, id}) {
               id="district"
               autoComplete="district"
           />*/}
+          
 
         <InputLabel id="demo-simple-select-label" 
         sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>District</InputLabel>
@@ -934,6 +941,20 @@ export default function FormDialog({open, setOpen, id}) {
           </MenuItem>
         ))}
         </Select>
+        <Grid item xs={4} classname="customdatepickerwidth" >
+        <InputLabel id="demo-simple-select-label" 
+        style={{justifyContent: "start"}}
+        sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2}}>Order Date</InputLabel>
+        
+        <div className="datepicker-container">
+        <div className="dates-container">
+          <div className="date-item"></div>
+        </div>
+        <div className="react-datepicker-wrapper">
+          <DatePicker className='react-datepicker1' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+        </div>
+      </div>
+      </Grid>
 
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>

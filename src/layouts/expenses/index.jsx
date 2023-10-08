@@ -306,18 +306,19 @@ function Expenses() {
       setStartDate('')
       setEndDate('')
       setExpenseName('')
+      
       SDK.ExpenseType.getAll()
-    .then(async (res) => {
-      setUserData(res?.data);
-      setOpenBackDrop(false);
-    })
-    .catch((error) => {
-      setOpenBackDrop(false);
-      console.log("Error: ", error)
-      setSnackSeverity('error');
-      setMessage('Error!');
-      setOpenSnack(true);
-    })
+      .then(async (res) => {
+        setUserData(res?.data);
+        setOpenBackDrop(false);
+      })
+      .catch((error) => {
+        setOpenBackDrop(false);
+        console.log("Error: ", error)
+        setSnackSeverity('error');
+        setMessage('Error!');
+        setOpenSnack(true);
+      })
     }
 
     const handleClickSearchBtn = () => {

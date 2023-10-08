@@ -61,7 +61,11 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-
+import moment from 'moment';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./customdatepickerwidth3.css";
+import "./style.css";
 // Data
 import {SDK} from "../../api/index";
 
@@ -116,6 +120,10 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+
+let user = localStorage.getItem('loggedInUser')
+let newuser = JSON.parse(user)
+
 function Orders() {
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = React.useState(false);
@@ -134,6 +142,7 @@ function Orders() {
   const [strackingNo, setStrackingNo] = React.useState('');
   const [sorderStatus, setSorderStatus] = React.useState('');
   const [managers, setManagers] = useState([]);
+  const [startDate, setStartDate] = useState('');
 
   const [state, setState] = React.useState({
     opens: false,
@@ -150,6 +159,18 @@ function Orders() {
   
   useEffect(() => {
     setOpenBackDrop(true)
+    console.log(newuser?.id)
+    newuser?.role == 'Marketing Manager' ? SDK.OrderType.findAllBySupplier(newuser?.id)
+    .then((res) => {
+      console.log("RES cccccccccccc: ", res);
+      setOrderData(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    }) : 
     SDK.OrderType.getAll()
     .then((res) => {
       console.log("RES: ", res);
@@ -220,13 +241,21 @@ function Orders() {
   
   const handleClickSearchBtn = () => {
 
+    var day = 60 * 60 * 24 * 1000;
+    var sDate = startDate && new Date(startDate?.getTime());
+    var eDate = startDate && new Date(startDate?.getTime() + day);
+
+
     SDK.OrderType.multipleSearch({
       "id" : soderId, 
       "customerName" : scusName,
       "customerPhone" : scusPhn,
       "supplier" : ssupplier,
       "status" : sorderStatus,
-      "trackingNo" : strackingNo
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date()).format('YYYY-MM-DD'),
+
     })
     .then((res) => {
       console.log("RES: ", res);
@@ -409,12 +438,14 @@ function Orders() {
   }
 
   const columns = [
-      { Header: "id", accessor: "id", width: "10%", align: "left" },
+      { Header: "id", accessor: "id", width: "5%", align: "left" },
+      { Header: "order Date", accessor: "CreatedAt", width: "10%", align: "left" },
       { Header: "customer Name", accessor: "customerName",  align: "left" },
       { Header: "customer Phone", accessor: "customerPhone",  align: "left" },
       { Header: "trackingNumber ", accessor: "trackingNumber", align: "center" },
       { Header: "total", accessor: "total", align: "center" },
       // { Header: "paid", accessor: "paid", align: "center" },
+      { Header: "Supplier", accessor: "supplierName", align: "center" },
       { Header: "Order status", accessor: "status", align: "center" },
       { Header: "Final Status", accessor: "finalStatus", align: "center" },
       { Header: "action", accessor: "action", align: "center" },
@@ -423,6 +454,9 @@ function Orders() {
     const rows = orderData  ?.map((user) =>  ({
         id: ( <MDTypography  component="span" variant="caption" color="text" fontWeight="medium" cursor='null'>
           {user.id || "-"}
+        </MDTypography>),
+        CreatedAt: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+          {moment(user.createdAt).format('DD-MM-YYYY')  || "-"}
         </MDTypography>),
         customerName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
           {user.ccfullName  || "-"}
@@ -434,13 +468,16 @@ function Orders() {
             {user.trackingNumber  || "-"}
         </MDTypography>),
         total: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.total.toFixed(2)  || "-"}
+          {user?.total?.toFixed(2)  || "-"}
         </MDTypography>),
         // paid: (
         //   <MDBox ml={-1}>
         //     <MDBadge badgeContent={`${user.paid}` || false} color={user.isActive ? "success" : "warning"} variant="gradient" size="sm" />
         //   </MDBox>
         // ),
+        supplierName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.supplierName  || "-"}
+      </MDTypography>),
         status: (
           <MDBox ml={-1}>
             <MDBadge badgeContent={`${user.status}` || false} color={user.status == 'Pending' ? "warning" : user.status == 'Delivered' ? "success" : 'danger'} variant="gradient" size="sm" />
@@ -455,22 +492,46 @@ function Orders() {
           <Box >
           <Stack direction="row" spacing={1}>
             <Button onClick={() => handleClickView(user.id)}> View </Button>   
-            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>           
-            <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
-            <Button disabled={!user?.barcode} onClick={() => handleClickBarcodeInit(user)}> Print Barcode</Button>
+            {newuser?.role != 'Marketing Manager' && <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>}        
+            {newuser?.role != 'Marketing Manager' && <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>}
+        {/*<Button disabled={!user?.barcode} onClick={() => handleClickBarcodeInit(user)}> Print Barcode</Button>*/}
           </Stack>
         </Box>
         )
     }))
+
+    const handleClickClear = () => {
+
+      setStartDate('')
+      setSoderId('')
+      setScusName('')
+      setScusPhn('')
+      setSsupplier('')
+      setSorderStatus('')
+      setStrackingNo('')
+
+      SDK.OrderType.getAll()
+    .then(async (res) => {
+      setOrderData(res?.data);
+      setOpenBackDrop(false);
+    })
+    .catch((error) => {
+      setOpenBackDrop(false);
+      console.log("Error: ", error)
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    })
+    }
   
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Box>
+      {newuser?.role != 'Marketing Manager' && <Box>
       <Item>
-      <Grid container spacing={2}>
-        <Grid item xs={4}>
+       <Grid container spacing={2}>
+        <Grid item xs={3}>
           <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
           sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Customer Name</InputLabel>
@@ -485,7 +546,7 @@ function Orders() {
             id="total"
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
            <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
           sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Customer Phone</InputLabel>
@@ -501,8 +562,8 @@ function Orders() {
             id="total"
           />
         </Grid>
-        <Grid item xs={4}>
-           
+
+       <Grid item xs={3}>
         <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Supplier</InputLabel>
@@ -522,6 +583,7 @@ function Orders() {
           value={ssupplier}
           label="status"
           fullWidth
+          disabled={newuser?.role == 'Marketing Manager'}
           name="status"
           sx={{ minWidth: 120,  minHeight: 40 }}
           onChange={handleSupplier}
@@ -537,9 +599,25 @@ function Orders() {
           </MenuItem>
         ))}
         </Select>
-
         </Grid>
-        <Grid item xs={4}>
+
+        <Grid item xs={3}>
+          <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Date</InputLabel>
+          <Grid item xs={4} classname="customdatepickerwidth" >
+              <div className="datepicker-container">
+              <div className="dates-container">
+                <div className="date-item"></div>
+              </div>
+              <div className="react-datepicker-wrapper">
+                <DatePicker className='react-datepicker3' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+              </div>
+            </div>
+            </Grid>
+        </Grid>
+
+        <Grid item xs={3}>
            <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Status</InputLabel>
@@ -572,7 +650,7 @@ function Orders() {
           <MenuItem value={"Returned"}>Returned</MenuItem>
         </Select>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
            <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
           sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Tracking Number</InputLabel>
@@ -587,7 +665,7 @@ function Orders() {
             id="total"
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
            <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
           sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Id</InputLabel>
@@ -605,13 +683,18 @@ function Orders() {
       </Grid>
       <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
           <FormControl sx={{ m: 1 }} variant="standard">
-          <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtn}>
-            &nbsp;Search
-          </MDButton>
+           <div style={{  marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+              <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="" color="" onClick={handleClickClear}>
+                Clear
+              </MDButton>
+            <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtn}>
+              &nbsp;Search
+            </MDButton>
+            </div>
         </FormControl>
       </div>
       </Item>
-    </Box>
+    </Box>}
       
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
@@ -633,7 +716,7 @@ function Orders() {
                 
                 <MDBox px={2} display="flex" justifyContent="end" alignItems="center">
                 <MDTypography variant="h6" fontWeight="medium"></MDTypography>
-                <MDButton sx={{ marginRight: '5px' }} variant="gradient" color="dark" onClick={handleClickOpen}>
+                <MDButton disabled={newuser?.role == 'Marketing Manager'} sx={{ marginRight: '5px' }} variant="gradient" color="dark" onClick={handleClickOpen}>
                   <Icon sx={{ fontWeight: "bold" }}>add</Icon>
                   &nbsp;Add Single Order
                 </MDButton>

@@ -328,7 +328,7 @@ function ProductStock() {
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
                   <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                    &nbsp;Add New User
+                    &nbsp;Add New Stock
                   </MDButton>
               </MDBox>
               {open &&  <FormDialog setOpen={handleCloseOpen} open={open} type={location?.pathname?.split("/")[3]} id={location?.pathname?.split("/")[4]}/>}

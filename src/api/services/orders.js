@@ -15,6 +15,12 @@ const getAll = async() => {
     return data;
 };
 
+const findAllBySupplier = async(id, req) => {
+    const data = await axios.get(extendedUrl + `/orders/findAllBySupplier/${id}`);
+    console.log(data);
+    return data;
+};
+
 const getAllReturned = async() => {
     const data = await axios.get(extendedUrl + "/orders/returned");
     console.log(data);
@@ -153,6 +159,7 @@ export const OrderType = {
     updateCancelled,
     multipleSearch,
     getBySupplierId,
+    findAllBySupplier,
     getAllExchanged,
     updateExchanged
 }

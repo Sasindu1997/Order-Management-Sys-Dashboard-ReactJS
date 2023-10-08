@@ -21,7 +21,10 @@ import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-
+import DatePicker from "react-datepicker";
+import moment from "moment";
+import "react-datepicker/dist/react-datepicker.css";
+import "./customdatepickerwidth2.css";
 import {SDK} from "../../api/index";
 
 export default function FormDialogUpdate({open, setOpen, userId}) {
@@ -31,6 +34,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
   const [userData, setUserData] = useState({});
   const [errorVM, setErrorVM] = useState(false);
   const [incomeStreams, setIncomeStreams] = useState([]);
+  const [startDate, setStartDate] = useState(new Date());
   const [incomeName, setIncomeName] = useState(false);
   const [initData, setInitData] = useState({
     name: '',
@@ -47,6 +51,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
       console.log("RES: ", res);
       setUserData(res?.data);
       setIncomeName(res?.data?.name)
+      setStartDate(new Date(res?.data?.createdAt))
       reset(res?.data);
     })
     .catch((error) => {
@@ -80,6 +85,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
         name: incomeName,
         description: values.description,
         amount: values.amount,
+        createdAt: startDate,
         isActive: true
       }
       console.log(obj);
@@ -118,7 +124,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
           <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
           <InputLabel id="demo-simple-select-label" 
-          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Income Name</InputLabel>
+          sx={{ paddingTop: 2, paddingBottom: 3, paddingLeft: 2 }}>Income Name</InputLabel>
             <Select
               labelId="incomeName"
               id="incomeName"
@@ -154,6 +160,20 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               id="amount"
               autoComplete="amount"
             />
+            <Grid item xs={4} classname="customdatepickerwidth" >
+              <InputLabel id="demo-simple-select-label" 
+              style={{justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2}}>Start Date</InputLabel>
+              
+              <div className="datepicker-container">
+              <div className="dates-container">
+                <div className="date-item"></div>
+              </div>
+              <div className="react-datepicker-wrapper">
+                <DatePicker className='react-datepicker1' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+              </div>
+            </div>
+            </Grid>
             <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
                <MDTypography variant="p" color="red">
                 {errorVM ? errorVM : ''}

@@ -270,14 +270,13 @@ function Invoice({orderDataSelectedArr}) {
           {invoiceData.map(data => (
             <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
               {console.log(data)}
-              {data[0] !== null && data[0] !== undefined && data[0] !== {} &&<Grid item xs={6}>
+              {data[0] !== null && data[0] !== undefined && <Grid item xs={6}>
                 <Item class="border">
                   <div>
                     <div class="parent parent-invoice-logo-type">
                         <span class="invoice-type child">
                             {`INVOICE: ${data[0]?.invoiceNumber}`}
                         </span>
-                        
                         <img class="invoice-logo child" src="logo.jpg" alt="" width="100" height="100"/>
                     </div>
                         <div class="invoice-tracking">
@@ -285,6 +284,9 @@ function Invoice({orderDataSelectedArr}) {
                             {` Tracking No: ${data[0]?.trackingNumber}`}
                         </span>
                         </div>
+                        <span  class="invoice-tracking">
+                        {` Date: ${moment(data[0]?.createdAt).format('DD-MM-YYYY')}`}
+                        </span>
                     <div class="parent parent-invoice-table-address">
                         <table class="child invoice-table-address" >
                             <tr class="table-addresses">
@@ -293,7 +295,7 @@ function Invoice({orderDataSelectedArr}) {
                             </tr>
                             <tr class="temp" >
                                 <td>La Rocher Ceylon pvt ltd</td>
-                                <td>{data[0]?.cfullName}</td>
+                                <td>{data[0]?.ccfullName}</td>
                             </tr>
                             <tr>
                                 <td>Hot line : 071-1752090</td>
@@ -361,6 +363,9 @@ function Invoice({orderDataSelectedArr}) {
                           {` Tracking No: ${data[1]?.trackingNumber}`}
                       </span>
                       </div>
+                      <span  class="invoice-tracking">
+                        {` Date: ${moment(data[1]?.createdAt).format('DD-MM-YYYY')}`}
+                        </span>
                   <div class="parent parent-invoice-table-address">
                       <table class="child invoice-table-address" >
                           <tr class="table-addresses">
@@ -369,7 +374,7 @@ function Invoice({orderDataSelectedArr}) {
                           </tr>
                           <tr class="temp" >
                               <td>La Rocher Ceylon pvt ltd</td>
-                              <td>{data[1]?.cfullName}</td>
+                              <td>{data[1]?.ccfullName}</td>
                           </tr>
                           <tr>
                               <td>Hot line : 071-1752090</td>
@@ -437,6 +442,9 @@ function Invoice({orderDataSelectedArr}) {
                           {` Tracking No: ${data[2]?.trackingNumber}`}
                       </span>
                       </div>
+                      <span  class="invoice-tracking">
+                        {` Date: ${moment(data[2]?.createdAt).format('DD-MM-YYYY')}`}
+                        </span>
                   <div class="parent parent-invoice-table-address">
                       <table class="child invoice-table-address" >
                           <tr class="table-addresses">
@@ -445,7 +453,7 @@ function Invoice({orderDataSelectedArr}) {
                           </tr>
                           <tr class="temp" >
                               <td>La Rocher Ceylon pvt ltd</td>
-                              <td>{data[2]?.cfullName}</td>
+                              <td>{data[2]?.ccfullName}</td>
                           </tr>
                           <tr>
                               <td>Hot line : 071-1752090</td>
@@ -513,6 +521,9 @@ function Invoice({orderDataSelectedArr}) {
                           {` Tracking No: ${data[3]?.trackingNumber}`}
                       </span>
                       </div>
+                      <span  class="invoice-tracking">
+                        {` Date: ${moment(data[3]?.createdAt).format('DD-MM-YYYY')}`}
+                        </span>
                   <div class="parent parent-invoice-table-address">
                       <table class="child invoice-table-address" >
                           <tr class="table-addresses">
@@ -521,7 +532,7 @@ function Invoice({orderDataSelectedArr}) {
                           </tr>
                           <tr class="temp" >
                               <td>La Rocher Ceylon pvt ltd</td>
-                              <td>{data[3]?.cfullName}</td>
+                              <td>{data[3]?.ccfullName}</td>
                           </tr>
                           <tr>
                               <td>Hot line : 071-1752090</td>

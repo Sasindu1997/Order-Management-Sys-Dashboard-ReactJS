@@ -42,6 +42,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Bar } from 'react-chartjs-2';
 import {faker} from '@faker-js/faker';
 
+let user = localStorage.getItem('loggedInUser')
+let newuser = JSON.parse(user)
+
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
   const [productData, setProductsData] = useState([]);
@@ -61,7 +64,7 @@ function Dashboard() {
 
   useEffect(() => {
     setOpenBackDrop(true);
-
+    console.log("loggedInUserDash", newuser?.role);
     SDK.UserType.findAllManagers()
     .then((res) => {
       let arr = []
@@ -317,7 +320,7 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
             </MDBox>
           </Grid>
         </Grid>
-        <MDBox mt={4.5}>
+        {newuser?.role != 'Marketing Manager' && <MDBox mt={4.5}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <MDBox mb={3}>
@@ -359,10 +362,10 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
               </MDBox>
             </Grid>
           </Grid>
-        </MDBox>
-      <MDBox mt={4.5}>
-      <Grid container spacing={3}>
-      {managers.length > 0 && managers.map((manager, i) => (
+        </MDBox>}
+      {newuser?.role != 'Marketing Manager' && <><MDBox mt={4.5}>
+       <Grid container spacing={3}>
+       {managers.length > 0 && managers.map((manager, i) => (
         <Grid item xs={12} md={6} lg={4}>
           <MDBox mb={3}>
           {console.log("ccxxxxxxxxxxxxxxxxxxxx", managersData)}
@@ -394,20 +397,20 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
               }} />
           </MDBox>
         </Grid>
-      ))}
-      </Grid>
-    </MDBox>
-        <MDBox>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={8}>
-              <Projects />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <OrdersOverview />
-            </Grid>
-          </Grid>
+        ))}
+        </Grid>
         </MDBox>
-      </MDBox>
+            <MDBox>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6} lg={8}>
+                  <Projects />
+                </Grid>
+                <Grid item xs={12} md={6} lg={4}>
+                  <OrdersOverview />
+                </Grid>
+              </Grid>
+            </MDBox></>}
+          </MDBox>
       <Footer />
     </DashboardLayout>
   );

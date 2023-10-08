@@ -12,13 +12,17 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import Icon from "@mui/material/Icon";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
-
+import DatePicker from "react-datepicker";
+import moment from "moment";
+import "react-datepicker/dist/react-datepicker.css";
+import "./customdatepickerwidth2.css";
 import {SDK} from "../../api/index";
 
 export default function FormDialog({open, setOpen, id}) {
@@ -27,6 +31,7 @@ export default function FormDialog({open, setOpen, id}) {
   const [errorSB, setErrorSB] = useState(false);
   const [userData, setUserData] = useState([]);
   const [errorVM, setErrorVM] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -45,6 +50,7 @@ export default function FormDialog({open, setOpen, id}) {
         name: data.get('name'),
         description: data.get('description'),
         amount: data.get('amount'),
+        createdAt: startDate,
         isActive: true
       }
       console.log(obj);
@@ -74,7 +80,7 @@ export default function FormDialog({open, setOpen, id}) {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add Expense</DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, pt: 3}}>
               <TextField
               margin="normal"
               required
@@ -105,6 +111,20 @@ export default function FormDialog({open, setOpen, id}) {
               id="amount"
               autoComplete="amount"
             />
+            <Grid item xs={4} classname="customdatepickerwidth" >
+              <InputLabel id="demo-simple-select-label" 
+              style={{justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2}}>Start Date</InputLabel>
+              
+              <div className="datepicker-container">
+              <div className="dates-container">
+                <div className="date-item"></div>
+              </div>
+              <div className="react-datepicker-wrapper">
+                <DatePicker className='react-datepicker1' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+              </div>
+            </div>
+            </Grid>
             <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
                <MDTypography variant="p" color="red">
                 {errorVM ? errorVM : ''}

@@ -23,11 +23,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDAvatar from "components/MDAvatar";
 import MDProgress from "components/MDProgress";
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+
 // Dashboard React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -43,7 +39,12 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import moment from 'moment';
+import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 // Data
 import {SDK} from "../../api/index";
@@ -51,39 +52,19 @@ import {SDK} from "../../api/index";
 import { useState, useEffect } from "react";
 import FormDialog from "./formTest";
 import FormDialogUpdate from "./updateModal";
-import FormDialogView from "./viewModal"
+import FormDialogView from "./viewModal";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { CSVLink, CSVDownload } from "react-csv";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import "./customdatepickerwidth.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
-
-function Incomes() {
+function RawmatTypes() {
   const [open, setOpen] = React.useState(false);
   const [userId, setUserId] = React.useState(false);
   const [openView, setOpenView] = React.useState(false);
@@ -103,18 +84,11 @@ function Incomes() {
   const [recordId, setRecordId] = React.useState(false);
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [openBackDrop, setOpenBackDrop] = React.useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [expenseName, setExpenseName] = React.useState('');
-  const [downloadingCSV, setDownloadingCSV] = React.useState([
-    ["id", "name", "description", "amount", "date"],
-  ]);
-  const [selectData, setSelectData] = useState([]);
-
+  
   useEffect(() => {
     setOpenBackDrop(true)
-    SDK.IncomesType.getAll()
-    .then(async (res) => {
+    SDK.RawStreamType.getAll()
+    .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
     })
@@ -124,14 +98,6 @@ function Incomes() {
       setMessage('Error!');
       setOpenSnack(true);
     })
-    SDK.IncomeStreamType.getAll()
-    .then((res) => {
-      console.log("RES: ", res);
-      setSelectData(res?.data)
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-    })
     setTimeout(function(){
       setOpenBackDrop(false);
     }, 1000);
@@ -139,11 +105,6 @@ function Incomes() {
 
   const handleClickOpen = () => {
     setOpen(true);
-  };
-
-  const handleExpenseNamed = (event) => {
-    console.log(event.target.value) 
-    setExpenseName(event.target.value);
   };
 
   const handleCloseConformDelete = () => {
@@ -207,7 +168,7 @@ function Incomes() {
   }
 
   const handleConformDelete = () => {
-    recordId && SDK.IncomesType.deletebyId(recordId)
+    recordId && SDK.RawStreamType.deletebyId(recordId)
     .then((res) => {
       console.log("RES: ", res);
       setOpenConformDelete(false);
@@ -224,143 +185,38 @@ function Incomes() {
     })
   };
 
-
   const columns = [
-    { Header: "id", accessor: "id", width: "15%", align: "left" },
+    { Header: "id", accessor: "id", width: "5%", align: "left" },
       { Header: "name", accessor: "name",  align: "left" },
       { Header: "description", accessor: "description", align: "left" },
-      { Header: "amount", accessor: "amount", align: "left" },
-      { Header: "date", accessor: "date", align: "left" },
       { Header: "action", accessor: "action", width: "8%", align: "center" },
     ]
-
     const rows = userData?.map((user) =>  ({
-        id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.id || "-"}
-        </MDTypography>),
-        name: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.incomeStream  || "-"}
-        </MDTypography>),
-        description: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.description  || "-"}
-        </MDTypography>),
-        amount: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-            {user.amount.toFixed(2)  || "-"}
-        </MDTypography>),
-        date: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-        {moment(user.createdAt).format('DD-MM-YYYY')  || "-"}
-        </MDTypography>),
-        action: (
-          <Box >
-          <Stack direction="row" spacing={1}>
-                    
-            <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
-            <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
-          </Stack>
-        </Box>
-        )
-    }))
-
-    const handleClickClear = () => {
-      setStartDate('')
-      setEndDate('')
-      setExpenseName('')
-      SDK.IncomesType.getAll()
-    .then(async (res) => {
-      console.log("RES: ", res);
-      setUserData(res?.data)
-    })
-    .catch((error) => {
-      console.log("Error: ", error)
-      setSnackSeverity('error');
-      setMessage('Error!');
-      setOpenSnack(true);
-    })
-    }
-    
-    const handleClickSearchBtn = () => {
-      SDK.IncomesType.multipleSearch({
-        "name" : expenseName, 
-        "startDate" : startDate ? moment(startDate).format('YYYY-MM-DD'): startDate,
-        "endDate" :  endDate ? moment(endDate).format('YYYY-MM-DD') : endDate
-      })
-      .then(async (res) => {
-        setOpenBackDrop(false)
-        console.log("RES: ", res);
-        setUserData(res?.data);
-        let csvData = [
-          ["id", "name", "description", "amount", "date"],
-        ]
-        if(res.data.length >=  csvData.length){
-          await res?.data.map((ex) => {
-            console.log(ex)
-            return csvData.push([`${ex.id}`, `${ex.incomeStream}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`])
-           })
-          setDownloadingCSV(csvData)
-          }
-      })
-      .catch((error) => {
-        setOpenBackDrop(false)
-        console.log("Error: ", error);
-        setSnackSeverity('error');
-        setMessage('Error in Search Orders!');
-        setOpenSnack(true);
-      })
-    }
+      id: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.id || "-"}
+      </MDTypography>),
+      name: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.name  || "-"}
+      </MDTypography>),
+      description: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+      {user.description  || "-"}
+      </MDTypography>),
+      category: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+      {user.categoryTitle  || "-"}
+      </MDTypography>),
+      action: (
+        <Box >
+        <Stack direction="row" spacing={1}>
+          <Button onClick={() => handleClickUpdate(user.id)}> Update </Button>
+          <Button onClick={() => handleClickDelete(user.id)}> Delete</Button>
+        </Stack>
+      </Box>
+      )
+  }))
   
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <Box>
-        <Item>
-        <Grid container spacing={2}>
-        <Grid item xs={4}>
-          <InputLabel id="demo-simple-select-label" 
-          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
-          sx={{ paddingTop: 2, paddingLeft: 8, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>Name</InputLabel>
-          <Select
-              labelId="incomeName"
-              id="incomeName"
-              value={expenseName}
-              label="incomeName"
-              name="incomeName"
-              sx={{ minWidth: 400,  minHeight: 40 }}
-              onChange={handleExpenseNamed}
-            >
-            {selectData.map((income) => (
-              <MenuItem value={income.id}>{income.name}</MenuItem>
-            ))}
-            </Select>
-        </Grid>
-          <Grid item xs={4} classname="customdatepickerwidth">
-            <InputLabel id="demo-simple-select-label" 
-            style={{justifyContent: "start"}}
-            sx={{ paddingTop: 2, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>Start Date</InputLabel>
-            <div  sx={{ width : '100'}}>
-            <DatePicker  className='react-datepicker' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
-            </div>
-          </Grid>
-          <Grid item xs={4}>
-            <InputLabel id="demo-simple-select-label" 
-            style={{alignItems: "right", justifyContent: "start"}}
-            sx={{ paddingTop: 2, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>End Date</InputLabel>
-            <DatePicker className='react-datepicker' selected={endDate} onChange={(date) => setEndDate(date)} />
-          </Grid>
-        </Grid>
-        <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
-            <FormControl sx={{ m: 1, mt: 5  }} variant="standard">
-            <div style={{  marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
-              <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="" color="" onClick={handleClickClear}>
-                Clear
-              </MDButton>
-              <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtn}>
-                &nbsp;Search
-              </MDButton>
-            </div>
-          </FormControl>
-        </div>
-        </Item>
-      </Box>
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
@@ -377,17 +233,13 @@ function Incomes() {
               >
                 <row>
                 <MDTypography variant="h6" color="white">
-                  Incomes Table
+                  Material Types Table
                 </MDTypography>
-                <MDBox px={2} display="flex" justifyContent="end" alignItems="center">
+                <MDBox px={2} display="flex" justifyContent="space-between" alignItems="center" onClick={handleClickOpen}>
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
                   <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                    &nbsp;Add New Income
-                  </MDButton>
-                  <MDButton sx={{ marginLeft: "5px" }} px={2} variant="gradient" color="dark">
-                    <Icon sx={{ fontWeight: "bold" }}>download</Icon>
-                    <CSVLink data={downloadingCSV}>&nbsp;Download Report</CSVLink>
+                    &nbsp;Add New Material Type
                   </MDButton>
               </MDBox>
                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
@@ -416,7 +268,7 @@ function Incomes() {
                   </Button>
                 </DialogActions>
               </Dialog>} 
-              </row>
+               </row>
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
@@ -448,4 +300,4 @@ function Incomes() {
   );
 }
 
-export default Incomes;
+export default RawmatTypes;

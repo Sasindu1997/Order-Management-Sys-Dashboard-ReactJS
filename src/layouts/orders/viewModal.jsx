@@ -19,6 +19,7 @@ import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 import { useState, useEffect } from "react";
 import Divider from '@mui/material/Divider';
+import moment from 'moment';
 
 import {SDK} from "../../api/index";
 
@@ -172,6 +173,13 @@ export default function FormDialogView({open, setOpen, userId}) {
          <Typography  variant="body2" sx={{ mb: 3 }}>
            {data.remark || "-"}
          </Typography>
+
+         <Typography  variant="h6" >
+         Order Date
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }}>
+          {moment(data.createdAt).format('DD-MM-YYYY') || "-"}
+        </Typography>
 
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
