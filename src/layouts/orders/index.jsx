@@ -143,6 +143,8 @@ function Orders() {
   const [sorderStatus, setSorderStatus] = React.useState('');
   const [managers, setManagers] = useState([]);
   const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
 
   const [state, setState] = React.useState({
     opens: false,
@@ -243,7 +245,7 @@ function Orders() {
 
     var day = 60 * 60 * 24 * 1000;
     var sDate = startDate && new Date(startDate?.getTime());
-    var eDate = startDate && new Date(startDate?.getTime() + day);
+    var eDate = endDate && new Date(endDate?.getTime() + day);
 
 
     SDK.OrderType.multipleSearch({
@@ -254,7 +256,7 @@ function Orders() {
       "status" : sorderStatus,
       "trackingNo" : strackingNo,
       "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
-      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date()).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
 
     })
     .then((res) => {
@@ -503,6 +505,7 @@ function Orders() {
     const handleClickClear = () => {
 
       setStartDate('')
+      setEndDate('')
       setSoderId('')
       setScusName('')
       setScusPhn('')
@@ -604,7 +607,7 @@ function Orders() {
         <Grid item xs={3}>
           <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
-          sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Date</InputLabel>
+          sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Start Date</InputLabel>
           <Grid item xs={4} classname="customdatepickerwidth" >
               <div className="datepicker-container">
               <div className="dates-container">
@@ -680,6 +683,21 @@ function Orders() {
             id="id"
           />
         </Grid>
+        <Grid item xs={3}>
+        <InputLabel id="demo-simple-select-label" 
+        style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+        sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order End Date</InputLabel>
+        <Grid item xs={4} classname="customdatepickerwidth" >
+            <div className="datepicker-container">
+            <div className="dates-container">
+              <div className="date-item"></div>
+            </div>
+            <div className="react-datepicker-wrapper">
+              <DatePicker className='react-datepicker3' onChange={(date) => setEndDate(date)} selected={endDate}  dateformat="dd/mm/yyyy" />
+            </div>
+          </div>
+          </Grid>
+      </Grid>
       </Grid>
       <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
           <FormControl sx={{ m: 1 }} variant="standard">

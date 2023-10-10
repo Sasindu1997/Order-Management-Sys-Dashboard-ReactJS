@@ -71,6 +71,14 @@ const multipleSearch = async(req) => {
     return data;
 };
 
+const multipleSearchDash = async(req) => {
+    const data = await axios.get(extendedUrl + `/orders/multipleSearchDash`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
 const update = async(id, req) => {
     const data = await axios.put(extendedUrl + `/orders/${id}`, req);
     console.log(data);
@@ -158,6 +166,7 @@ export const OrderType = {
     updateReturned,
     updateCancelled,
     multipleSearch,
+    multipleSearchDash,
     getBySupplierId,
     findAllBySupplier,
     getAllExchanged,

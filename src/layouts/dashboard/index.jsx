@@ -41,6 +41,25 @@ import CircularProgress from '@mui/material/CircularProgress';
 // import { BarChart } from '@mui/x-charts';
 import { Bar } from 'react-chartjs-2';
 import {faker} from '@faker-js/faker';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import InputLabel from '@mui/material/InputLabel';
+import { styled } from '@mui/material/styles';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import DatePicker from "react-datepicker";
+import MDButton from "components/MDButton";
+import FormControl from '@mui/material/FormControl';
+import moment from 'moment';
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
 
 let user = localStorage.getItem('loggedInUser')
 let newuser = JSON.parse(user)
@@ -62,9 +81,75 @@ function Dashboard() {
   const [openBackDrop, setOpenBackDrop] = React.useState(true);
   const [openBackDrop2, setOpenBackDrop2] = React.useState(true);
 
+  const [soderId, setSoderId] = React.useState('');
+  const [scusName, setScusName] = React.useState('');
+  const [scusPhn, setScusPhn] = React.useState('');
+  const [ssupplier, setSsupplier] = React.useState('');
+  const [strackingNo, setStrackingNo] = React.useState('');
+  const [sorderStatus, setSorderStatus] = React.useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [snackSeverity, setSnackSeverity] = React.useState(false);
+  const [message, setMessage] = React.useState(false);
+  const [orderData, setOrderData] = useState([]);
+  const [sumOrders, setSumOrders] = useState(0);
+
+
   useEffect(() => {
     setOpenBackDrop(true);
     console.log("loggedInUserDash", newuser?.role);
+    var day = 60 * 60 * 24 * 1000;
+    var sDate = startDate && new Date(startDate?.getTime());
+    var eDate = endDate && new Date(endDate?.getTime() + day);
+
+    newuser?.role == 'Marketing Manager' ? SDK.OrderType.findAllBySupplier(newuser?.id)
+    .then((res) => {
+      console.log("RES cccccccccccc: ", res);
+      setOrderData(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    }) : 
+    SDK.OrderType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setOrderData(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    })
+    SDK.OrderType.multipleSearchDash({
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD'),
+    })
+    .then((res) => {
+      console.log("RESTot: ", res);
+      setSumOrders(res.data[0].sum)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+
+
     SDK.UserType.findAllManagers()
     .then((res) => {
       let arr = []
@@ -200,7 +285,95 @@ useEffect(() => {
     }, 3000); 
 }, [managersData])
 
+const handleClickClear = () => {
 
+  setStartDate('')
+  setEndDate('')
+  setSoderId('')
+  setScusName('')
+  setScusPhn('')
+  setSsupplier('')
+  setSorderStatus('')
+  setStrackingNo('')
+
+  SDK.OrderType.getAll()
+.then(async (res) => {
+  setOrderData(res?.data);
+  setOpenBackDrop(false);
+})
+.catch((error) => {
+  setOpenBackDrop(false);
+  console.log("Error: ", error)
+  setSnackSeverity('error');
+  setMessage('Error!');
+  setOpenSnack(true);
+})
+}
+
+const handleScusName = (event) => {
+    console.log(event.target.value)
+    setScusName(event.target.value);
+  };
+  const handleScusPhn = (event) => {
+    console.log(event.target.value)
+    setScusPhn(event.target.value);
+  };
+  const handleSupplier = (event) => {
+    console.log(event.target.value)
+    setSsupplier(event.target.value);
+  };
+  const handleSorderStatus = (event) => {
+    console.log(event.target.value)
+    setSorderStatus(event.target.value);
+  };
+  const handleStrackingNo = (event) => {
+    console.log(event.target.value)
+    setStrackingNo(event.target.value);
+  };
+  const handleSoderId = (event) => {
+    console.log(event.target.value) 
+    setSoderId(event.target.value);
+  };
+  
+  const handleClickSearchBtn = () => {
+
+    var day = 60 * 60 * 24 * 1000;
+    var sDate = startDate && new Date(startDate?.getTime());
+    var eDate = endDate && new Date(endDate?.getTime() + day);
+
+    let obj = {
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD'),
+    }
+    SDK.OrderType.multipleSearch(obj)
+    .then((res) => {
+      console.log("RES: ", res);
+      setOrderData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+    SDK.OrderType.multipleSearchDash(obj)
+    .then((res) => {
+      console.log("RESTot: ", res.data[0].sum);
+      setSumOrders(res.data[0].sum)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+  }
 
  const options = {
   responsive: true,
@@ -259,6 +432,7 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
       </Backdrop>
       <DashboardNavbar />
       <MDBox py={3}>
+        <h2 style={{marginBottom : '15px'}}>Sales Data</h2>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
@@ -320,6 +494,7 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
             </MDBox>
           </Grid>
         </Grid>
+        <h2 style={{marginBottom : '15px'}}>Sales Charts </h2>
         {newuser?.role != 'Marketing Manager' && <MDBox mt={4.5}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
@@ -363,6 +538,216 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
             </Grid>
           </Grid>
         </MDBox>}
+
+          {newuser?.role != 'Marketing Manager' && <Box>
+          <h2 style={{marginBottom : '15px'}}>Order Details Search</h2>
+          <Item sx={{paddingBottom : 5}}>
+           <Grid container spacing={2} sx={{paddingBottom : 5}}>
+            <Grid item xs={3}>
+              <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Customer Name</InputLabel>
+              <TextField
+                value={scusName}
+                onChange={handleScusName}
+                margin="normal"
+                required
+                sx={{ paddingLeft: 2, paddingRight: 2}}
+                fullWidth
+                name="total"
+                id="total"
+              />
+            </Grid>
+            <Grid item xs={3}>
+               <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Customer Phone</InputLabel>
+              <TextField
+                value={scusPhn}
+                onChange={handleScusPhn}
+                margin="normal"
+                required
+                sx={{ paddingLeft: 2, paddingRight: 2}}
+                fullWidth
+                name="total"
+                type='number'
+                id="total"
+              />
+            </Grid>
+    
+           <Grid item xs={3}>
+            <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Supplier</InputLabel>
+              {/*<TextField
+                value={ssupplier}
+                onChange={handleSupplier}
+                margin="normal"
+                required
+                sx={{ paddingLeft: 2, paddingRight: 2}}
+                fullWidth
+                name="total"
+                id="total"
+      />*/}
+            <Select
+              labelId="status"
+              id="status" 
+              value={ssupplier}
+              label="status"
+              fullWidth
+              disabled={newuser?.role == 'Marketing Manager'}
+              name="status"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleSupplier}
+            >
+            {managers?.map((obj) => (
+              <MenuItem
+                key={obj.id}
+                value={obj.userName}
+                extra={obj.userName}
+              >
+                
+                {obj.userName}
+              </MenuItem>
+            ))}
+            </Select>
+            </Grid>
+    
+            <Grid item xs={3}>
+              <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Start Date</InputLabel>
+              <Grid item xs={4} classname="customdatepickerwidth" >
+                  <div className="datepicker-container">
+                  <div className="dates-container">
+                    <div className="date-item"></div>
+                  </div>
+                  <div className="react-datepicker-wrapper">
+                    <DatePicker className='react-datepicker3' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+                  </div>
+                </div>
+                </Grid>
+            </Grid>
+    
+            <Grid item xs={3}>
+               <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Status</InputLabel>
+              {/*<TextField
+                value={sorderStatus}
+                onChange={handleSorderStatus}
+                margin="normal"
+                required
+                sx={{ paddingLeft: 2, paddingRight: 2}}
+                fullWidth
+                name="total"
+                id="total"
+              />*/}
+              <Select
+              labelId="status"
+              id="status" 
+              value={sorderStatus}
+              label="status"
+              fullWidth
+              name="status"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleSorderStatus}
+            >
+              <MenuItem value={""}></MenuItem>
+              <MenuItem value={""}></MenuItem>
+              <MenuItem value={"Pending"}>Pending</MenuItem>
+              <MenuItem value={"Delivered"}>Delivered</MenuItem>
+              <MenuItem value={"ExChanged"}>ExChanged</MenuItem>
+              <MenuItem value={"Cancelled"}>Cancelled</MenuItem>
+              <MenuItem value={"Returned"}>Returned</MenuItem>
+            </Select>
+            </Grid>
+            <Grid item xs={3}>
+               <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Tracking Number</InputLabel>
+              <TextField
+                value={strackingNo}
+                onChange={handleStrackingNo}
+                margin="normal"
+                required
+                sx={{ paddingLeft: 2, paddingRight: 2}}
+                fullWidth
+                name="total"
+                id="total"
+              />
+            </Grid>
+            <Grid item xs={3}>
+               <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order Id</InputLabel>
+              <TextField
+                value={soderId}
+                onChange={handleSoderId}
+                margin="normal"
+                required
+                sx={{ paddingLeft: 2, paddingRight: 2}}
+                fullWidth
+                name="id"
+                id="id"
+              />
+            </Grid>
+            <Grid item xs={3}>
+            <InputLabel id="demo-simple-select-label" 
+            style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+            sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Order End Date</InputLabel>
+            <Grid item xs={4} classname="customdatepickerwidth" >
+                <div className="datepicker-container">
+                <div className="dates-container">
+                  <div className="date-item"></div>
+                </div>
+                <div className="react-datepicker-wrapper">
+                  <DatePicker className='react-datepicker3' onChange={(date) => setEndDate(date)} selected={endDate}  dateformat="dd/mm/yyyy" />
+                </div>
+              </div>
+              </Grid>
+            </Grid>
+          </Grid>
+              <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
+                <FormControl sx={{ m: 1 }} variant="standard">
+                <div style={{  marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+                  <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="" color="" onClick={handleClickClear}>
+                    Clear
+                  </MDButton>
+                  <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtn}>
+                  &nbsp;Search
+                  </MDButton>
+                  </div>
+                </FormControl>
+               </div>
+
+               <Grid container spacing={2}>
+            <Grid item xs={3}>
+              <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+              sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px'}}>Order Count</InputLabel>
+              <h1>{orderData.length}</h1>
+            </Grid>
+            <Grid item xs={3}>
+               <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "left", justifyContent: "start"}}
+              sx={{ paddingTop: 2, fontWeight: 'bold', fontSize: '15px' }}>Order Total</InputLabel>
+              <div style={{display: "flex" , alignItems: "left", justifyContent: "center"}}><h1>{sumOrders.toFixed(2)}</h1><h6>LKR </h6></div>
+            </Grid>
+    
+           <Grid item xs={3}>
+            
+            </Grid>
+    
+            <Grid item xs={3}>
+              
+            </Grid>
+          </Grid>
+          
+          </Item>
+        </Box>}
+
+      <h2 style={{marginBottom : '15px', marginTop : '15px'}}>Monthly Charts of Marketing Managers</h2>
       {newuser?.role != 'Marketing Manager' && <><MDBox mt={4.5}>
        <Grid container spacing={3}>
        {managers.length > 0 && managers.map((manager, i) => (
