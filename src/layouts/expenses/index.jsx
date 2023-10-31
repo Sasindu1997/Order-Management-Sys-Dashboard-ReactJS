@@ -140,6 +140,16 @@ function Expenses() {
     .then(async (res) => {
       setUserData(res?.data);
       setOpenBackDrop(false);
+      let csvData = [
+        ["id", "name", "description", "amount", "date"],
+      ]
+      if(res.data.length >=  csvData.length){
+        await res?.data.map((ex) => {
+          console.log(ex)
+          return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`])
+         })
+        setDownloadingCSV(csvData)
+      }
     })
     .catch((error) => {
       setOpenBackDrop(false);
@@ -262,12 +272,14 @@ function Expenses() {
   };
 
   const columns = [
-    { Header: "id", accessor: "id", width: "15%", align: "left" },
+    { Header: "id", accessor: "id", width: "5%", align: "left" },
       { Header: "name", accessor: "name",  align: "left" },
       { Header: "description", accessor: "description", align: "left" },
+      { Header: "supplier", accessor: "supplier", align: "left" },
       { Header: "amount", accessor: "amount", align: "left" },
+      { Header: "payment method", accessor: "paymentMethod", align: "left" },
       { Header: "date", accessor: "date", align: "left" },
-      { Header: "action", accessor: "action", width: "8%", align: "center" },
+      { Header: "action", accessor: "action", width: "6%", align: "center" },
     ]
 
     const rows = userData?.map((user) =>  ({
@@ -280,8 +292,14 @@ function Expenses() {
         description: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {user.description  || "-"}
         </MDTypography>),
+        supplier: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+        {user.itemSupplier  || "-"}
+        </MDTypography>),
         amount: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.amount.toFixed(2)  || "-"}
+        </MDTypography>),
+        paymentMethod: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
+            {user.paymentMethod  || "-"}
         </MDTypography>),
         date: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
         {moment(user.createdAt).format('DD-MM-YYYY')  || "-"}
@@ -429,8 +447,7 @@ function Expenses() {
                   </MDButton>
                   <MDButton sx={{ marginLeft: "5px" }} px={2} variant="gradient" color="dark">
                     <Icon sx={{ fontWeight: "bold" }}>download</Icon>
-                    {console.log(downloadingCSV)}
-                    <CSVLink data={downloadingCSV}>&nbsp;Download Report</CSVLink>
+                    <CSVLink filename={`Expenses-report-${moment(new Date()).format('YYYY-DD-MM')}.csv`}  data={downloadingCSV}>&nbsp;Download Report</CSVLink>
                   </MDButton>
               </MDBox>
                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}

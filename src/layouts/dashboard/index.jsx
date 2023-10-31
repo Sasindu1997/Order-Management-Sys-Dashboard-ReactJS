@@ -87,21 +87,28 @@ function Dashboard() {
   const [ssupplier, setSsupplier] = React.useState('');
   const [strackingNo, setStrackingNo] = React.useState('');
   const [sorderStatus, setSorderStatus] = React.useState('');
+  const [sproduct, setSproduct] = React.useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [openSnack, setOpenSnack] = React.useState(false);
   const [snackSeverity, setSnackSeverity] = React.useState(false);
+  const [countsLoading, setCountsLoading] = React.useState(false);
   const [message, setMessage] = React.useState(false);
   const [orderData, setOrderData] = useState([]);
+  const [orderCount, setOrderCount] = useState(0);
+  const [allProductData, setAllProductData] = useState([]);
   const [sumOrders, setSumOrders] = useState(0);
+  const [sumProducts, setSumProducts] = useState(0);
 
 
   useEffect(() => {
     setOpenBackDrop(true);
+    setCountsLoading(true);
     console.log("loggedInUserDash", newuser?.role);
     var day = 60 * 60 * 24 * 1000;
     var sDate = startDate && new Date(startDate?.getTime());
     var eDate = endDate && new Date(endDate?.getTime() + day);
+    var tDate = new Date(new Date()?.getTime() + day);
 
     newuser?.role == 'Marketing Manager' ? SDK.OrderType.findAllBySupplier(newuser?.id)
     .then((res) => {
@@ -114,10 +121,44 @@ function Dashboard() {
       setMessage('Error!');
       setOpenSnack(true);
     }) : 
-    SDK.OrderType.getAll()
+    // SDK.OrderType.getAll()
+    // .then((res) => {
+    //   console.log("RES: ", res);
+    //   setOrderData(res?.data);
+    //   setTimeout(function(){
+    //     setCountsLoading(false);
+    //   }, 500);
+    // })
+    // .catch((error) => {
+    //   console.log("Error: ", error);
+    //   setSnackSeverity('error');
+    //   setMessage('Error!');
+    //   setOpenSnack(true);
+    // })
+    SDK.OrderType.multipleSearchOrderCount({
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(tDate).format('YYYY-MM-DD'),
+    })
+    .then((res) => {
+      console.log("RES Count: ", res);
+      setOrderCount(res.data.Count);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    })
+    SDK.ProductType.getAll()
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data);
+      setAllProductData(res?.data);
     })
     .catch((error) => {
       console.log("Error: ", error);
@@ -133,11 +174,34 @@ function Dashboard() {
       "status" : sorderStatus,
       "trackingNo" : strackingNo,
       "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
-      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(tDate).format('YYYY-MM-DD'),
     })
     .then((res) => {
       console.log("RESTot: ", res);
-      setSumOrders(res.data[0].sum)
+      setSumOrders(res.data.total_prc)
+      setTimeout(function(){
+        setCountsLoading(false);
+      }, 500);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+    SDK.OrderType.multipleSearchDashPr({
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD'),
+    })
+    .then((res) => {
+      console.log("RESTotPr: ", res);
+      setSumProducts(res.data)
     })
     .catch((error) => {
       console.log("Error: ", error);
@@ -147,6 +211,7 @@ function Dashboard() {
     })
     setTimeout(function(){
       setOpenBackDrop(false);
+      setCountsLoading(false);
     }, 1000);
 
 
@@ -158,6 +223,7 @@ function Dashboard() {
       setManagers(res?.data)
 
       res?.data?.map(managers => {
+        console.log("managers==================", managers)
         SDK.OrderType.getBySupplierId(managers.id)
           .then((res) => {
             res?.data?.map(dat => { 
@@ -294,20 +360,96 @@ const handleClickClear = () => {
   setScusPhn('')
   setSsupplier('')
   setSorderStatus('')
+  setSproduct('')
   setStrackingNo('')
 
-  SDK.OrderType.getAll()
-.then(async (res) => {
-  setOrderData(res?.data);
-  setOpenBackDrop(false);
-})
-.catch((error) => {
-  setOpenBackDrop(false);
-  console.log("Error: ", error)
-  setSnackSeverity('error');
-  setMessage('Error!');
-  setOpenSnack(true);
-})
+//   SDK.OrderType.getAll()
+// .then(async (res) => {
+//   setOrderData(res?.data);
+//   setOpenBackDrop(false);
+//   setTimeout(function(){
+//     setCountsLoading(false);
+//   }, 500);
+// })
+// .catch((error) => {
+//   setOpenBackDrop(false);
+//   console.log("Error: ", error)
+//   setSnackSeverity('error');
+//   setMessage('Error!');
+//   setOpenSnack(true);
+// })
+var day = 60 * 60 * 24 * 1000;
+var sDate = startDate && new Date(startDate?.getTime());
+var eDate = endDate && new Date(endDate?.getTime() + day);
+var tDate = new Date(new Date()?.getTime() + day);
+
+    SDK.OrderType.multipleSearchOrderCount({
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(tDate).format('YYYY-MM-DD'),
+    })
+    .then((res) => {
+      console.log("RES Count: ", res);
+      setOrderCount(res.data.Count);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    })
+
+    SDK.OrderType.multipleSearchDash({
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(tDate).format('YYYY-MM-DD'),
+    })
+    .then((res) => {
+      console.log("RESTot: ", res);
+      setSumOrders(res.data.total_prc)
+      setTimeout(function(){
+        setCountsLoading(false);
+      }, 500);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+    SDK.OrderType.multipleSearchDashPr({
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD'),
+    })
+    .then((res) => {
+      console.log("RESTotPr: ", res);
+      setSumProducts(res.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
 }
 
 const handleScusName = (event) => {
@@ -326,6 +468,10 @@ const handleScusName = (event) => {
     console.log(event.target.value)
     setSorderStatus(event.target.value);
   };
+  const handleSproduct = (event) => {
+    console.log(event.target.value)
+    setSproduct(event.target.value);
+  };
   const handleStrackingNo = (event) => {
     console.log(event.target.value)
     setStrackingNo(event.target.value);
@@ -336,10 +482,11 @@ const handleScusName = (event) => {
   };
   
   const handleClickSearchBtn = () => {
-
+    setCountsLoading(true);
     var day = 60 * 60 * 24 * 1000;
     var sDate = startDate && new Date(startDate?.getTime());
     var eDate = endDate && new Date(endDate?.getTime() + day);
+    var tDate = new Date(new Date()?.getTime() + day);
 
     let obj = {
       "id" : soderId, 
@@ -347,14 +494,18 @@ const handleScusName = (event) => {
       "customerPhone" : scusPhn,
       "supplier" : ssupplier,
       "status" : sorderStatus,
+      "prid": sproduct,
       "trackingNo" : strackingNo,
       "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
-      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(tDate).format('YYYY-MM-DD'),
     }
-    SDK.OrderType.multipleSearch(obj)
+    SDK.OrderType.multipleSearchC(obj)
     .then((res) => {
       console.log("RES: ", res);
       setOrderData(res?.data)
+      setTimeout(function(){
+        setCountsLoading(false);
+      }, 500);
     })
     .catch((error) => {
       console.log("Error: ", error);
@@ -362,10 +513,45 @@ const handleScusName = (event) => {
       setMessage('Error in Search Orders!');
       setOpenSnack(true);
     })
+    SDK.OrderType.multipleSearchOrderCount(obj)
+    .then((res) => {
+      console.log("RES Count: ", res);
+      setOrderCount(res.data.Count);
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    })
     SDK.OrderType.multipleSearchDash(obj)
     .then((res) => {
-      console.log("RESTot: ", res.data[0].sum);
-      setSumOrders(res.data[0].sum)
+      console.log("RESTot: ", res.data.total_prc);
+      setSumOrders(res.data.total_prc)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+    SDK.OrderType.multipleSearchDashPr({
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "prid": sproduct,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD'),
+    })
+    .then((res) => {
+      console.log("RESTotPr: ", res);
+      setSumProducts(res.data)
+      setTimeout(function(){
+        setCountsLoading(false);
+      }, 500);
     })
     .catch((error) => {
       console.log("Error: ", error);
@@ -707,6 +893,25 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
               </div>
               </Grid>
             </Grid>
+            <Grid item xs={3}>
+              <InputLabel id="demo-simple-select-label" 
+                style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+                sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Product</InputLabel>
+                <Select
+                labelId="sproduct"
+                id="sproduct" 
+                value={sproduct}
+                label="Product"
+                fullWidth
+                name="sproduct"
+                sx={{ minWidth: 120,  minHeight: 40 }}
+                onChange={handleSproduct}
+              >
+                {allProductData.length > 0 && allProductData.map(pr => (
+                  <MenuItem value={pr.id}>{pr.productName}</MenuItem>
+                ))}
+              </Select>
+            </Grid>
           </Grid>
               <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
                 <FormControl sx={{ m: 1 }} variant="standard">
@@ -726,17 +931,32 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
               <InputLabel id="demo-simple-select-label" 
               style={{display: "flex", alignItems: "right", justifyContent: "start"}}
               sx={{ paddingTop: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px'}}>Order Count</InputLabel>
-              <h1>{orderData.length}</h1>
+              {!countsLoading ? (<h1>{orderCount || 0}</h1>) : (
+                <CircularProgress color="inherit" />
+              )}
             </Grid>
             <Grid item xs={3}>
                <InputLabel id="demo-simple-select-label" 
               style={{display: "flex", alignItems: "left", justifyContent: "start"}}
               sx={{ paddingTop: 2, fontWeight: 'bold', fontSize: '15px' }}>Order Total</InputLabel>
-              <div style={{display: "flex" , alignItems: "left", justifyContent: "center"}}><h1>{sumOrders.toFixed(2)}</h1><h6>LKR </h6></div>
+              <div style={{display: "flex" , alignItems: "left", justifyContent: "center"}}> {!countsLoading ? (<><h1>{sumOrders?.toFixed(2) || 0}</h1><h6>LKR </h6></>) : (
+                <CircularProgress color="inherit" />
+              )}</div>
+            </Grid>
+            <Grid item xs={3}>
+               <InputLabel id="demo-simple-select-label" 
+              style={{display: "flex", alignItems: "left", justifyContent: "start"}}
+              sx={{ paddingTop: 2, fontWeight: 'bold', fontSize: '15px' }}>Products Sold</InputLabel>
+
+              <div style={{display: "flex" , alignItems: "left", justifyContent: "center"}}>
+              {!countsLoading ? (<><h1>{Number(sumProducts)  && Number(sumProducts) || 0}
+              </h1></>) : (
+                <CircularProgress color="inherit" />
+              )}</div>
             </Grid>
     
            <Grid item xs={3}>
-            
+           
             </Grid>
     
             <Grid item xs={3}>
@@ -753,7 +973,6 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
        {managers.length > 0 && managers.map((manager, i) => (
         <Grid item xs={12} md={6} lg={4}>
           <MDBox mb={3}>
-          {console.log("ccxxxxxxxxxxxxxxxxxxxx", managersData)}
               <Bar options={ {
                 responsive: true,
                 plugins: {
@@ -786,14 +1005,14 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
         </Grid>
         </MDBox>
             <MDBox>
-              <Grid container spacing={3}>
+              {/*<Grid container spacing={3}>
                 <Grid item xs={12} md={6} lg={8}>
                   <Projects />
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
                   <OrdersOverview />
                 </Grid>
-              </Grid>
+            </Grid>*/}
             </MDBox></>}
           </MDBox>
       <Footer />

@@ -1,0 +1,190 @@
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
+import Icon from "@mui/material/Icon";
+import MDButton from "components/MDButton";
+import MDSnackbar from "components/MDSnackbar";
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+
+import {SDK} from "../../api/index";
+
+export default function FormDialogUpdate({open, setOpen, userId}) {
+  const [successSB, setSuccessSB] = useState(false);
+  const [warningSB, setWarningSB] = useState(false);
+  const [errorSB, setErrorSB] = useState(false);
+  const [userData, setUserData] = useState({});
+  const [categoryData, setCategoryData] = useState({});
+  const [categoryId, setCategoryId] = React.useState('');
+  const [errorVM, setErrorVM] = useState(false);
+  const [initData, setInitData] = useState({
+    title: '',
+    description: '',
+    categoryId: '',
+  });
+  const { register, handleSubmit, errors, reset } = useForm({
+    defaultValues: initData,
+  });
+  const form = new FormData();
+
+  useEffect(() => {
+    userId && SDK.ItemSuppliersType.getById(userId)
+    .then((res) => {
+      console.log("RES: ", res);
+      setUserData(res?.data)
+      reset(res?.data);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+      setOpen(false, 'error');
+    })
+
+    SDK.CategoryType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setCategoryData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+  }, [])
+
+  const handleChangeCategory = (event) => {
+    console.log(event.target.value)
+    setCategoryId(event.target.value);
+  };
+
+  const onSubmit = (values) => {
+    // event.preventDefault();
+    // const data = new FormData(event.currentTarget);
+    if(values?.name == '' || values?.name == 'undefined' || values?.name == null){
+      setErrorVM("Enter a Valid Sub-Category Title.");
+      return;
+    } 
+    else {
+      setErrorVM(false)
+    }
+
+    const obj = {
+        name: values?.name,
+        description: values?.description,
+        phone: values?.phone,
+        address: values?.address,
+        isActive: true
+      }
+      console.log(obj);
+      
+      SDK.ItemSuppliersType.update(userId, obj)
+    .then((res) => {
+      console.log("RES: ", res);
+      res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
+      // window.history.pushState("", "", "/settings/subcategories");
+      setOpen(false, 'success');
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+      setErrorSB(true);
+      setOpen(false, 'error');
+    })
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Update Item Supplier</DialogTitle>
+        <DialogContent>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+          {console.log("userData.fullName", userData.fullName)}
+          <TextField
+              {...register("name")}
+              margin="normal"
+              required
+              fullWidth
+              name="name"
+              label="Name"
+              type="name"
+              id="name"
+              autoComplete="name"
+              autoFocus
+            />
+            <TextField
+              {...register("description")}
+              margin="normal"
+              required
+              fullWidth
+              name="description"
+              label="Description"
+              type="description"
+              id="description"
+              autoComplete="description"
+            />
+
+            
+            <TextField
+            {...register("phone")}
+              margin="normal"
+              required
+              fullWidth
+              name="phone"
+              label="Phone"
+              type="phone"
+              id="phone"
+              autoComplete="phone"
+            />
+
+            <TextField
+            {...register("address")}
+              margin="normal"
+              required
+              fullWidth
+              name="address"
+              label="Address"
+              type="address"
+              id="address"
+              autoComplete="address"
+            />
+            <div style={{ color: 'red', marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+               <MDTypography variant="p" color="red">
+                {errorVM ? errorVM : ''}
+              </MDTypography>
+            </div>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
+        <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
+        <Button
+            type="submit"
+            variant="contained"
+            sx={{ mt: 3, mb: 2, color: (theme) => '#FFFFFF', }}
+            >
+            Update
+            </Button>
+        </div>
+        </Box>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

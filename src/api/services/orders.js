@@ -9,8 +9,9 @@ const add = async(req) => {
     return data;
 };
 
-const getAll = async() => {
-    const data = await axios.get(extendedUrl + "/orders");
+const getAll = async(limit, offset) => {
+    console.log(limit, offset)
+    const data = await axios.get(extendedUrl + `/orders/${limit}/${offset}`);
     console.log(data);
     return data;
 };
@@ -46,7 +47,7 @@ const getById = async(id) => {
 };
 
 const getBySupplierId = async(id) => {
-    const data = await axios.get(extendedUrl + `/orders/supplier/${id}`);
+    const data = await axios.get(extendedUrl + `/orders/supplier/get/${id}`);
     console.log(data);
     return data;
 };
@@ -63,16 +64,41 @@ const searchBy = async(value, searchby) => {
     return data;
 };
 
-const multipleSearch = async(req) => {
-    const data = await axios.get(extendedUrl + `/orders/multipleSearch`, {
+const multipleSearch = async(limit, offset, req) => {
+    const data = await axios.get(extendedUrl + `/orders/multipleSearch/${limit}/${offset}`, {
         params: req
     });
     console.log(data);
     return data;
 };
 
+const multipleSearchC = async(req) => {
+    const data = await axios.get(extendedUrl + `/orders/multipleSearchC`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
+
 const multipleSearchDash = async(req) => {
     const data = await axios.get(extendedUrl + `/orders/multipleSearchDash`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
+const multipleSearchDashPr = async(req) => {
+    const data = await axios.get(extendedUrl + `/orders/multipleSearchDashProd`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
+const multipleSearchOrderCount = async(req) => {
+    const data = await axios.get(extendedUrl + `/orders/multipleSearchOrderCount`, {
         params: req
     });
     console.log(data);
@@ -170,5 +196,8 @@ export const OrderType = {
     getBySupplierId,
     findAllBySupplier,
     getAllExchanged,
-    updateExchanged
+    updateExchanged,
+    multipleSearchDashPr,
+    multipleSearchOrderCount,
+    multipleSearchC
 }

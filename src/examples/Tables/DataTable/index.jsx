@@ -39,6 +39,8 @@ import MDPagination from "components/MDPagination";
 import DataTableHeadCell from "examples/Tables/DataTable/DataTableHeadCell";
 import DataTableBodyCell from "examples/Tables/DataTable/DataTableBodyCell";
 
+
+
 function DataTable({
   entriesPerPage,
   canSearch,
@@ -219,7 +221,6 @@ function DataTable({
           })}
         </TableBody>
       </Table>
-
       <MDBox
         display="flex"
         flexDirection={{ xs: "column", sm: "row" }}

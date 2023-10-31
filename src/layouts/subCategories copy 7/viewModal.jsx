@@ -29,7 +29,7 @@ export default function FormDialogView({open, setOpen, userId}) {
   const [userData, setUserData] = useState({});
 
   useEffect(() => {
-    userId && SDK.ChemicalsType.getById(userId)
+    userId && SDK.UserType.getById(userId)
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
@@ -38,6 +38,35 @@ export default function FormDialogView({open, setOpen, userId}) {
       console.log("Error: ", error)
     })
   }, [])
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const obj = {
+        email: data.get('email'),
+        password: data.get('password'),
+        fullName: data.get('fullName'),
+        userName: data.get('userName'),
+        role: data.get('role'),
+        phoneNumber: data.get('phone'),
+        address: data.get('address'),
+        isActive: true
+      }
+      console.log(obj);
+      
+      SDK.UserType.update(userId, obj)
+    .then((res) => {
+      console.log("RES: ", res);
+      res?.status === 200 ? setSuccessSB(true) : setWarningSB(true);
+      window.history.pushState("", "", "/users");
+      setOpen(false);
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+      setErrorSB(true);
+      setOpen(false);
+    })
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -50,52 +79,60 @@ export default function FormDialogView({open, setOpen, userId}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>View Chemical</DialogTitle>
+        <DialogTitle>View User</DialogTitle>
         <DialogContent>
-          <Box component="form" noValidate sx={{ mt: 1, ml: 2 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           {console.log("userData.fullName", userData.fullName)}
+         
         <Typography  variant="h6" >
-          Chemical Name
+          Full Name
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }}>
-          {userData.name}
+          {userData.fullName}
         </Typography>
 
         <Typography  variant="h6" >
-        Chemical Code
+        Email
       </Typography>
       <Typography  variant="body2" sx={{ mb: 3 }}>
-        {userData.code}
+        {userData.email}
       </Typography>
-        
+
         <Typography  variant="h6" >
-        Supplier
+          User Name
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.supplier}
+          {userData.userName}
         </Typography>
         
         <Typography  variant="h6" >
-        Unit Of Measure
+          Password
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.unitOfMeasure}
+          {userData.password}
+        </Typography>
+        
+        <Typography  variant="h6" >
+         Role
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }} >
+          {userData?.role}
         </Typography>
        
         <Typography  variant="h6" >
-        Unit Price
+          Phone Number
         </Typography>
         <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.unitPrice}
+          {userData.phoneNumber}
+        </Typography>
+        
+        <Typography  variant="h6" >
+          Address
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }} >
+          {userData.address}
         </Typography>
 
-        {/*<Typography  variant="h6" >
-          Payment Method
-        </Typography>
-        <Typography  variant="body2" sx={{ mb: 3 }} >
-          {userData.paymentMethod}
-        </Typography>*/}
-        
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         </div>

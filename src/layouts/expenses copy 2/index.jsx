@@ -111,6 +111,16 @@ function UtilityExpenses() {
     SDK.UtilityExpensesType.getAll()
     .then(async (res) => {
       setUserData(res?.data);
+      let csvData = [
+        ["id", "name", "description", "amount", "date"],
+      ]
+      if(res.data.length >=  csvData.length){
+        await res?.data.map((ex) => {
+          console.log(ex)
+          return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`])
+         })
+        setDownloadingCSV(csvData)
+      }
     })
     .catch((error) => {
       console.log("Error: ", error)
@@ -342,11 +352,11 @@ function UtilityExpenses() {
                   <MDTypography variant="h6" fontWeight="medium"></MDTypography>
                   <MDButton variant="gradient" color="dark" onClick={handleClickOpen}>
                     <Icon sx={{ fontWeight: "bold" }}>add</Icon>
-                    &nbsp;Add NewUtility Expense
+                    &nbsp;Add New Utility Expense
                   </MDButton>
                   <MDButton sx={{ marginLeft: "5px" }} px={2} variant="gradient" color="dark">
                     <Icon sx={{ fontWeight: "bold" }}>download</Icon>
-                    <CSVLink data={downloadingCSV}>&nbsp;Download Report</CSVLink>
+                    <CSVLink filename={`Utility-expenses-report-${moment(new Date()).format('YYYY-DD-MM')}.csv`} data={downloadingCSV}>&nbsp;Download Report</CSVLink>
                   </MDButton>
               </MDBox>
                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}

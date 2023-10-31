@@ -69,6 +69,7 @@ import IncomeStream from "layouts/subCategories copy 3";
 import ExpenseStream from "layouts/subCategories copy 4";
 import ChemicalTypes from "layouts/subCategories copy 5";
 import RawmatTypes from "layouts/subCategories copy 6";
+import Suppliers from "layouts/subCategories copy 7";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -342,6 +343,15 @@ const routes = newuser?.role == 'Marketing Manager' ? supplierRoutes : [{
         icon: <Icon fontSize = "small" > assignment </Icon>,
         route: "/settings/materialTypes",
         component: <RawmatTypes />,
+        isVisible: false
+    },
+    {
+        type: "collapse",
+        name: "suppiers",
+        key: "suppiers",
+        icon: <Icon fontSize = "small" > assignment </Icon>,
+        route: "/settings/suppiers",
+        component: <Suppliers />,
         isVisible: false
     },
     {

@@ -80,6 +80,7 @@ export default function FormDialogView({open, setOpen, userId}) {
          </Typography>
          <Typography  variant="body2" sx={{ mb: 3 }}>
            {data.cphone || "-"}
+           {data?.cphone2 && `, ${data.cphone2}` || ""}
          </Typography>
 
           <Typography  variant="h6" >
@@ -159,6 +160,13 @@ export default function FormDialogView({open, setOpen, userId}) {
           <Typography  variant="body2" sx={{ mb: 3 }}>
             {data.shippingMethod || "-"}
           </Typography>
+
+          {data?.shippingMethod == "Delivery Service" && <><Typography  variant="h6" >
+          Delivery Acccount Name
+        </Typography>
+        <Typography  variant="body2" sx={{ mb: 3 }}>
+          {data.deliveryName || "-"}
+        </Typography></>}
 
           <Typography  variant="h6" >
             Tracking Number

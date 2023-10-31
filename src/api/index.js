@@ -17,6 +17,7 @@ import { IncomeStreamType } from './services/incomeStream';
 import { ExpenseStreamType } from './services/expenseStream';
 import { ChemStreamType } from './services/chemStream';
 import { RawStreamType } from './services/rawStream';
+import { ItemSuppliersType } from './services/itemSuppliers';
 
 export const SDK = {
     tutorialType,
@@ -37,5 +38,6 @@ export const SDK = {
     IncomeStreamType,
     ExpenseStreamType,
     RawStreamType,
-    ChemStreamType
+    ChemStreamType,
+    ItemSuppliersType
 }

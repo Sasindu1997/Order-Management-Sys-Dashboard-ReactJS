@@ -309,7 +309,7 @@ export default function FormDialog({open, setOpen, id}) {
         smsbody: smsBody,
         supplierId : supplierName,
         isDeliveryAdded : shippingMethod === "Delivery Service" ? true : false,
-        deliveryId : shippingMethod === "Delivery Service" ? deliveryId : false,
+        deliveryId : deliveryId ? deliveryId : false,
         createdAt: startDate,
         isActive: true
       }
@@ -870,36 +870,62 @@ export default function FormDialog({open, setOpen, id}) {
         </Select>
 
         {shippingMethod === 'Delivery Service' && <><TextField
-        margin="normal"
-        required
-        fullWidth
-        name="orderId"
-        label="WayBill No"
-        id="orderId"
-      />
-        <InputLabel id="demo-simple-select-label" 
-          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Select Delivery Account</InputLabel>
-        <Select
-        labelId="deliveryId"
-        id="deliveryId"
-        value={deliveryId}
-        label="deliveryId"
-        fullWidth
-        name="deliveryId"
-        MenuProps={MenuProps}
-        sx={{ minWidth: 120,  minHeight: 40 }}
-        onChange={handleChangeDeliveryId}
-      >
-      {deliveryAccData?.map((obj) => (
-          <MenuItem
-            key={obj.id}
-            value={obj.id}
-            style={getStyles(obj.name, personName, theme)}
-          >
-            {obj.userName}
-          </MenuItem>
-        ))}
-      </Select></>}
+          margin="normal"
+          required
+          fullWidth
+          name="orderId"
+          label="WayBill No"
+          id="orderId"
+        />
+          <InputLabel id="demo-simple-select-label" 
+            sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Select Delivery Account</InputLabel>
+          <Select
+          labelId="deliveryId"
+          id="deliveryId"
+          value={deliveryId}
+          label="deliveryId"
+          fullWidth
+          name="deliveryId"
+          MenuProps={MenuProps}
+          sx={{ minWidth: 120,  minHeight: 40 }}
+          onChange={handleChangeDeliveryId}
+        >
+            {deliveryAccData?.map((obj) => (
+                <MenuItem
+                  key={obj.id}
+                  value={obj.id}
+                  style={getStyles(obj.name, personName, theme)}
+                >
+                  {obj.userName}
+                </MenuItem>
+              ))}
+          </Select></>}
+
+
+          {shippingMethod === 'Rider' && <>
+          <InputLabel id="demo-simple-select-label" 
+            sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Select SMS Account</InputLabel>
+          <Select
+          labelId="deliveryId"
+          id="deliveryId"
+          value={deliveryId}
+          label="deliveryId"
+          fullWidth
+          name="deliveryId"
+          MenuProps={MenuProps}
+          sx={{ minWidth: 120,  minHeight: 40 }}
+          onChange={handleChangeDeliveryId}
+        >
+            {deliveryAccData?.map((obj) => (
+                <MenuItem
+                  key={obj.id}
+                  value={obj.id}
+                  style={getStyles(obj.name, personName, theme)}
+                >
+                  {obj.description}
+                </MenuItem>
+              ))}
+          </Select></>}
 
         <InputLabel id="demo-simple-select-label" 
           sx={{ paddingTop: 2, paddingLeft: 2 }}>Remark</InputLabel>

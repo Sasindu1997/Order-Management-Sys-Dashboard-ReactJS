@@ -32,13 +32,24 @@ export default function FormDialog({open, setOpen, id}) {
   const [errorSB, setErrorSB] = useState(false);
   const [errorVM, setErrorVM] = useState(false);
   const [incomeName, setIncomeName] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState(false);
+  const [suppliers, setSuppliers] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
+  const [payemntMethod, setPayemntMethod] = React.useState('');
 
   useEffect(() => {
     SDK.ExpenseStreamType.getAll()
     .then((res) => {
       console.log("RES: ", res);
       setUserData(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    SDK.ItemSuppliersType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setSuppliers(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
@@ -62,9 +73,11 @@ export default function FormDialog({open, setOpen, id}) {
 
     const obj = {
         name: incomeName,
+        supplierId: selectedSupplier,
         description: data.get('description'),
         amount: data.get('amount'),
         createdAt: startDate,
+        paymentMethod : payemntMethod,
         isActive: true
       }
       console.log(obj);
@@ -94,6 +107,16 @@ export default function FormDialog({open, setOpen, id}) {
     setIncomeName(event.target.value);
   };
 
+  const handleChangeSupplier = (event) => {
+    console.log(event.target.value)
+    setSelectedSupplier(event.target.value);
+  };
+
+  const handleChangePayment = (event) => {
+    console.log(event.target.value)
+    setPayemntMethod(event.target.value);
+  };
+
   return (
     <div sx={{ zIndex : 8 }}>
       <Dialog open={open} onClose={handleClose} sx={{ zIndex : 8 }}>
@@ -101,7 +124,7 @@ export default function FormDialog({open, setOpen, id}) {
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <InputLabel id="demo-simple-select-label" 
-          sx={{ paddingTop: 2, paddingBottom: 3, paddingLeft: 2 }}>Expense Name</InputLabel>
+            sx={{ paddingTop: 2, paddingBottom: 3, paddingLeft: 2 }}>Expense Name</InputLabel>
             <Select
               labelId="incomeName"
               id="incomeName"
@@ -112,8 +135,24 @@ export default function FormDialog({open, setOpen, id}) {
               sx={{ minWidth: 120,  minHeight: 40 }}
               onChange={handleChangeName}
             >
-            {userData.map((income) => (
+            {userData?.map((income) => (
               <MenuItem value={income.id}>{income.name}</MenuItem>
+            ))}
+            </Select>
+            <InputLabel id="demo-simple-select-label" 
+            sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Supplier</InputLabel>
+            <Select
+              labelId="selectedSupplier"
+              id="selectedSupplier"
+              value={selectedSupplier}
+              label="selectedSupplier"
+              fullWidth
+              name="selectedSupplier"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleChangeSupplier}
+            >
+            {suppliers?.map((supplier) => (
+              <MenuItem value={supplier.id}>{supplier.name}</MenuItem>
             ))}
             </Select>
             <TextField
@@ -135,6 +174,25 @@ export default function FormDialog({open, setOpen, id}) {
               id="amount"
               autoComplete="amount"
             />
+
+            <InputLabel id="demo-simple-select-label" 
+              sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Payment Method</InputLabel>
+              <Select
+                labelId="payemntMethod"
+                id="payemntMethod"
+                value={payemntMethod}
+                label="payemntMethod"
+                fullWidth
+                name="payemntMethod"
+                sx={{ minWidth: 120,  minHeight: 40 }}
+                onChange={handleChangePayment}
+              >
+                <MenuItem value={"Cash"}>Cash</MenuItem>
+                <MenuItem value={"Card"}>Card</MenuItem>
+                <MenuItem value={"Cheque"}>Cheque</MenuItem>
+                <MenuItem value={"Gift"}>Gift</MenuItem>
+              </Select>
+
             <Grid item xs={4} classname="customdatepickerwidth" >
               <InputLabel id="demo-simple-select-label" 
               style={{justifyContent: "start"}}

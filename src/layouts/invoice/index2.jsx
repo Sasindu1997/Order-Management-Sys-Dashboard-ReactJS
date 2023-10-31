@@ -71,6 +71,8 @@ import FormDialogUpdate from "./updateModal";
 import FormDialogView from "./viewModal"
 import { MaterialReactTable } from 'material-react-table';
 import { invalid } from 'moment';
+import Pagination from "./pagination";
+
 // import { Br, Cut, Line, Printer, Text, Row, render } from 'react-thermal-printer';
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -158,24 +160,65 @@ function OrdersForInvoice() {
   const [visibleDiv, setVisibleDiv] = useState(false);
   const [invoiceData, setInvoiceData] = useState(false);
   const [testact, setTestact] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [offset, setOffset] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
+  const [pageData, setPageData] = useState({
+    rowData: [],
+    isLoading: false,
+    totalPages: 0,
+    totalPassengers: 0,
+  });
 
   useEffect(() => {
     setOpenBackDrop(true)
-    SDK.OrderType.getAll()
+    SDK.OrderType.getAll(pageSize, (currentPage - 1) * pageSize)
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data);
+      setOrderData(res?.data?.rows);
+      setTotalCount(res?.data.count)
+       setOpenBackDrop(false)
     })
     .catch((error) => {
       console.log("Error: ", error);
       setSnackSeverity('error');
       setMessage('Error!');
+      setOpenBackDrop(false)
       setOpenSnack(true);
+      setTimeout(function(){
+        setOpenBackDrop(false);
+      }, 500);
     })
-    setTimeout(function(){
-      setOpenBackDrop(false);
-    }, 1000);
   }, [open, openConformDelete, openUpdate])
+
+  useEffect(() => {
+    setPageData((prevState) => ({
+      ...prevState,
+      rowData: [],
+      isLoading: true,
+    }));
+    setOffset((currentPage - 1) * pageSize)
+    console.log(currentPage, currentPage * pageSize)
+
+    SDK.OrderType.getAll(pageSize, (currentPage - 1) * pageSize)
+    .then((res) => {
+      console.log("RES: ", res);
+      setOrderData(res?.data?.rows);
+      setTotalCount(res?.data.count)
+       setOpenBackDrop(false)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenBackDrop(false)
+      setOpenSnack(true);
+      setTimeout(function(){
+        setOpenBackDrop(false);
+      }, 500);
+    })
+  }, [currentPage]);
 
   useEffect(() => {
     setTestact(!testact)
@@ -457,10 +500,10 @@ function OrdersForInvoice() {
     const rows = orderData?.map((user, i) =>  ({
         id: user.id,
         cfullName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.ccfullName  || "-"}
+          {user.ccfullName  || user.cusName  || "-"}
         </MDTypography>),
         cphone: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.cphone  || "-"}
+        {user.cphone  || user.cusPhone  || "-"}
       </MDTypography>),
         trackingNumber: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.trackingNumber  || "-"}
@@ -581,7 +624,14 @@ function OrdersForInvoice() {
                   })}
                   state={{ rowSelection }}
                 />
+                  
+              <Pagination
+              totalRows={totalCount}
+              pageChangeHandler={setCurrentPage}
+              rowsPerPage={pageSize}
+            />
               </MDBox>
+            
             </Card>
           </Grid>
         </Grid>

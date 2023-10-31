@@ -57,6 +57,10 @@ function Settings() {
     navigate("/settings/incomeStream");
   }
 
+  const handleClickSuppliers = () => {
+    navigate("/settings/suppiers");
+  }
+
   const handleClickExpenseStream = () => {
     navigate("/settings/expenseStream");
   }
@@ -121,6 +125,16 @@ function Settings() {
               />
             </MDBox>
           </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+          <MDBox mb={1.5}>
+            <ComplexStatisticsCard
+              icon="inventory"
+              color="primary"
+              title="Item Suppliers"
+              onClickCard={handleClickSuppliers}
+            />
+          </MDBox>
+        </Grid>
           {/*<Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard

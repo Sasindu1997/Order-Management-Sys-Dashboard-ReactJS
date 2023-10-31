@@ -40,6 +40,9 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     name: '',
     description: '',
   });
+  const [payemntMethod, setPayemntMethod] = React.useState('');
+  const [suppliers, setSuppliers] = useState([]);
+  const [selectedSupplier, setSelectedSupplier] = useState(false);
   const { register, handleSubmit, errors, reset } = useForm({
     defaultValues: initData,
   });
@@ -51,7 +54,9 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
       console.log("RES: ", res);
       setUserData(res?.data);
       setIncomeName(res?.data?.name)
+      setSelectedSupplier(res?.data?.supplierId)
       setStartDate(new Date(res?.data?.createdAt))
+      setPayemntMethod(res?.data?.paymentMethod)
       reset(res?.data);
     })
     .catch((error) => {
@@ -61,6 +66,14 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     .then((res) => {
       console.log("RES: ", res);
       setIncomeStreams(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    SDK.ItemSuppliersType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setSuppliers(res?.data)
     })
     .catch((error) => {
       console.log("Error: ", error)
@@ -86,6 +99,8 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
         description: values.description,
         amount: values.amount,
         createdAt: startDate,
+        supplierId: selectedSupplier,
+        paymentMethod : payemntMethod,
         isActive: true
       }
       console.log(obj);
@@ -108,12 +123,22 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
     setIncomeName(event.target.value);
   };
 
+  const handleChangeSupplier = (event) => {
+    console.log(event.target.value)
+    setSelectedSupplier(event.target.value);
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleChangePayment = (event) => {
+    console.log(event.target.value)
+    setPayemntMethod(event.target.value);
   };
 
   return (
@@ -139,6 +164,22 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               <MenuItem value={income.id}>{income.name}</MenuItem>
             ))}
             </Select>
+            <InputLabel id="demo-simple-select-label" 
+            sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Supplier</InputLabel>
+            <Select
+              labelId="selectedSupplier"
+              id="selectedSupplier"
+              value={selectedSupplier}
+              label="selectedSupplier"
+              fullWidth
+              name="selectedSupplier"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleChangeSupplier}
+            >
+            {suppliers?.map((supplier) => (
+              <MenuItem value={supplier.id}>{supplier.name}</MenuItem>
+            ))}
+            </Select>
             <TextField
             {...register("description")}
               margin="normal"
@@ -160,6 +201,25 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
               id="amount"
               autoComplete="amount"
             />
+
+            <InputLabel id="demo-simple-select-label" 
+            sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Payment Method</InputLabel>
+            <Select
+              labelId="payemntMethod"
+              id="payemntMethod"
+              value={payemntMethod}
+              label="payemntMethod"
+              fullWidth
+              name="payemntMethod"
+              sx={{ minWidth: 120,  minHeight: 40 }}
+              onChange={handleChangePayment}
+            >
+              <MenuItem value={"Cash"}>Cash</MenuItem>
+              <MenuItem value={"Card"}>Card</MenuItem>
+              <MenuItem value={"Cheque"}>Cheque</MenuItem>
+              <MenuItem value={"Gift"}>Gift</MenuItem>
+            </Select>
+
             <Grid item xs={4} classname="customdatepickerwidth" >
               <InputLabel id="demo-simple-select-label" 
               style={{justifyContent: "start"}}

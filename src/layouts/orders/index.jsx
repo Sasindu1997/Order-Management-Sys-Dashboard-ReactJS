@@ -66,6 +66,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./customdatepickerwidth3.css";
 import "./style.css";
+import Pagination from "./pagination";
+
 // Data
 import {SDK} from "../../api/index";
 
@@ -145,6 +147,16 @@ function Orders() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  const [pageData, setPageData] = useState({
+    rowData: [],
+    isLoading: false,
+    totalPages: 0,
+    totalPassengers: 0,
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [offset, setOffset] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
 
   const [state, setState] = React.useState({
     opens: false,
@@ -161,33 +173,64 @@ function Orders() {
   
   useEffect(() => {
     setOpenBackDrop(true)
+    let day = 60 * 60 * 24 * 1000;
+    var sDate = startDate && new Date(startDate?.getTime());
+    var eDate = endDate && new Date(endDate?.getTime() + day);
+
     console.log(newuser?.id)
     newuser?.role == 'Marketing Manager' ? SDK.OrderType.findAllBySupplier(newuser?.id)
     .then((res) => {
       console.log("RES cccccccccccc: ", res);
       setOrderData(res?.data);
+      setOpenBackDrop(false);
     })
     .catch((error) => {
       console.log("Error: ", error);
       setSnackSeverity('error');
       setMessage('Error!');
       setOpenSnack(true);
-    }) : 
-    SDK.OrderType.getAll()
+      setOpenBackDrop(false);
+    }) :
+
+    SDK.OrderType.multipleSearch(pageSize, (currentPage - 1) * pageSize * pageSize, {
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
+    })
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data);
+      setOrderData(res?.data.rows);
+      setOpenBackDrop(false)
     })
     .catch((error) => {
       console.log("Error: ", error);
+      setOpenBackDrop(false)
       setSnackSeverity('error');
-      setMessage('Error!');
+      setMessage('Error in Search Orders!');
       setOpenSnack(true);
     })
-    setTimeout(function(){
-      setOpenBackDrop(false);
-    }, 1000);
-
+    // SDK.OrderType.getAll(pageSize, (currentPage - 1) * pageSize)
+    // .then((res) => {
+    //   console.log("RES: ", res);
+    //   setOrderData(res?.data.rows);
+    //   setTotalCount(res?.data.count)
+    //   // setTimeout(function(){
+    //     setOpenBackDrop(false);
+    //   // }, 10);
+    // })
+    // .catch((error) => {
+    //   console.log("Error: ", error);
+    //   setSnackSeverity('error');
+    //   setMessage('Error!');
+    //   setOpenSnack(true);
+    //   setOpenBackDrop(false);
+    // })
+   
     SDK.UserType.findAllManagers()
     .then((res) => {
       console.log("RES: ", res);
@@ -198,6 +241,72 @@ function Orders() {
     })
   }, [open, openConformDelete, openUpdate])
 
+  useEffect(() => {
+    setPageData((prevState) => ({
+      ...prevState,
+      rowData: [],
+      isLoading: true,
+    }));
+    setOffset((currentPage - 1) * pageSize)
+    console.log(currentPage, currentPage * pageSize)
+
+    // SDK.OrderType.getAll(pageSize, (currentPage - 1) * pageSize)
+    // .then((res) => {
+    //   console.log("RES: ", res);
+    //   setOrderData(res?.data.rows);
+    //   setTotalCount(res?.data.count)
+    //   // setTimeout(function(){
+    //     setOpenBackDrop(false);
+    //   // }, 10);
+    // })
+    // .catch((error) => {
+    //   console.log("Error: ", error);
+    //   setSnackSeverity('error');
+    //   setMessage('Error!');
+    //   setOpenSnack(true);
+    //   setOpenBackDrop(false);
+    // })
+
+    var day = 60 * 60 * 24 * 1000;
+    var sDate = startDate && new Date(startDate?.getTime());
+    var eDate = endDate && new Date(endDate?.getTime() + day);
+
+
+    SDK.OrderType.multipleSearch(pageSize, (currentPage - 1) * pageSize, {
+      "id" : soderId, 
+      "customerName" : scusName,
+      "customerPhone" : scusPhn,
+      "supplier" : ssupplier,
+      "status" : sorderStatus,
+      "trackingNo" : strackingNo,
+      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
+    })
+    .then((res) => {
+      console.log("RES: ", res);
+      setOrderData(res?.data.rows);
+      setTotalCount(res?.data.count)
+      setOpenBackDrop(false)
+    })
+    .catch((error) => {
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+      setOpenBackDrop(false)
+    })
+
+    // getData(currentPage).then((info) => {
+    //   const { totalPages, totalPassengers, data } = info;
+    //   setPageData({
+    //     isLoading: false,
+    //     rowData: formatRowData(data),
+    //     totalPages,
+    //     totalPassengers: 150,
+    //   });
+    // });
+  }, [currentPage]);
+
   const handleChangeSearch = (event) => {
     console.log(event.target.value);
     
@@ -205,7 +314,8 @@ function Orders() {
       SDK.OrderType.searchBy(event.target.value, searchSelect)
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data)
+      setOrderData(res?.data.rows)
+      setTotalCount(res?.data.count)
     })
     .catch((error) => {
       console.log("Error: ", error);
@@ -248,7 +358,7 @@ function Orders() {
     var eDate = endDate && new Date(endDate?.getTime() + day);
 
 
-    SDK.OrderType.multipleSearch({
+    SDK.OrderType.multipleSearch(pageSize, offset, {
       "id" : soderId, 
       "customerName" : scusName,
       "customerPhone" : scusPhn,
@@ -257,17 +367,19 @@ function Orders() {
       "trackingNo" : strackingNo,
       "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
       "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
-
     })
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data)
+      setOrderData(res?.data.rows);
+      setTotalCount(res?.data.count)
+      setOpenBackDrop(false)
     })
     .catch((error) => {
       console.log("Error: ", error);
       setSnackSeverity('error');
       setMessage('Error in Search Orders!');
       setOpenSnack(true);
+      setOpenBackDrop(false)
     })
   }
 
@@ -461,10 +573,10 @@ function Orders() {
           {moment(user.createdAt).format('DD-MM-YYYY')  || "-"}
         </MDTypography>),
         customerName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.ccfullName  || "-"}
+          {user.ccfullName  || user.cusName  || "-"}
         </MDTypography>),
         customerPhone: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.cphone  || "-"}
+        {user.cphone  || user.cusPhone  || "-"}
       </MDTypography>),
         trackingNumber: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.trackingNumber  || "-"}
@@ -503,7 +615,7 @@ function Orders() {
     }))
 
     const handleClickClear = () => {
-
+      setOpenBackDrop(true);
       setStartDate('')
       setEndDate('')
       setSoderId('')
@@ -513,18 +625,33 @@ function Orders() {
       setSorderStatus('')
       setStrackingNo('')
 
-      SDK.OrderType.getAll()
-    .then(async (res) => {
-      setOrderData(res?.data);
-      setOpenBackDrop(false);
-    })
-    .catch((error) => {
-      setOpenBackDrop(false);
-      console.log("Error: ", error)
-      setSnackSeverity('error');
-      setMessage('Error!');
-      setOpenSnack(true);
-    })
+      let day = 60 * 60 * 24 * 1000;
+      var sDate = startDate && new Date(startDate?.getTime());
+      var eDate = endDate && new Date(endDate?.getTime() + day);
+
+      SDK.OrderType.multipleSearch(pageSize, (currentPage - 1) * pageSize * pageSize, {
+        "id" : '', 
+        "customerName" : '',
+        "customerPhone" : '',
+        "supplier" : '',
+        "status" : '',
+        "trackingNo" : '',
+        "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
+        "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
+      })
+      .then((res) => {
+        console.log("RES: ", res);
+        setOrderData(res?.data?.rows);
+        setTotalCount(res?.data?.count);
+        setOpenBackDrop(false)
+      })
+      .catch((error) => {
+        console.log("Error: ", error);
+        setSnackSeverity('error');
+        setMessage('Error in Search Orders!');
+        setOpenSnack(true);
+        setOpenBackDrop(false)
+      })
     }
   
 
@@ -579,7 +706,7 @@ function Orders() {
             fullWidth
             name="total"
             id="total"
-  />*/}
+          />*/}
         <Select
           labelId="status"
           id="status" 
@@ -633,7 +760,7 @@ function Orders() {
             fullWidth
             name="total"
             id="total"
-/>*/}
+        />*/}
           <Select
           labelId="status"
           id="status" 
@@ -774,11 +901,18 @@ function Orders() {
               <MDBox pt={3}>
                 <DataTable
                   table={{ columns, rows }}
-                  isSorted={false}
+                  isSorted={true}
                   entriesPerPage={false}
-                  showTotalEntries={false}
+                  showTotalEntries={true}
                   noEndBorder
                 />
+               
+                <Pagination
+                  totalRows={totalCount}
+                  pageChangeHandler={setCurrentPage}
+                  rowsPerPage={pageSize}
+                />
+                
               </MDBox>
             </Card>
           </Grid>

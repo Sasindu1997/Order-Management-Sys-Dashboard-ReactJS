@@ -181,7 +181,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
                 id="unitPrice"
                 autoComplete="unitPrice"
             />
-            <InputLabel id="demo-simple-select-label" 
+            {/*<InputLabel id="demo-simple-select-label" 
               sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2 }}>Payment Method</InputLabel>
               <Select
                 {...register("payemntMethod")}
@@ -198,7 +198,7 @@ export default function FormDialogUpdate({open, setOpen, userId}) {
                 <MenuItem value={"card"}>Card</MenuItem>
                 <MenuItem value={"cheque"}>Cheque</MenuItem>
                 <MenuItem value={"gift"}>Gift</MenuItem>
-              </Select>
+                </Select>*/}
         <div style={{display: "flex", alignItems: "right", justifyContent: "end"}}>
         <Button onClick={handleClose}  sx={{ mt: 3, mb: 2 }}>Cancel</Button>
         <Button
