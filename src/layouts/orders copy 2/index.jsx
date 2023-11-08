@@ -63,10 +63,10 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
+import { CSVLink, CSVDownload } from "react-csv";
 import "react-datepicker/dist/react-datepicker.css";
 import "./customdatepickerwidth3.css";
 import "./style.css";
-import Pagination from "./pagination";
 
 // Data
 import {SDK} from "../../api/index";
@@ -126,7 +126,7 @@ const Item = styled(Paper)(({ theme }) => ({
 let user = localStorage.getItem('loggedInUser')
 let newuser = JSON.parse(user)
 
-function Orders() {
+function Reports() {
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [openBulk, setOpenBulk] = React.useState(false);
@@ -141,9 +141,14 @@ function Orders() {
   const [scusName, setScusName] = React.useState('');
   const [scusPhn, setScusPhn] = React.useState('');
   const [ssupplier, setSsupplier] = React.useState('');
+  const [prName, setPrName] = React.useState('');
+  const [catName, setCatName] = React.useState('');
   const [strackingNo, setStrackingNo] = React.useState('');
   const [sorderStatus, setSorderStatus] = React.useState('');
   const [managers, setManagers] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [productsByCat, setProductsByCat] = useState([]);
+
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -170,41 +175,75 @@ function Orders() {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const  ZebraBrowserPrintWrapper = require('zebra-browser-print-wrapper');
   const [openBackDrop, setOpenBackDrop] = React.useState(false);
-  
+
+  const [expenseName, setExpenseName] = React.useState('');
+  const [incomeName, setIncomeName] = React.useState('');
+  const [selectDataEx, setSelectDataEx] = useState([]);
+  const [selectDataInc, setSelectDataInc] = useState([]);
+
+  const [downloadingCSVOrders, setDownloadingCSVOrders] = React.useState([
+    ["id", "cusName", "cusPhone", "productDetails",
+     "parcelType", "paymentMethod", "shippingMethod", "shippingAddress", "district",
+     "status", "finalStatus", "hub", "supplierName", "subTotal", "deliveryCharge", 
+     "total", "trackingNumber", "createdAt"],
+  ]);
+  const [downloadingCSVEx, setDownloadingCSVEx] = React.useState([
+    ["id", "name", "description", "amount", "date"],
+  ]);
+  const [downloadingCSVInc, setDownloadingCSVInc] = React.useState([
+    ["id", "name", "description", "amount", "date"],
+  ]);
+
   useEffect(() => {
     setOpenBackDrop(true)
     let day = 60 * 60 * 24 * 1000;
     var sDate = startDate && new Date(startDate?.getTime());
     var eDate = endDate && new Date(endDate?.getTime() + day);
-
-    console.log(newuser?.id)
-    newuser?.role == 'Marketing Manager' ? SDK.OrderType.findAllBySupplier(newuser?.id)
-    .then((res) => {
-      console.log("RES cccccccccccc: ", res);
-      setOrderData(res?.data);
-      setOpenBackDrop(false);
-    })
-    .catch((error) => {
-      console.log("Error: ", error);
-      setSnackSeverity('error');
-      setMessage('Error!');
-      setOpenSnack(true);
-      setOpenBackDrop(false);
-    }) :
-
-    SDK.OrderType.multipleSearch(pageSize, (currentPage - 1) * pageSize * pageSize, {
+    SDK.OrderType.multipleSearchReport({
       "id" : soderId, 
       "customerName" : scusName,
       "customerPhone" : scusPhn,
       "supplier" : ssupplier,
       "status" : sorderStatus,
       "trackingNo" : strackingNo,
+      "productId" : prName,
+      "categoryId" : catName,
       "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
       "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
     })
-    .then((res) => {
+    .then(async (res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data.rows);
+      let csvData = [
+        ["id", "cusName", "cusPhone", "productDetails",
+        "parcelType", "paymentMethod", "shippingMethod", "shippingAddress", "district",
+        "status", "finalStatus", "hub", "supplierName", "subTotal", "deliveryCharge", 
+        "total", "trackingNumber", "createdAt"],
+      ]
+      if(res.data.length >=  csvData.length){
+        await res?.data?.map((ex) => {
+          console.log(ex)
+          return csvData.push([`${ex.id}`, `${ex.cusName}`, `${ex.cusPhone}`, `${ex.productDetails}`,
+           `${ex.parcelType}`, `${ex.paymentMethod}`, `${ex.shippingMethod}`, `${ex.shippingAddress}`, 
+           `${ex.district}`, `${ex.status}`, `${ex.finalStatus}`, `${ex.hub}`, `${ex.supplierName}`,
+            `${ex.subTotal}`, `${ex.deliveryCharge}`, `${ex.total}`, `${ex.trackingNumber}`, `${ex.createdAt}`],)
+           
+         })
+        setDownloadingCSVOrders(csvData)
+      }
+      SDK.ExpenseType.getAll()
+    .then(async (res) => {
+      setOpenBackDrop(false);
+      let csvData = [
+        ["id", "name", "description", "amount", "date"],
+      ]
+      if(res.data.length >=  csvData.length){
+        await res?.data.map((ex) => {
+          console.log(ex)
+          return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`])
+         })
+        setDownloadingCSVEx(csvData)
+      }
+    })
       setOpenBackDrop(false)
     })
     .catch((error) => {
@@ -214,22 +253,27 @@ function Orders() {
       setMessage('Error in Search Orders!');
       setOpenSnack(true);
     })
-    // SDK.OrderType.getAll(pageSize, (currentPage - 1) * pageSize)
-    // .then((res) => {
-    //   console.log("RES: ", res);
-    //   setOrderData(res?.data.rows);
-    //   setTotalCount(res?.data.count)
-    //   // setTimeout(function(){
-    //     setOpenBackDrop(false);
-    //   // }, 10);
-    // })
-    // .catch((error) => {
-    //   console.log("Error: ", error);
-    //   setSnackSeverity('error');
-    //   setMessage('Error!');
-    //   setOpenSnack(true);
-    //   setOpenBackDrop(false);
-    // })
+
+    SDK.IncomesType.getAll()
+    .then(async (res) => {
+      console.log("RES: ", res);
+      let csvData = [
+        ["id", "name", "description", "amount", "date"],
+      ]
+      if(res.data.length >=  csvData.length){
+        await res?.data.map((ex) => {
+          console.log(ex)
+          return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`])
+         })
+        setDownloadingCSVInc(csvData)
+      }
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+      setSnackSeverity('error');
+      setMessage('Error!');
+      setOpenSnack(true);
+    })
    
     SDK.UserType.findAllManagers()
     .then((res) => {
@@ -239,92 +283,49 @@ function Orders() {
     .catch((error) => {
       console.log("Error: ", error)
     })
-  }, [open, openConformDelete, openUpdate])
+
+    SDK.CategoryType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setCategories(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+
+    SDK.IncomeStreamType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setSelectDataInc(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+    setTimeout(function(){
+      setOpenBackDrop(false);
+    }, 1000);
+
+    SDK.ExpenseStreamType.getAll()
+    .then((res) => {
+      console.log("RES: ", res);
+      setSelectDataEx(res?.data)
+    })
+    .catch((error) => {
+      console.log("Error: ", error)
+    })
+  }, [])
 
   useEffect(() => {
-    setPageData((prevState) => ({
-      ...prevState,
-      rowData: [],
-      isLoading: true,
-    }));
-    setOffset((currentPage - 1) * pageSize)
-    console.log(currentPage, currentPage * pageSize)
-
-    // SDK.OrderType.getAll(pageSize, (currentPage - 1) * pageSize)
-    // .then((res) => {
-    //   console.log("RES: ", res);
-    //   setOrderData(res?.data.rows);
-    //   setTotalCount(res?.data.count)
-    //   // setTimeout(function(){
-    //     setOpenBackDrop(false);
-    //   // }, 10);
-    // })
-    // .catch((error) => {
-    //   console.log("Error: ", error);
-    //   setSnackSeverity('error');
-    //   setMessage('Error!');
-    //   setOpenSnack(true);
-    //   setOpenBackDrop(false);
-    // })
-
-    var day = 60 * 60 * 24 * 1000;
-    var sDate = startDate && new Date(startDate?.getTime());
-    var eDate = endDate && new Date(endDate?.getTime() + day);
-
-
-    SDK.OrderType.multipleSearch(pageSize, (currentPage - 1) * pageSize, {
-      "id" : soderId, 
-      "customerName" : scusName,
-      "customerPhone" : scusPhn,
-      "supplier" : ssupplier,
-      "status" : sorderStatus,
-      "trackingNo" : strackingNo,
-      "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
-      "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
-    })
+    console.log(catName)
+    catName && SDK.ProductType.getAllByCategoryId(catName)
     .then((res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data.rows);
-      setTotalCount(res?.data.count)
-      setOpenBackDrop(false)
+      setProductsByCat(res?.data)
     })
     .catch((error) => {
-      console.log("Error: ", error);
-      setSnackSeverity('error');
-      setMessage('Error in Search Orders!');
-      setOpenSnack(true);
-      setOpenBackDrop(false)
+      console.log("Error: ", error)
     })
-
-    // getData(currentPage).then((info) => {
-    //   const { totalPages, totalPassengers, data } = info;
-    //   setPageData({
-    //     isLoading: false,
-    //     rowData: formatRowData(data),
-    //     totalPages,
-    //     totalPassengers: 150,
-    //   });
-    // });
-  }, [currentPage]);
-
-  const handleChangeSearch = (event) => {
-    console.log(event.target.value);
-    
-    setTimeout(function(){
-      SDK.OrderType.searchBy(event.target.value, searchSelect)
-    .then((res) => {
-      console.log("RES: ", res);
-      setOrderData(res?.data.rows)
-      setTotalCount(res?.data.count)
-    })
-    .catch((error) => {
-      console.log("Error: ", error);
-      setSnackSeverity('error');
-      setMessage('Error!');
-      setOpenSnack(true);
-    })
-   }, 2000); 
-  };
+  }, [catName])
 
   const handleScusName = (event) => {
     console.log(event.target.value)
@@ -338,6 +339,14 @@ function Orders() {
     console.log(event.target.value)
     setSsupplier(event.target.value);
   };
+  const handleCategory = (event) => {
+    console.log(event.target.value)
+    setCatName(event.target.value);
+  };
+  const handlePr = (event) => {
+    console.log(event.target.value)
+    setPrName(event.target.value);
+  };
   const handleSorderStatus = (event) => {
     console.log(event.target.value)
     setSorderStatus(event.target.value);
@@ -350,28 +359,52 @@ function Orders() {
     console.log(event.target.value) 
     setSoderId(event.target.value);
   };
+    
   
-  const handleClickSearchBtn = () => {
+  const handleClickSearchBtnOrders = () => {
 
     var day = 60 * 60 * 24 * 1000;
     var sDate = startDate && new Date(startDate?.getTime());
     var eDate = endDate && new Date(endDate?.getTime() + day);
 
-
-    SDK.OrderType.multipleSearch(pageSize, offset, {
+    SDK.OrderType.multipleSearchReport({
       "id" : soderId, 
       "customerName" : scusName,
       "customerPhone" : scusPhn,
       "supplier" : ssupplier,
       "status" : sorderStatus,
       "trackingNo" : strackingNo,
+      "productId" : prName,
+      "categoryId" : catName,
       "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
       "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
     })
-    .then((res) => {
+    .then(async (res) => {
       console.log("RES: ", res);
-      setOrderData(res?.data.rows);
-      setTotalCount(res?.data.count)
+      setOrderData(res?.data);
+      let csvData = [
+        ["id", "cusName", "cusPhone", "productDetails",
+        "parcelType", "paymentMethod", "shippingMethod", "shippingAddress", "district",
+        "status", "finalStatus", "hub", "supplierName", "subTotal", "deliveryCharge", 
+        "total", "trackingNumber", "createdAt"],
+      ]
+      console.log(res?.data?.length ,  csvData.length)
+      if(res.data.length >=  csvData.length){
+        await res?.data?.map((ex) => {
+          let prString = '';
+          ex.productData.map(prd => {
+            prString = prString + `${prd.pName}-${prd.ocount}, `
+          })
+          console.log(prString)
+          return csvData.push([`${ex.id}`, `${ex.cusName}`, `${ex.cusPhone}`, `${prString}`,
+           `${ex.parcelType}`, `${ex.paymentMethod}`, `${ex.shippingMethod}`, `${ex.shippingAddress}`, 
+           `${ex.district}`, `${ex.status}`, `${ex.finalStatus}`, `${ex.hub}`, `${ex.supplierName}`,
+            `${ex.subTotal}`, `${ex.deliveryCharge}`, `${ex.total}`, `${ex.trackingNumber}`,
+             `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`],)
+           
+         })
+        setDownloadingCSVOrders(csvData)
+      }
       setOpenBackDrop(false)
     })
     .catch((error) => {
@@ -383,56 +416,63 @@ function Orders() {
     })
   }
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  const handleClickSearchBtnEx = () => {
+    SDK.ExpenseType.multipleSearch({
+      "name" : expenseName, 
+      "startDate" : startDate ? moment(startDate).format('YYYY-MM-DD'): startDate,
+      "endDate" :  endDate ? moment(endDate).format('YYYY-MM-DD') : endDate
+    })
+    .then(async (res) => {
+      setOpenBackDrop(false)
+      console.log("RES: ", res);
+      let csvData = [
+        ["id", "name", "description", "amount", "date"],
+      ]
+      if(res.data.length >=  csvData.length){
+        await res?.data.map((ex) => {
+          console.log(ex)
+          return csvData.push([`${ex.id}`, `${ex.name}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`])
+         })
+        setDownloadingCSVEx(csvData)
+        }
+    })
+    .catch((error) => {
+      setOpenBackDrop(false)
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+  }
 
-  const handleClickOpenBulk = () => {
-    setOpenBulk(true);
-  };
-
-  const handleCloseConformDelete = () => {
-    setOpenConformDelete(false);
-  };
-
-  const handleCloseSnack = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpenSnack(false);
-  };
-
-  const handleCloseOpen = (state, msg) => {
-    console.log("here")
-    setOpen(state);
-    setSnackSeverity(msg == 'success' ? 'success' : 'error');
-    setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
-    setOpenSnack(true);
-    // window.location.reload();
-  };
-
-  const handleCloseOpenBulk = (state, msg) => {
-    console.log("here")
-    setOpenBulk(state);
-    setSnackSeverity(msg == 'success' ? 'success' : 'error');
-    setMessage(msg == 'success' ? 'Record Created Sucessfully!' : 'Error In Record Creation!');
-    setOpenSnack(true);
-    // window.location.reload();
-  };
-
-  const handleCloseOpenUpdate = (state, msg) => {
-    console.log("here 2")
-    setOpenUpdate(state);
-    setSnackSeverity(msg == 'success' ? 'success' : 'error');
-    setMessage(msg == 'success' ? 'Record Updated Sucessfully!' : 'Error In Record Update!');
-    setOpenSnack(true);
-    // window.location.reload();
-  };
-
-  const handleCloseOpenView = (state) => {
-    console.log("here 3")
-    setOpenView(state);
-  };
+  const handleClickSearchBtnInc = () => {
+    SDK.IncomesType.multipleSearch({
+      "name" : incomeName, 
+      "startDate" : startDate ? moment(startDate).format('YYYY-MM-DD'): startDate,
+      "endDate" :  endDate ? moment(endDate).format('YYYY-MM-DD') : endDate
+    })
+    .then(async (res) => {
+      setOpenBackDrop(false)
+      console.log("RES: ", res);
+      let csvData = [
+        ["id", "name", "description", "amount", "date"],
+      ]
+      if(res.data.length >=  csvData.length){
+        await res?.data.map((ex) => {
+          console.log(ex)
+          return csvData.push([`${ex.id}`, `${ex.incomeStream}`, `${ex.description}`, `${ex.amount}.00`, `${moment(ex.createdAt).format('YYYY-DD-MM')  || "-"}`])
+         })
+        setDownloadingCSVInc(csvData)
+        }
+    })
+    .catch((error) => {
+      setOpenBackDrop(false)
+      console.log("Error: ", error);
+      setSnackSeverity('error');
+      setMessage('Error in Search Orders!');
+      setOpenSnack(true);
+    })
+  }
 
   const handleClickView = (id) => {
     console.log(id);
@@ -449,107 +489,17 @@ function Orders() {
   const handleClickDelete = (id) => {
     setOpenConformDelete(true);
     setRecordId(id);
-    // id && SDK.UserType.deletebyId(id)
-    // .then((res) => {
-    //   console.log("RES: ", res);
-    //   window.location.reload();
-    // })
-    // .catch((error) => {
-    //   console.log("Error: ", error)
-    // })
   }
 
-  const handleConformDelete = () => {
-    recordId && SDK.OrderType.deletebyId(recordId)
-    .then((res) => {
-      console.log("RES: ", res);
-      setOpenConformDelete(false);
-      setSnackSeverity('success');
-      setMessage('Record Deleted Sucessfully!');
-      setOpenSnack(true);
-    })
-    .catch((error) => {
-      setOpenConformDelete(false);
-      console.log("Error: ", error);
-      setSnackSeverity('error');
-      setMessage('Error In Record Deletion!');
-      setOpenSnack(true);
-    })
+  const handleExpenseNamed = (event) => {
+    console.log(event.target.value) 
+    setExpenseName(event.target.value);
   };
 
-    const handleClickBarcodeInit = async (order) => {
-    const res = handleClickBarcode(order).then(ress => {
-      if(ress == 'success'){
-        setSnackSeverity('success');
-        setMessage('Barcode Printed Sucessfully!');
-        setOpenSnack(true);
-      } else {
-        setSnackSeverity('error');
-        setMessage('Error In Barcode Printing!');
-        setOpenSnack(true);
-      }
-    })
-  }
-
-  const handleClickBarcode = async (order) => {
-    console.log(order)
-
-    const serial = "0123456789";
-        // const receipt = (
-        //     <Printer type="" width={2} characterSet="korea">
-        //       <Text size={{ width: 1, height: 0.2 }}>9,500원</Text>
-        //       <Text bold={true}>결제 완료</Text>
-        //       <Cut />
-        //     </Printer>
-        //   );
-        // const data = await render(receipt);
-        // console.log("data", data)
-        try {
-
-          // Create a new instance of the object
-          const browserPrint = new ZebraBrowserPrintWrapper.default(); 
-
-          // Select default printer
-          const defaultPrinter =  await browserPrint.getDefaultPrinter();
-      
-          // Set the printer
-          browserPrint.setPrinter(defaultPrinter);
-
-          // Check printer status
-          const printerStatus = await browserPrint.checkPrinterStatus();
-          console.log(order)
-          // Check if the printer is ready
-          if(printerStatus.isReadyToPrint) {
-
-              // ZPL script to print a simple barcode
-              // const zpl = order.barcode && `^XA
-              //             ^BY2,2,100
-              //             ^FO20,20^BC^FD${order.barcode}^FS
-              //             ^XZ`;
-
-              const zpl = `^XA
-              ^MMC
-              ^PW650
-              ^LL0223
-              ^LS0
-              ^BY2,2,100
-              ^FO20,20^BC^FD${order.barcode}^FS
-
-              ^BY2,2,100
-              ^FO20,20^BC^FD${order.barcode}^FS
-              ^PQ1,1,1,Y^XZ`
-
-              order.barcode && browserPrint.print(zpl);
-              return order.barcode ? 'success': 'error'; 
-
-          } else {
-              console.log("Error/s", printerStatus.errors);
-              return 'error'; 
-          }
-        } catch (error) {
-            throw new Error(error);
-        }
-  }
+  const handleIncomeNamed = (event) => {
+    console.log(event.target.value) 
+    setIncomeName(event.target.value);
+  };
 
   const columns = [
       { Header: "id", accessor: "id", width: "5%", align: "left" },
@@ -619,6 +569,8 @@ function Orders() {
       setStartDate('')
       setEndDate('')
       setSoderId('')
+      setPrName('')
+      setCatName('')
       setScusName('')
       setScusPhn('')
       setSsupplier('')
@@ -629,13 +581,15 @@ function Orders() {
       var sDate = startDate && new Date(startDate?.getTime());
       var eDate = endDate && new Date(endDate?.getTime() + day);
 
-      SDK.OrderType.multipleSearch(pageSize, (currentPage - 1) * pageSize * pageSize, {
-        "id" : '', 
-        "customerName" : '',
-        "customerPhone" : '',
-        "supplier" : '',
-        "status" : '',
-        "trackingNo" : '',
+      SDK.OrderType.multipleSearchReport({
+        "id" : soderId, 
+        "customerName" : scusName,
+        "customerPhone" : scusPhn,
+        "supplier" : ssupplier,
+        "status" : sorderStatus,
+        "trackingNo" : strackingNo,
+        "productId" : prName,
+        "categoryId" : catName,
         "createdAt" : sDate ? moment(new Date(sDate)).format('YYYY-MM-DD') : moment(new Date('2000-01-01')).format('YYYY-MM-DD'),
         "endDate" : eDate ? moment(new Date(eDate)).format('YYYY-MM-DD') : moment(new Date() + day).format('YYYY-MM-DD') ,
       })
@@ -654,11 +608,11 @@ function Orders() {
       })
     }
   
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
       {newuser?.role != 'Marketing Manager' && <Box>
+      <h2 style={{margin : '15px'}}>Order Details Report</h2>
       <Item>
        <Grid container spacing={2}>
         <Grid item xs={3}>
@@ -692,21 +646,10 @@ function Orders() {
             id="total"
           />
         </Grid>
-
        <Grid item xs={3}>
         <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
           sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Supplier</InputLabel>
-          {/*<TextField
-            value={ssupplier}
-            onChange={handleSupplier}
-            margin="normal"
-            required
-            sx={{ paddingLeft: 2, paddingRight: 2}}
-            fullWidth
-            name="total"
-            id="total"
-          />*/}
         <Select
           labelId="status"
           id="status" 
@@ -730,7 +673,6 @@ function Orders() {
         ))}
         </Select>
         </Grid>
-
         <Grid item xs={3}>
           <InputLabel id="demo-simple-select-label" 
           style={{display: "flex", alignItems: "right", justifyContent: "start"}}
@@ -824,16 +766,76 @@ function Orders() {
             </div>
           </div>
           </Grid>
+        </Grid>
+
+        <Grid item xs={3}>
+        <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Category</InputLabel>
+        <Select
+          labelId="status"
+          id="status" 
+          value={catName}
+          label="status"
+          fullWidth
+          disabled={newuser?.role == 'Marketing Manager'}
+          name="status"
+          sx={{ minWidth: 120,  minHeight: 40 }}
+          onChange={handleCategory}
+        >
+        {categories?.map((obj) => (
+          <MenuItem
+            key={obj.id}
+            value={obj.id}
+          >
+            
+            {obj.title}
+          </MenuItem>
+        ))}
+        </Select>
+        </Grid>
+        <Grid item xs={3}>
+        <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingBottom: 2, paddingLeft: 2, fontWeight: 'bold', fontSize: '15px', }}>Product</InputLabel>
+        <Select
+          labelId="status"
+          id="status" 
+          value={prName}
+          label="status"
+          fullWidth
+          name="status"
+          disabled={productsByCat.length < 1}
+          sx={{ minWidth: 120,  minHeight: 40, marginLeft: 2, }}
+          onChange={handlePr}
+        >
+        {productsByCat?.map((obj) => (
+          <MenuItem
+            key={obj.id}
+            value={obj.id}
+          >
+            
+            {obj.productName}
+          </MenuItem>
+        ))}
+        </Select>
+        </Grid>
       </Grid>
-      </Grid>
+
       <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
           <FormControl sx={{ m: 1 }} variant="standard">
            <div style={{  marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
               <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="" color="" onClick={handleClickClear}>
                 Clear
               </MDButton>
-            <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtn}>
-              &nbsp;Search
+            <MDButton sx={{ px: 5, py: 2, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtnOrders}>
+              &nbsp;Search Orders
+            </MDButton>
+            {console.log(downloadingCSVOrders.length)}
+            <MDButton sx={{ px: 5, py: 2, mr: 1 }} disabled={downloadingCSVOrders.length < 2}  px={2} py={2} variant="gradient" color="dark">
+              <Icon sx={{ fontWeight: "bold" }}>download</Icon>
+              <CSVLink filename={`Orders-report-${moment(new Date()).format('YYYY-DD-MM')}.csv`}  
+              data={downloadingCSVOrders} >&nbsp;Download Report</CSVLink>
             </MDButton>
             </div>
         </FormControl>
@@ -841,7 +843,7 @@ function Orders() {
       </Item>
     </Box>}
       
-      <MDBox pt={6} pb={3}>
+      {/*<MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
@@ -870,42 +872,15 @@ function Orders() {
                 &nbsp;Add Bulk Order
               </MDButton>
                 </MDBox>
-                {open &&  <FormDialog setOpen={handleCloseOpen} open={open}/>}
-                {openBulk &&  <FormDialog2 setOpen={handleCloseOpenBulk} open={openBulk}/>}
-                {openUpdate && userId &&  <FormDialogUpdate setOpen={handleCloseOpenUpdate} open={openUpdate} orderId={userId}/>}
-                {openView && userId &&  <FormDialogView setOpen={handleCloseOpenView} open={openView} userId={userId}/>}
-                {<Dialog
-                fullScreen={fullScreen}
-                open={openConformDelete}
-                onClose={handleCloseConformDelete}
-                aria-labelledby="responsive-dialog-title"
-              >
-                <DialogTitle id="responsive-dialog-title">
-                  {"Confirm Delete"}
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    This action will delete this record permanantly from the list.
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button autoFocus onClick={handleCloseConformDelete}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleConformDelete} autoFocus>
-                    Confirm
-                  </Button>
-                </DialogActions>
-              </Dialog>}  
                 </MDBox>
               <MDBox pt={3}>
-                <DataTable
+               { <DataTable
                   table={{ columns, rows }}
                   isSorted={true}
                   entriesPerPage={false}
                   showTotalEntries={true}
                   noEndBorder
-                />
+               />}
                
                 <Pagination
                   totalRows={totalCount}
@@ -922,8 +897,123 @@ function Orders() {
         <Alert onClose={handleCloseSnack} severity={snackSeverity} sx={{ width: '100%' }}>
           {message}
         </Alert>
-      </Snackbar>
-      <Footer />
+               </Snackbar>*/}
+
+
+      <Box>
+      <h2 style={{margin : '15px'}}>Expenses Report</h2>
+        <Item>
+        <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <InputLabel id="demo-simple-select-label" 
+          style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingLeft: 8, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>Name</InputLabel>
+          <Select
+              labelId="incomeName"
+              id="incomeName"
+              value={expenseName}
+              label="incomeName"
+              name="incomeName"
+              sx={{ minWidth: 400,  minHeight: 40 }}
+              onChange={handleExpenseNamed}
+            >
+            {selectDataEx.map((income) => (
+              <MenuItem value={income.id}>{income.name}</MenuItem>
+            ))}
+            </Select>
+        </Grid>
+          <Grid item xs={4} classname="customdatepickerwidth" >
+            <InputLabel id="demo-simple-select-label" 
+            style={{justifyContent: "start"}}
+            sx={{ paddingTop: 2, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>Start Date</InputLabel>
+            <div  sx={{ width : '100'}}>
+            <DatePicker  className='react-datepicker' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+            </div>
+          </Grid>
+          <Grid item xs={4}>
+            <InputLabel id="demo-simple-select-label" 
+            style={{alignItems: "right", justifyContent: "start"}}
+            sx={{ paddingTop: 2, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>End Date</InputLabel>
+            <DatePicker className='react-datepicker' selected={endDate} onChange={(date) => setEndDate(date)} />
+          </Grid>
+        </Grid>
+        <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5',  mt: '5'}} >
+            <FormControl sx={{ m: 1, mt: 5 }} variant="standard">
+            <div style={{  marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+              <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="" color="" onClick={handleClickClear}>
+                Clear
+              </MDButton>
+              <MDButton sx={{ px: 5, py: 2, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtnEx}>
+              &nbsp;Search Expenses
+            </MDButton>
+            <MDButton disabled={downloadingCSVEx.length < 2}  sx={{ px: 5, py: 2, mr: 1 }} px={2} variant="gradient" color="dark">
+              <Icon sx={{ fontWeight: "bold" }}>download</Icon>
+              <CSVLink filename={`Expenses-report-${moment(new Date()).format('YYYY-DD-MM')}.csv`} disabled={downloadingCSVEx.length < 2}  data={downloadingCSVEx}>&nbsp;Download Report</CSVLink>
+            </MDButton>
+            </div>
+          </FormControl>
+        </div>
+        </Item>
+      </Box>
+
+      <Box>
+      <h2 style={{margin : '15px'}}>Income Report</h2>
+      <Item>
+      <Grid container spacing={2}>
+      <Grid item xs={4}>
+        <InputLabel id="demo-simple-select-label" 
+        style={{display: "flex", alignItems: "right", justifyContent: "start"}}
+        sx={{ paddingTop: 2, paddingLeft: 8, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>Name</InputLabel>
+        <Select
+            labelId="incomeName"
+            id="incomeName"
+            value={incomeName}
+            label="incomeName"
+            name="incomeName"
+            sx={{ minWidth: 400,  minHeight: 40 }}
+            onChange={handleIncomeNamed}
+          >
+          {selectDataInc.map((income) => (
+            <MenuItem value={income.id}>{income.name}</MenuItem>
+          ))}
+          </Select>
+      </Grid>
+        <Grid item xs={4} classname="customdatepickerwidth">
+          <InputLabel id="demo-simple-select-label" 
+          style={{justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>Start Date</InputLabel>
+          <div  sx={{ width : '100'}}>
+          <DatePicker  className='react-datepicker' onChange={(date) => setStartDate(date)} selected={startDate}  dateformat="dd/mm/yyyy" />
+          </div>
+        </Grid>
+        <Grid item xs={4}>
+          <InputLabel id="demo-simple-select-label" 
+          style={{alignItems: "right", justifyContent: "start"}}
+          sx={{ paddingTop: 2, paddingBottom: 2, fontWeight: 'bold', fontSize: '15px', }}>End Date</InputLabel>
+          <DatePicker className='react-datepicker' selected={endDate} onChange={(date) => setEndDate(date)} />
+        </Grid>
+      </Grid>
+      <div style={{display: "flex", alignItems: "right", justifyContent: "end", mr: '5'}} >
+          <FormControl sx={{ m: 1, mt: 5  }} variant="standard">
+          <div style={{  marginLeft: '3px', fontStyle : 'italic', fontWeight : 'bold' }}>
+            <MDButton sx={{ px: 6, py: 2.5, mr: 1 }} variant="" color="" onClick={handleClickClear}>
+              Clear
+            </MDButton>
+            <MDButton sx={{ px: 5, py: 2, mr: 1 }} variant="gradient" color="warning" onClick={handleClickSearchBtnInc}>
+              &nbsp;Search Incomes
+            </MDButton>
+            <MDButton disabled={downloadingCSVInc.length < 2}  sx={{ px: 5, py: 2, mr: 1 }} px={2} variant="gradient" color="dark">
+              <Icon sx={{ fontWeight: "bold" }}>download</Icon>
+              <CSVLink filename={`Income-report-${moment(new Date()).format('YYYY-DD-MM')}.csv`}  data={downloadingCSVInc}>&nbsp;Download Report</CSVLink>
+            </MDButton>
+          </div>
+        </FormControl>
+      </div>
+      </Item>
+    </Box>
+
+
+     <Footer />
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={openBackDrop}
@@ -935,4 +1025,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default Reports;

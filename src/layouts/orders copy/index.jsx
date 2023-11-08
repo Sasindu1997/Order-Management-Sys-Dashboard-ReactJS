@@ -388,10 +388,10 @@ function ReturnedOrders() {
           {user.id || "-"}
         </MDTypography>),
         customerName: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-          {user.cfullName  || "-"}
+          {user.cusName  || "-"}
         </MDTypography>),
         customerPhone: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
-        {user.cphone  || "-"}
+        {user.cusPhone  || "-"}
       </MDTypography>),
         trackingNumber: ( <MDTypography component="span" href="#" variant="caption" color="text" fontWeight="medium">
             {user.trackingNumber  || "-"}

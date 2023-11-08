@@ -446,9 +446,11 @@ function OrdersForInvoice() {
 
             // ZPL script to print a simple barcode
             const zpl = `^XA
-                        ^BY2,2,100
-                        ^FO20,20^BC^FD${order.barcode}^FS
-                        ^XZ`;
+            ^BY2,2,100
+            ^FO20,20^BC^FD${order.barcode}^FS
+            ^XZ`;
+
+          
 
                         order.barcode && browserPrint.print(zpl);
 

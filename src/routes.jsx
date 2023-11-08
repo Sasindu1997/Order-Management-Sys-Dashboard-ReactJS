@@ -47,6 +47,7 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
 import Orders from "layouts/orders";
+import Reports from "layouts/orders copy 2";
 import ReturnedOrders from "layouts/orders copy";
 import Products from "layouts/products";
 import Materials from "layouts/users copy";
@@ -380,15 +381,15 @@ const routes = newuser?.role == 'Marketing Manager' ? supplierRoutes : [{
         component: <Delivery />,
         isVisible: true
     },
-    // {
-    //     type: "collapse",
-    //     name: "Invoicessss",
-    //     key: "Invoicessss",
-    //     route: `/invoices`,
-    //     icon: <Icon fontSize = "small" > receipt </Icon>,
-    //     component: <Invoice />,
-    //     isVisible: false
-    // },
+    {
+        type: "collapse",
+        name: "Reports",
+        key: "reports",
+        route: `/reports`,
+        icon: <Icon fontSize = "small" > dataset </Icon>,
+        component: <Reports />,
+        isVisible: true
+    },
    
     {
         type: "collapse",

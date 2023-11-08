@@ -820,7 +820,6 @@ export default function FormDialog({open, setOpen, id}) {
           sx={{ minWidth: 120,  minHeight: 40 }}
           onChange={handleChangeStatus}
         >
-          <MenuItem value={"Dispatched"}>Dispatched</MenuItem>
           <MenuItem value={"Pending"}>Pending</MenuItem>
           <MenuItem value={"Waiting"}>Waiting</MenuItem>
           <MenuItem value={"Delivered"}>Delivered</MenuItem>

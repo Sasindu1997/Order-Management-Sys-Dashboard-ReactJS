@@ -53,7 +53,7 @@ const getBySupplierId = async(id) => {
 };
 
 const getByBarcode = async(barcode) => {
-    const data = await axios.get(extendedUrl + `/orders/barcode/${barcode}`);
+    const data = await axios.get(extendedUrl + `/barcode/${barcode}`);
     console.log(data);
     return data;
 };
@@ -66,6 +66,14 @@ const searchBy = async(value, searchby) => {
 
 const multipleSearch = async(limit, offset, req) => {
     const data = await axios.get(extendedUrl + `/orders/multipleSearch/${limit}/${offset}`, {
+        params: req
+    });
+    console.log(data);
+    return data;
+};
+
+const multipleSearchReport = async(req) => {
+    const data = await axios.get(extendedUrl + `/orders/multipleSearchReport`, {
         params: req
     });
     console.log(data);
@@ -199,5 +207,6 @@ export const OrderType = {
     updateExchanged,
     multipleSearchDashPr,
     multipleSearchOrderCount,
-    multipleSearchC
+    multipleSearchC,
+    multipleSearchReport
 }

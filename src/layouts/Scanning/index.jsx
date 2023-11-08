@@ -256,18 +256,18 @@ function ScanPage() {
                        {UserData.productId  || "-"}
                      </Typography>}
             
-                      <Typography  variant="h6" >
+                     {/* <Typography  variant="h6" >
                        User
                       </Typography>
                       <Typography  variant="body2" sx={{ mb: 3 }}>
                         {UserData?.ufullName || "-"}
-                      </Typography>
+                     </Typography>*/}
             
                       <Typography  variant="h6" >
                        Customer Name
                       </Typography>
                       <Typography  variant="body2" sx={{ mb: 3 }}>
-                        {UserData?.cfullName || "-"}
+                        {UserData?.ccfullName || "-"}
                       </Typography>
             
                       <Typography  variant="h6" >

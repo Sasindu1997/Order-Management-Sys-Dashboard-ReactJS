@@ -840,7 +840,7 @@ const labels = ['Jan', 'Febr', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 
               onChange={handleSorderStatus}
             >
               <MenuItem value={""}></MenuItem>
-              <MenuItem value={""}></MenuItem>
+              <MenuItem value={"Dispatched"}>Dispatched</MenuItem>
               <MenuItem value={"Pending"}>Pending</MenuItem>
               <MenuItem value={"Delivered"}>Delivered</MenuItem>
               <MenuItem value={"ExChanged"}>ExChanged</MenuItem>
